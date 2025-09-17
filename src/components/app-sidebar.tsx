@@ -26,7 +26,7 @@ import { useAuth } from '@/hooks/use-auth';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground dark:bg-card dark:text-foreground">
@@ -107,7 +107,7 @@ export function AppSidebar() {
       </SidebarContent>
       <Separator className="my-0 bg-border/50" />
       <SidebarFooter className="p-4">
-        {user && (
+        {!loading && user && (
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user.avatarUrl} />
