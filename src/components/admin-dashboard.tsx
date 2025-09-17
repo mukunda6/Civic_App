@@ -8,178 +8,105 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { getIssues, getWorkers, updateIssueAssignment } from '@/lib/firebase-service';
-import type { Issue, Worker } from '@/lib/types';
-import { formatDistanceToNow } from 'date-fns';
+import { getIssuesByWorker } from '@/lib/firebase-service';
+import type { Issue } from '@/lib/types';
+import { IssueCard } from './issue-card';
+import { Wrench, AlertTriangle, ListTodo } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 import { useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
 
 export function AdminDashboard() {
-  const [issues, setIssues] = useState<Issue[]>([]);
-  const [workers, setWorkers] = useState<Worker[]>([]);
+  const { user } = useAuth();
+  const [assignedIssues, setAssignedIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [fetchedIssues, fetchedWorkers] = await Promise.all([getIssues(), getWorkers()]);
-        setIssues(fetchedIssues);
-        setWorkers(fetchedWorkers);
-      } catch (error) {
-        console.error("Error fetching admin data:", error);
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Could not fetch dashboard data.'
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [toast]);
-
-  const openIssues = issues.filter(issue => issue.status !== 'Resolved');
-  const resolvedIssuesCount = issues.length - openIssues.length;
-
-  const handleAssignWorker = async (issueId: string, workerId: string) => {
-    try {
-      await updateIssueAssignment(issueId, workerId);
-      setIssues(prevIssues =>
-        prevIssues.map(issue =>
-          issue.id === issueId
-            ? { ...issue, assignedTo: workerId, status: 'In Progress' }
-            : issue
-        )
-      );
-      toast({
-        title: 'Worker Assigned',
-        description: 'The issue has been updated.',
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Assignment Failed',
-        description: 'Could not assign worker. Please try again.',
-      });
+    if (user && user.role === 'Admin') {
+      const fetchIssues = async () => {
+        try {
+          const issues = await getIssuesByWorker(user.uid);
+          setAssignedIssues(issues.filter(i => i.status !== 'Resolved'));
+        } catch (error) {
+          console.error("Error fetching admin issues:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchIssues();
     }
-  };
-
-  const getWorkerName = (workerId?: string) => {
-    if (!workerId) return 'Unassigned';
-    return workers.find(w => w.id === workerId)?.name || 'Unknown';
-  };
+  }, [user]);
 
   if (loading) {
-    return <div>Loading admin dashboard...</div>
+    return <div>Loading your assigned tasks...</div>;
   }
+
+  const highPriorityIssues = assignedIssues.filter(i => i.category === 'Roads, Footpaths & Infrastructure Damage' || i.category === 'Streetlights & Electricity Failures');
 
   return (
     <div className="grid gap-8">
-      <div className="grid gap-4 md:grid-cols-3">
+       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Issues</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Assigned Tasks
+            </CardTitle>
+            <ListTodo className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{issues.length}</div>
+            <div className="text-2xl font-bold">{assignedIssues.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Open issues assigned to you
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Issues</CardTitle>
+            <CardTitle className="text-sm font-medium">High Priority</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{openIssues.length}</div>
+            <div className="text-2xl font-bold">{highPriorityIssues.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Urgent tasks requiring attention
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Resolved Issues</CardTitle>
+            <CardTitle className="text-sm font-medium">Tools & Equipment</CardTitle>
+            <Wrench className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{resolvedIssuesCount}</div>
+            <div className="text-2xl font-bold">Checklist</div>
+            <p className="text-xs text-muted-foreground">
+              Verify your daily equipment
+            </p>
           </CardContent>
         </Card>
       </div>
+
       <Card>
         <CardHeader>
-          <CardTitle>Manage Issue Assignments</CardTitle>
+          <CardTitle>My Task Queue</CardTitle>
           <CardDescription>
-            Assign workers to unresolved issues.
+            These are the active issues assigned to you.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Issue</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead className="text-right">Assigned Worker</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {openIssues.map(issue => (
-                <TableRow key={issue.id}>
-                  <TableCell className="font-medium">{issue.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{issue.category}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{issue.status}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {formatDistanceToNow(new Date(issue.submittedAt), {
-                      addSuffix: true,
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Select
-                      value={issue.assignedTo}
-                      onValueChange={workerId =>
-                        handleAssignWorker(issue.id, workerId)
-                      }
-                      disabled={!workers.length}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Assign worker...">
-                          {getWorkerName(issue.assignedTo)}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {workers.map(worker => (
-                          <SelectItem key={worker.id} value={worker.id}>
-                            {worker.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="grid gap-6">
+          {assignedIssues.length > 0 ? (
+            assignedIssues.map(issue => <IssueCard key={issue.id} issue={issue} userRole="Admin" />)
+          ) : (
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+                <h3 className="text-xl font-semibold tracking-tight">
+                    No assigned tasks
+                </h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                    Your task queue is empty. Great job!
+                </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

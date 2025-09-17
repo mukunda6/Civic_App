@@ -8,18 +8,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getIssues, getWorkers } from '@/lib/firebase-service';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { getIssues, getWorkers, updateIssueAssignment } from '@/lib/firebase-service';
 import type { Issue, Worker } from '@/lib/types';
+import { formatDistanceToNow } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export function HeadDashboard() {
-  const [stats, setStats] = useState({
-      totalIssues: 0,
-      openIssues: 0,
-      resolvedIssues: 0,
-      totalWorkers: 0,
-  });
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -27,17 +40,10 @@ export function HeadDashboard() {
     const fetchData = async () => {
       try {
         const [fetchedIssues, fetchedWorkers] = await Promise.all([getIssues(), getWorkers()]);
-        const openIssues = fetchedIssues.filter(issue => issue.status !== 'Resolved').length;
-        
-        setStats({
-            totalIssues: fetchedIssues.length,
-            openIssues: openIssues,
-            resolvedIssues: fetchedIssues.length - openIssues,
-            totalWorkers: fetchedWorkers.length,
-        })
-
+        setIssues(fetchedIssues);
+        setWorkers(fetchedWorkers);
       } catch (error) {
-        console.error("Error fetching head data:", error);
+        console.error("Error fetching admin data:", error);
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -50,20 +56,50 @@ export function HeadDashboard() {
     fetchData();
   }, [toast]);
 
+  const openIssues = issues.filter(issue => issue.status !== 'Resolved');
+  const resolvedIssuesCount = issues.length - openIssues.length;
+
+  const handleAssignWorker = async (issueId: string, workerId: string) => {
+    try {
+      await updateIssueAssignment(issueId, workerId);
+      setIssues(prevIssues =>
+        prevIssues.map(issue =>
+          issue.id === issueId
+            ? { ...issue, assignedTo: workerId, status: 'In Progress' }
+            : issue
+        )
+      );
+      toast({
+        title: 'Admin Assigned',
+        description: 'The issue has been updated.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Assignment Failed',
+        description: 'Could not assign admin. Please try again.',
+      });
+    }
+  };
+
+  const getWorkerName = (workerId?: string) => {
+    if (!workerId) return 'Unassigned';
+    return workers.find(w => w.id === workerId)?.name || 'Unknown';
+  };
+
   if (loading) {
     return <div>Loading head dashboard...</div>
   }
 
   return (
     <div className="grid gap-8">
-        <CardDescription>High-level overview of all civic issue resolution activities.</CardDescription>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Issues</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalIssues}</div>
+            <div className="text-2xl font-bold">{issues.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -71,7 +107,7 @@ export function HeadDashboard() {
             <CardTitle className="text-sm font-medium">Open Issues</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.openIssues}</div>
+            <div className="text-2xl font-bold">{openIssues.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -79,25 +115,69 @@ export function HeadDashboard() {
             <CardTitle className="text-sm font-medium">Resolved Issues</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.resolvedIssues}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Field Workers</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalWorkers}</div>
+            <div className="text-2xl font-bold">{resolvedIssuesCount}</div>
           </CardContent>
         </Card>
       </div>
       <Card>
         <CardHeader>
-            <CardTitle>System Monitoring</CardTitle>
-            <CardDescription>Use the navigation to view leaderboards and manage issue assignments in the Admin Dashboard.</CardDescription>
+          <CardTitle>Manage Issue Assignments</CardTitle>
+          <CardDescription>
+            Assign admins to unresolved issues.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-            <p>As the GMC Head, you have oversight of the entire system. Your primary role is to monitor performance, ensure tasks are assigned efficiently by Admins, and intervene when issues are critically delayed.</p>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Issue</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Submitted</TableHead>
+                <TableHead className="text-right">Assigned Admin</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {openIssues.map(issue => (
+                <TableRow key={issue.id}>
+                  <TableCell className="font-medium">{issue.title}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{issue.category}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{issue.status}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    {formatDistanceToNow(new Date(issue.submittedAt), {
+                      addSuffix: true,
+                    })}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Select
+                      value={issue.assignedTo}
+                      onValueChange={workerId =>
+                        handleAssignWorker(issue.id, workerId)
+                      }
+                      disabled={!workers.length}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Assign admin...">
+                          {getWorkerName(issue.assignedTo)}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {workers.map(worker => (
+                          <SelectItem key={worker.id} value={worker.id}>
+                            {worker.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

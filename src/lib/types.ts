@@ -10,7 +10,7 @@ export type IssueCategory =
   | 'Stray Animals & Public Health Hazards'
   | 'Poor Maintenance of Public Facilities';
 
-export type UserRole = 'Citizen' | 'Worker' | 'Admin' | 'Head';
+export type UserRole = 'Citizen' | 'Admin' | 'Head';
 
 export interface AppUser {
     uid: string;
@@ -33,7 +33,7 @@ export interface Issue {
   imageUrl: string;
   imageHint: string;
   submittedBy: {
-    uid: string;
+    uid:string;
     name: string;
     email: string;
   };

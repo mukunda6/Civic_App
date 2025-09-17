@@ -90,20 +90,6 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )}
-          {(user?.role === 'Admin' || user?.role === 'Head') && (
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/leaderboard'}
-                tooltip="Worker Leaderboard"
-              >
-                <Link href="/leaderboard">
-                  <Trophy />
-                  <span>Worker Leaderboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )}
         </SidebarMenu>
 
         <SidebarMenu>

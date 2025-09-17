@@ -29,13 +29,6 @@ const MOCK_USERS: Record<string, AppUser> = {
         role: 'Admin',
         avatarUrl: 'https://picsum.photos/seed/admin/100/100',
     },
-    'worker@test.com': {
-        uid: 'worker-user-01',
-        name: 'Alice Johnson',
-        email: 'worker@test.com',
-        role: 'Worker',
-        avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
-    },
     'citizen@test.com': {
         uid: 'citizen-user-01',
         name: 'John Citizen',

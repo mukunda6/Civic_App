@@ -147,7 +147,6 @@ export default function LoginPage() {
                   <div className="flex flex-wrap gap-2 mt-2">
                     <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('head@test.com')}>Head</Button>
                     <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('admin@test.com')}>Admin</Button>
-                    <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('worker@test.com')}>Worker</Button>
                     <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('citizen@test.com')}>Citizen</Button>
                   </div>
                 </AlertDescription>

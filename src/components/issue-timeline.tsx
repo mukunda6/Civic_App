@@ -82,7 +82,7 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
             </div>
           ))}
         </div>
-        {!isUpdating && issue.status !== 'Resolved' && (user?.role === 'Worker' || user?.role === 'Admin') && (
+        {!isUpdating && issue.status !== 'Resolved' && user?.role === 'Admin' && (
             <Button onClick={() => setIsUpdating(true)}>Update Status</Button>
         )}
         {isUpdating && <UpdateForm issueId={issue.id} onCancel={() => setIsUpdating(false)} onUpdateAdded={handleUpdateAdded} />}

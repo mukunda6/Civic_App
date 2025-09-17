@@ -122,7 +122,7 @@ export const addIssueUpdate = async (
     const newUpdate = {
         ...update,
         updatedAt: now,
-        imageUrl: imageFile ? 'https://picsum.photos/seed/update/300/200' : undefined,
+        imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined,
         imageHint: imageFile ? 'resolved issue' : undefined,
     };
     issue.updates.push(newUpdate);

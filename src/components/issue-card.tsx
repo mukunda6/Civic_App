@@ -74,7 +74,7 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
             </Badge>
             <Button asChild variant="outline" size="sm" className="ml-auto gap-1.5">
                 <Link href={`/issues/${issue.id}`}>
-                    {userRole === 'Worker' ? 'Manage Task' : 'View Details'}
+                    {userRole === 'Admin' ? 'Manage Task' : 'View Details'}
                     <ArrowUpRight className="h-4 w-4" />
                 </Link>
             </Button>

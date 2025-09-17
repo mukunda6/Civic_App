@@ -4,7 +4,6 @@
 import { useSearchParams } from 'next/navigation'
 import type { UserRole } from '@/lib/types'
 import { CitizenDashboard } from '@/components/citizen-dashboard'
-import { WorkerDashboard } from '@/components/worker-dashboard'
 import { AdminDashboard } from '@/components/admin-dashboard'
 import { HeadDashboard } from '@/components/head-dashboard'
 import { Suspense } from 'react'
@@ -38,8 +37,6 @@ function DashboardContent() {
     switch (user.role) {
       case 'Citizen':
         return <CitizenDashboard />
-      case 'Worker':
-        return <WorkerDashboard />
       case 'Admin':
         return <AdminDashboard />
       case 'Head':
@@ -54,10 +51,8 @@ function DashboardContent() {
     switch (user.role) {
       case 'Citizen':
         return 'Track your reports and see community issues.'
-      case 'Worker':
-        return 'View and manage your assigned tasks.'
       case 'Admin':
-        return 'Oversee all issues and manage worker assignments.'
+        return 'View and manage your assigned tasks.'
       case 'Head':
         return 'Top-level overview of the entire system.'
       default:
@@ -69,8 +64,6 @@ function DashboardContent() {
      switch (user.role) {
       case 'Citizen':
         return 'Citizen Dashboard';
-      case 'Worker':
-        return 'Worker Dashboard';
       case 'Admin':
         return 'Admin Dashboard';
       case 'Head':
