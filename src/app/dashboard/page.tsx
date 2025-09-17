@@ -26,7 +26,7 @@ function DashboardContent() {
   if (loading || !user) {
     return (
         <div className="flex justify-center items-center h-screen">
-            <div className="text-lg">Loading...</div>
+            <div className="text-lg">Loading Dashboard...</div>
         </div>
     )
   }
@@ -40,6 +40,7 @@ function DashboardContent() {
       case 'Admin':
         return <AdminDashboard />
       default:
+        // Fallback to citizen dashboard if role is unknown
         return <CitizenDashboard />
     }
   }
@@ -53,7 +54,7 @@ function DashboardContent() {
       case 'Admin':
         return 'Oversee all issues and manage worker assignments.'
       default:
-        return ''
+        return 'Track your reports and see community issues.'
     }
   }
   
@@ -91,7 +92,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="flex justify-center items-center h-screen"><div className="text-lg">Loading...</div></div>}>
             <DashboardContent />
         </Suspense>
     )
