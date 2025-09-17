@@ -85,7 +85,6 @@ export function AppSidebar() {
                 asChild
                 isActive={pathname === '/report/emergency'}
                 tooltip="Emergency Booking"
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:bg-destructive/90 focus:text-destructive-foreground data-[active=true]:bg-destructive data-[active=true]:text-destructive-foreground"
               >
                 <Link href="/report/emergency">
                   <AlertTriangle />
