@@ -24,46 +24,37 @@ import { mockIssues, mockUsers, mockWorkers } from './mock-data-db';
 // --- MOCKED OFFLINE-MODE ---
 // The following functions are modified to return mock data and prevent
 // live database calls, allowing the app to run without a real Firebase connection.
+const sessionIssues: Issue[] = mockIssues.map((issue, index) => ({
+      ...issue,
+      id: `mock-issue-${index + 1}`
+  })) as Issue[];
+
 
 // Get a list of all issues
 export const getIssues = async (): Promise<Issue[]> => {
   console.log("Using mock data: getIssues");
-  const issueList = mockIssues.map((issue, index) => ({
-      ...issue,
-      id: `mock-issue-${index + 1}`
-  }));
-  return Promise.resolve(issueList as Issue[]);
+  return Promise.resolve(sessionIssues);
 };
 
 // Get a single issue by its ID
 export const getIssueById = async (id: string): Promise<Issue | null> => {
     console.log("Using mock data: getIssueById");
-    const allMockIssues = mockIssues.map((issue, index) => ({
-        ...issue,
-        id: `mock-issue-${index + 1}`
-    }));
-    const issue = allMockIssues.find(i => i.id === id) || null;
-    return Promise.resolve(issue as Issue | null);
+    const issue = sessionIssues.find(i => i.id === id) || null;
+    return Promise.resolve(issue);
 };
 
 // Get issues submitted by a specific user
 export const getIssuesByUser = async (userId: string): Promise<Issue[]> => {
     console.log("Using mock data: getIssuesByUser");
-    const userIssues = mockIssues.filter(issue => issue.submittedBy.uid === userId).map((issue, index) => ({
-        ...issue,
-        id: `mock-user-issue-${index + 1}`
-    }));
-    return Promise.resolve(userIssues as Issue[]);
+    const userIssues = sessionIssues.filter(issue => issue.submittedBy.uid === userId);
+    return Promise.resolve(userIssues);
 };
 
 // Get issues assigned to a specific worker
 export const getIssuesByWorker = async (workerId: string): Promise<Issue[]> => {
     console.log("Using mock data: getIssuesByWorker");
-    const workerIssues = mockIssues.filter(issue => issue.assignedTo === workerId).map((issue, index) => ({
-        ...issue,
-        id: `mock-worker-issue-${index+1}`
-    }));
-    return Promise.resolve(workerIssues as Issue[]);
+    const workerIssues = sessionIssues.filter(issue => issue.assignedTo === workerId);
+    return Promise.resolve(workerIssues);
 }
 
 // Get all workers
@@ -78,7 +69,7 @@ export const addIssue = async (
     imageFile: File,
     user: AppUser
 ): Promise<Issue> => {
-    console.log("Mocking issue submission. No data will be saved.");
+    console.log("Mocking issue submission. Data will be saved in-memory for this session.");
     const now = new Date().toISOString();
     const newIssue: Issue = {
         id: `new-mock-issue-${Date.now()}`,
@@ -101,12 +92,18 @@ export const addIssue = async (
             }
         ]
     };
+    sessionIssues.unshift(newIssue); // Add to the beginning of the array
     return Promise.resolve(newIssue);
 };
 
 // Assign a worker to an issue
 export const updateIssueAssignment = async (issueId: string, workerId:string): Promise<void> => {
     console.log(`Mocking assignment of worker ${workerId} to issue ${issueId}. No data will be saved.`);
+    const issue = sessionIssues.find(i => i.id === issueId);
+    if (issue) {
+        issue.assignedTo = workerId;
+        issue.status = 'In Progress';
+    }
     return Promise.resolve();
 };
 
@@ -130,6 +127,13 @@ export const addIssueUpdate = async (
     };
     issue.updates.push(newUpdate);
     issue.status = update.status;
+    
+    // Update the issue in the main session array
+    const issueIndex = sessionIssues.findIndex(i => i.id === issueId);
+    if (issueIndex > -1) {
+        sessionIssues[issueIndex] = issue;
+    }
+
     return Promise.resolve(issue);
 };
 
