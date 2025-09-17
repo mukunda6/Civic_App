@@ -2,76 +2,93 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import type { AppUser, UserRole } from '@/lib/types';
+import type { AppUser } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { auth, db } from '@/lib/firebase';
+import { 
+  onAuthStateChanged, 
+  signInWithEmailAndPassword, 
+  signOut,
+  createUserWithEmailAndPassword,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { getUserProfile } from '@/lib/firebase-service';
 
 interface AuthContextType {
   user: AppUser | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
+  signUp: (email: string, pass: string, name: string, role: AppUser['role']) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const MOCK_USERS: Record<string, AppUser> = {
-    'head@test.com': {
-        uid: 'head-user-01',
-        name: 'GMC Head',
-        email: 'head@test.com',
-        role: 'Head',
-        avatarUrl: 'https://picsum.photos/seed/head/100/100',
-    },
-    'admin@test.com': {
-        uid: 'admin-user-01',
-        name: 'Admin Manager',
-        email: 'admin@test.com',
-        role: 'Admin',
-        avatarUrl: 'https://picsum.photos/seed/admin/100/100',
-    },
-    'citizen@test.com': {
-        uid: 'citizen-user-01',
-        name: 'John Citizen',
-        email: 'citizen@test.com',
-        role: 'Citizen',
-        avatarUrl: 'https://picsum.photos/seed/citizen/100/100',
-    }
-}
-
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // User is signed in, get their profile from Firestore
+        const profile = await getUserProfile(firebaseUser.uid);
+        if (profile) {
+          setUser(profile);
+        } else {
+          // This case might happen if a user is created in Auth but not in Firestore
+          setUser(null);
+        }
+      } else {
+        // User is signed out
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   const login = async (email: string, pass: string) => {
     setLoading(true);
-    const mockUser = MOCK_USERS[email.toLowerCase()];
-    if (mockUser) {
-        setUser(mockUser);
-    } else {
-        // Default to citizen if email is not recognized
-        const defaultUser = MOCK_USERS['citizen@test.com'];
-        setUser({...defaultUser, email, name: 'Guest User'});
-    }
+    await signInWithEmailAndPassword(auth, email, pass);
+    // onAuthStateChanged will handle setting the user state
+    router.push('/dashboard');
     setLoading(false);
   };
 
   const logout = async () => {
-    setUser(null);
+    await signOut(auth);
     router.push('/');
   };
   
-  // This effect will run when the user state changes.
-  useEffect(() => {
-    if(user) {
-        router.push('/dashboard');
-    }
-  }, [user, router]);
+  const signUp = async (email: string, pass: string, name: string, role: AppUser['role']) => {
+    setLoading(true);
+    // 1. Create user in Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    const firebaseUser = userCredential.user;
 
+    // 2. Create user profile in Firestore
+    const newUser: AppUser = {
+      uid: firebaseUser.uid,
+      name,
+      email,
+      role,
+      avatarUrl: `https://picsum.photos/seed/${name.split(' ')[0]}/100/100`, // Generic avatar
+    };
+    
+    await setDoc(doc(db, "users", firebaseUser.uid), newUser);
+    
+    setUser(newUser);
+    router.push('/dashboard');
+    setLoading(false);
+  }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, signUp }}>
       {children}
     </AuthContext.Provider>
   );

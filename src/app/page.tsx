@@ -29,6 +29,9 @@ import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import Link from 'next/link'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Info } from 'lucide-react'
+
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
@@ -76,11 +79,14 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(values.email, values.password);
+      // The auth provider will handle the redirect on successful login
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred.',
+        description: error.code === 'auth/invalid-credential' 
+            ? 'Invalid email or password.' 
+            : error.message || 'An unexpected error occurred.',
       })
     } finally {
         setIsSubmitting(false);
@@ -92,10 +98,11 @@ export default function LoginPage() {
     form.setValue('password', 'password');
   }
 
-  if (authLoading && !user) {
+  // Display a loading indicator until auth state is confirmed and user is not logged in.
+  if (authLoading || user) {
      return (
         <div className="flex justify-center items-center h-screen">
-            <div className="text-lg">Loading...</div>
+            <Loader2 className="h-8 w-8 animate-spin" />
         </div>
     )
   }
@@ -142,9 +149,6 @@ export default function LoginPage() {
           )}
         />
         <div className="pt-2">
-            <p className="text-xs text-center text-muted-foreground mb-4">
-                For demo purposes, the password can be anything. Email is pre-filled.
-            </p>
             <Button
                 type="submit"
                 className="w-full"
@@ -174,6 +178,13 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+            <Alert className="mb-4">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Demo Credentials</AlertTitle>
+                <AlertDescription>
+                   Use the pre-filled credentials below or <Link href="/signup" className="underline font-semibold">sign up</Link> to create a new account. The password for all demo accounts is `password`.
+                </AlertDescription>
+            </Alert>
           <Tabs defaultValue="Citizen" className="w-full" onValueChange={(value) => handleTabChange(value as Role)}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="Citizen">Citizen</TabsTrigger>
@@ -192,7 +203,7 @@ export default function LoginPage() {
           </Tabs>
            <div className="mt-4 text-center text-sm">
             Don't have an account?{' '}
-            <Link href="/seed" className="underline">
+            <Link href="/signup" className="underline">
               Sign Up
             </Link>
           </div>
