@@ -197,9 +197,13 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
   };
   
   const finishSubmission = async () => {
+    setDuplicateInfo(null);
+    setIsSubmitting(true);
+
     const data = form.getValues();
     if (!imageFile) {
         toast({ variant: 'destructive', title: 'Error', description: 'No image file selected.' });
+        setIsSubmitting(false);
         return;
     }
 
@@ -212,11 +216,12 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
         form.reset();
         setImagePreview(null);
         setImageClarity({status: 'idle'});
-        setDuplicateInfo(null);
         router.push(`/issues/${newIssue.id}`);
     } catch (error) {
         console.error('Error adding issue:', error);
         toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -349,11 +354,11 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
             <AlertDialogTitle>Possible Duplicate Detected</AlertDialogTitle>
             <AlertDialogDescription>
               Our AI has detected that your report might be a duplicate of an
-              existing issue. Please review before submitting.
+              existing issue. Please review before submitting. You can view the original report <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} className="underline">here</a>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setIsSubmitting(false)}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={finishSubmission}>
               Submit Anyway
             </AlertDialogAction>
