@@ -96,7 +96,7 @@ export default function UserLeaderboardPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-headline flex items-center gap-2">
             <Trophy className="h-8 w-8 text-primary" />
-            Community Leaders
+            Leaderboard and Rewards
           </CardTitle>
           <CardDescription>
             Ranking of citizens based on the number of issues they've reported.
