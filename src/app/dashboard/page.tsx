@@ -17,12 +17,14 @@ function DashboardContent() {
   const { user, loading } = useAuth();
   
   useEffect(() => {
+    // If auth is done loading and there's still no user, redirect to login.
     if (!loading && !user) {
       router.push('/');
     }
   }, [user, loading, router]);
 
 
+  // While loading or if user is null (before redirect happens), show a loading screen.
   if (loading || !user) {
     return (
         <div className="flex justify-center items-center h-screen">

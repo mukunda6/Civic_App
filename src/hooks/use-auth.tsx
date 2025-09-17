@@ -31,6 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const appUser = { uid: firebaseUser.uid, ...userDoc.data() } as AppUser;
         setUser(appUser);
       } else {
+        // This case can happen if the user exists in Auth but not in Firestore.
+        // For this app, we treat that as not logged in.
         setUser(null);
       }
     } else {
@@ -42,12 +44,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, handleUser);
     return () => unsubscribe();
-  }, [auth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const login = async (email: string, pass: string) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     // After successful sign-in, manually trigger user handling to ensure
-    // the user state is set before the promise resolves.
+    // the user state is fully set before the promise resolves.
+    // This is the key to fixing the redirect loop.
     await handleUser(userCredential.user);
   };
 

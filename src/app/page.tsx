@@ -67,13 +67,12 @@ export default function LoginPage() {
         title: 'Login Failed',
         description: error.message || 'An unexpected error occurred.',
       })
-      setIsSubmitting(false);
+    } finally {
+        setIsSubmitting(false);
     }
-    // No need for finally block, as we only want to stop submitting on error.
-    // On success, the page will navigate away.
   }
 
-  // Show a loading screen if the user is already logged in and we are redirecting
+  // Show a loading screen if we are checking auth or if a user is already logged in and we are about to redirect.
   if (authLoading || user) {
      return (
         <div className="flex justify-center items-center h-screen">
