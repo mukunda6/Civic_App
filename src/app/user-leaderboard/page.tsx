@@ -28,6 +28,7 @@ type UserStats = {
   name: string;
   avatarUrl: string;
   reportCount: number;
+  score: number;
 };
 
 export default function UserLeaderboardPage() {
@@ -40,23 +41,48 @@ export default function UserLeaderboardPage() {
         const issues = await getIssues();
         
         const statsMap = new Map<string, UserStats>();
+        const userIssueCounts = new Map<string, Map<string, number>>(); // Map<userId, Map<issueTitle, count>>
 
         issues.forEach(issue => {
           const { uid, name } = issue.submittedBy;
+
+          // Initialize user stats if not present
           if (!statsMap.has(uid)) {
             statsMap.set(uid, {
               uid,
               name,
-              // All mock users have the same avatar, so we'll just use a generic one based on name
               avatarUrl: `https://picsum.photos/seed/${name.split(' ')[0]}/100/100`,
               reportCount: 0,
+              score: 0,
             });
+            userIssueCounts.set(uid, new Map());
           }
-          statsMap.get(uid)!.reportCount += 1;
+
+          const userStat = statsMap.get(uid)!;
+          const issueCounts = userIssueCounts.get(uid)!;
+          
+          // Simplified way to identify a unique issue for scoring
+          const issueIdentifier = issue.title.toLowerCase().trim();
+          
+          const reportCountForThisIssue = issueCounts.get(issueIdentifier) || 0;
+
+          // Calculate score based on the rules
+          let points = 0;
+          if (reportCountForThisIssue === 0) {
+            points = 5; // First submission
+          } else if (reportCountForThisIssue >= 1 && reportCountForThisIssue < 5) {
+            points = 3; // 2nd to 5th submission
+          } else {
+            points = 1; // More than 5 submissions
+          }
+          
+          userStat.score += points;
+          userStat.reportCount += 1;
+          issueCounts.set(issueIdentifier, reportCountForThisIssue + 1);
         });
 
         const stats = Array.from(statsMap.values());
-        stats.sort((a, b) => b.reportCount - a.reportCount);
+        stats.sort((a, b) => b.score - a.score);
         
         setUserStats(stats);
       } catch (error) {
@@ -90,7 +116,7 @@ export default function UserLeaderboardPage() {
             Leaderboard and Rewards
           </CardTitle>
           <CardDescription>
-            Ranking of citizens based on the number of issues they've reported.
+            Ranking of citizens based on their contribution score.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,7 +141,7 @@ export default function UserLeaderboardPage() {
               <TableRow>
                 <TableHead className="w-[80px]">Rank</TableHead>
                 <TableHead>Citizen</TableHead>
-                <TableHead className="text-center">Reports Submitted</TableHead>
+                <TableHead className="text-center">Score</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,13 +163,13 @@ export default function UserLeaderboardPage() {
                       <div>
                         <p className="font-semibold">{user.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {user.uid}
+                          Reports: {user.reportCount}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-center text-lg font-bold text-primary">
-                    {user.reportCount}
+                    {user.score}
                   </TableCell>
                 </TableRow>
               ))}
