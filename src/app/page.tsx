@@ -24,11 +24,20 @@ import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
 import type { UserRole } from '@/lib/types'
 import { CivicSolveLogo } from '@/components/icons'
-import { ArrowRight } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
   password: z.string().min(1, 'Password is required.'),
+  role: z.enum(['Citizen', 'Worker', 'Admin'], {
+    required_error: 'Please select a role.',
+  }),
 })
 
 export default function LoginPage() {
@@ -42,10 +51,11 @@ export default function LoginPage() {
     },
   })
 
-  const handleLogin = (role: UserRole) => {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     // In a real app, you'd perform authentication here.
     // For this demo, we'll just navigate.
-    router.push(`/dashboard?role=${role}`)
+    console.log(values)
+    router.push(`/dashboard?role=${values.role}`)
   }
 
   return (
@@ -59,12 +69,12 @@ export default function LoginPage() {
             Welcome to CivicSolve
           </CardTitle>
           <CardDescription>
-            Select your role to sign in and continue.
+            Sign in to access your dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -91,36 +101,35 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Citizen">Citizen</SelectItem>
+                        <SelectItem value="Worker">Worker</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="pt-4 space-y-2">
-                <Button
-                    type="button"
-                    onClick={form.handleSubmit(() => handleLogin('Citizen'))}
-                    className="w-full justify-between"
-                    size="lg"
-                >
-                    <span>Sign in as Citizen</span>
-                    <ArrowRight />
-                </Button>
-                <Button
-                    type="button"
-                    onClick={form.handleSubmit(() => handleLogin('Worker'))}
-                    className="w-full justify-between"
-                    size="lg"
-                    variant="secondary"
-                >
-                    <span>Sign in as Worker</span>
-                    <ArrowRight />
-                </Button>
-                <Button
-                    type="button"
-                    onClick={form.handleSubmit(() => handleLogin('Admin'))}
-                    className="w-full justify-between"
-                    size="lg"
-                    variant="outline"
-                >
-                    <span>Sign in as Admin</span>
-                    <ArrowRight />
+              <div className="pt-4">
+                <Button type="submit" className="w-full" size="lg">
+                  Sign In
                 </Button>
               </div>
             </form>
