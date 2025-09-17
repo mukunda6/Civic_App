@@ -139,8 +139,8 @@ export default function LoginPage() {
                 <AlertTitle>Demo Credentials</AlertTitle>
                 <AlertDescription>
                   <ul className="list-disc pl-5 text-sm">
+                    <li>head@test.com</li>
                     <li>admin@test.com</li>
-                    <li>worker@test.com</li>
                     <li>citizen@test.com</li>
                   </ul>
                   (Password can be anything)

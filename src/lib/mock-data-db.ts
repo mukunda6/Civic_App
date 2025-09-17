@@ -6,20 +6,20 @@ import type { Issue, Worker, UserRole } from './types';
 
 export const mockUsers = [
   {
+    uid: 'head-user-01',
+    name: 'Head User',
+    email: 'head@test.com',
+    password: 'password',
+    role: 'Head' as UserRole,
+    avatarUrl: 'https://picsum.photos/seed/head/100/100',
+  },
+  {
     uid: 'admin-user-01',
     name: 'Admin User',
     email: 'admin@test.com',
     password: 'password',
     role: 'Admin' as UserRole,
     avatarUrl: 'https://picsum.photos/seed/admin/100/100',
-  },
-  {
-    uid: 'worker-user-01',
-    name: 'Alice Johnson',
-    email: 'worker@test.com',
-    password: 'password',
-    role: 'Worker' as UserRole,
-    avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
   },
   {
     uid: 'citizen-user-01',

@@ -1,7 +1,7 @@
 
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
 export type IssueCategory = 'Garbage' | 'Streetlights' | 'Manholes' | 'Water Quality' | 'Potholes';
-export type UserRole = 'Citizen' | 'Worker' | 'Admin';
+export type UserRole = 'Citizen' | 'Admin' | 'Head';
 
 export interface AppUser {
     uid: string;

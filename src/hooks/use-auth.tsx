@@ -15,18 +15,18 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const MOCK_USERS: Record<string, AppUser> = {
-    'admin@test.com': {
+    'head@test.com': {
         uid: 'admin-user-01',
-        name: 'Admin User',
-        email: 'admin@test.com',
-        role: 'Admin',
+        name: 'Head User',
+        email: 'head@test.com',
+        role: 'Head',
         avatarUrl: 'https://picsum.photos/seed/admin/100/100',
     },
-    'worker@test.com': {
+    'admin@test.com': {
         uid: 'worker-user-01',
         name: 'Alice Johnson',
-        email: 'worker@test.com',
-        role: 'Worker',
+        email: 'admin@test.com',
+        role: 'Admin',
         avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
     },
     'citizen@test.com': {

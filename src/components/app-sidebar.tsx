@@ -93,11 +93,11 @@ export function AppSidebar() {
               <SidebarMenuButton
                 asChild
                 isActive={pathname === '/leaderboard'}
-                tooltip="Worker Leaderboard"
+                tooltip="Admin Leaderboard"
               >
                 <Link href="/leaderboard">
                   <Trophy />
-                  <span>Worker Leaderboard</span>
+                  <span>Admin Leaderboard</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
