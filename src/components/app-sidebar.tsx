@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -28,7 +29,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground dark:bg-card dark:text-foreground">
       <SidebarHeader className="p-4">
-        <Link href="/" className="flex items-center gap-2 font-semibold font-headline text-lg">
+        <Link href="/dashboard" className="flex items-center gap-2 font-semibold font-headline text-lg">
           <CivicSolveLogo className="h-8 w-8 text-primary" />
           <span>CivicSolve</span>
         </Link>
@@ -38,10 +39,10 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={pathname === '/'}
+              isActive={pathname === '/dashboard'}
               tooltip="Dashboard"
             >
-              <Link href="/">
+              <Link href="/dashboard">
                 <LayoutDashboard />
                 <span>Dashboard</span>
               </Link>

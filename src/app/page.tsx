@@ -1,65 +1,69 @@
+
 'use client'
 
-import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { useRouter } from 'next/navigation'
 import type { UserRole } from '@/lib/types'
-import { CitizenDashboard } from '@/components/citizen-dashboard'
-import { WorkerDashboard } from '@/components/worker-dashboard'
-import { AdminDashboard } from '@/components/admin-dashboard'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CivicSolveLogo } from '@/components/icons'
+import { ArrowRight } from 'lucide-react'
 
-export default function Home() {
-  const [userRole, setUserRole] = useState<UserRole>('Citizen')
+export default function LoginPage() {
+  const router = useRouter()
 
-  const renderDashboard = () => {
-    switch (userRole) {
-      case 'Citizen':
-        return <CitizenDashboard />;
-      case 'Worker':
-        return <WorkerDashboard />;
-      case 'Admin':
-        return <AdminDashboard />;
-      default:
-        return <CitizenDashboard />;
-    }
-  }
-  
-  const getDashboardDescription = () => {
-    switch (userRole) {
-      case 'Citizen':
-        return 'Track your reports and see community issues.';
-      case 'Worker':
-        return 'View and manage your assigned tasks.';
-      case 'Admin':
-        return 'Oversee all issues and manage worker assignments.';
-      default:
-        return '';
-    }
+  const handleLogin = (role: UserRole) => {
+    router.push(`/dashboard?role=${role}`)
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight font-headline">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {getDashboardDescription()}
-          </p>
-        </div>
-        <Tabs
-          value={userRole}
-          onValueChange={value => setUserRole(value as UserRole)}
-        >
-          <TabsList>
-            <TabsTrigger value="Citizen">Citizen</TabsTrigger>
-            <TabsTrigger value="Worker">Worker</TabsTrigger>
-            <TabsTrigger value="Admin">Admin</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
-      {renderDashboard()}
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="text-center">
+          <div className="flex justify-center items-center gap-2 mb-4">
+            <CivicSolveLogo className="h-12 w-12 text-primary" />
+          </div>
+          <CardTitle className="text-3xl font-headline">
+            Welcome to CivicSolve
+          </CardTitle>
+          <CardDescription>
+            Select your role to sign in and continue.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button
+            onClick={() => handleLogin('Citizen')}
+            className="w-full justify-between"
+            size="lg"
+          >
+            <span>Sign in as Citizen</span>
+            <ArrowRight />
+          </Button>
+          <Button
+            onClick={() => handleLogin('Worker')}
+            className="w-full justify-between"
+            size="lg"
+            variant="secondary"
+          >
+            <span>Sign in as Worker</span>
+             <ArrowRight />
+          </Button>
+          <Button
+            onClick={() => handleLogin('Admin')}
+            className="w-full justify-between"
+            size="lg"
+            variant="outline"
+          >
+            <span>Sign in as Admin</span>
+             <ArrowRight />
+          </Button>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }

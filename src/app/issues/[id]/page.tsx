@@ -1,3 +1,4 @@
+
 import { mockIssues } from '@/lib/mock-data';
 import { notFound } from 'next/navigation';
 import { IssueDetails } from '@/components/issue-details';
@@ -17,7 +18,7 @@ export default function IssueDetailPage({ params }: { params: { id: string } }) 
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <Button asChild variant="outline" size="sm" className="mb-4 gap-2">
-            <Link href="/">
+            <Link href="/dashboard">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Dashboard
             </Link>
