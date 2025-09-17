@@ -13,8 +13,8 @@ import {
     serverTimestamp
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { db, storage } from './firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { db, storage, auth } from './firebase';
 import type { Issue, Worker, AppUser, UserRole, IssueCategory } from './types';
 import { mockIssues, mockUsers, mockWorkers } from './mock-data-db';
 
@@ -179,7 +179,6 @@ export const addIssueUpdate = async (
 // Seed the database with mock data
 export async function seedDatabase() {
     const batch = writeBatch(db);
-    const auth = getAuth();
 
     // Seed Users
     for (const userData of mockUsers) {

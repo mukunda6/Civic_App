@@ -37,7 +37,6 @@ const formSchemas = {
   Citizen: citizenSchema,
   Admin: adminSchema,
   Head: headSchema,
-  Worker: z.object({}), // Should not be used
 };
 
 type CitizenFormData = z.infer<typeof citizenSchema>;
