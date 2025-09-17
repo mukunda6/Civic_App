@@ -1,5 +1,7 @@
+
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/image-clarity-check.ts';
-import '@/ai/flows/duplicate-issue-detection.ts';
+// Ensure you have this file and it's correctly set up.
+// You can add your flows here.
+// For example: import '@/ai/flows/your-flow';
