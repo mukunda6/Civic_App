@@ -37,6 +37,7 @@ export default function LoginPage() {
   const router = useRouter()
   const { user, login, loading: authLoading } = useAuth()
   const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
     if (user) {
@@ -54,6 +55,7 @@ export default function LoginPage() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     try {
       await login(values.email, values.password)
       router.push('/dashboard')
@@ -63,6 +65,8 @@ export default function LoginPage() {
         title: 'Login Failed',
         description: error.message || 'An unexpected error occurred.',
       })
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -131,9 +135,9 @@ export default function LoginPage() {
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={authLoading}
+                  disabled={isSubmitting}
                 >
-                  {authLoading && <Loader2 className="animate-spin mr-2" />}
+                  {isSubmitting && <Loader2 className="animate-spin mr-2" />}
                   Sign In
                 </Button>
               </div>
