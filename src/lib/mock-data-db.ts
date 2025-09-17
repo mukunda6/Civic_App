@@ -1,5 +1,5 @@
 
-import type { Issue, Worker, UserRole } from './types';
+import type { Issue, Worker, UserRole, IssueCategory } from './types';
 
 // This file is used ONLY for seeding the database.
 // The application should not import from this file directly for displaying data.
@@ -63,7 +63,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
   {
     title: 'Large pothole on Main St',
     description: 'A large pothole on Main St near the intersection with 1st Ave. It has caused damage to my car\'s suspension.',
-    category: 'Potholes',
+    category: 'Roads, Footpaths & Infrastructure Damage',
     status: 'Resolved',
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
@@ -80,7 +80,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
   {
     title: 'Discolored tap water',
     description: 'The water from my tap has a brown tint and a strange smell.',
-    category: 'Water Quality',
+    category: 'Water Supply & Drainage Issues',
     status: 'In Progress',
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
@@ -96,7 +96,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
   {
     title: 'Broken streetlight',
     description: 'The streetlight at the corner of Elm St and Oak Ave is flickering and sometimes goes out completely.',
-    category: 'Streetlights',
+    category: 'Streetlights & Electricity Failures',
     status: 'Submitted',
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',

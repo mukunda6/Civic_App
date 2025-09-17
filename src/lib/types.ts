@@ -1,6 +1,15 @@
 
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
-export type IssueCategory = 'Garbage' | 'Streetlights' | 'Manholes' | 'Water Quality' | 'Potholes';
+export type IssueCategory = 
+  | 'Garbage & Waste Management Problems'
+  | 'Water Supply & Drainage Issues'
+  | 'Roads, Footpaths & Infrastructure Damage'
+  | 'Streetlights & Electricity Failures'
+  | 'Parks, Trees & Environmental Concerns'
+  | 'Illegal Constructions & Encroachments'
+  | 'Stray Animals & Public Health Hazards'
+  | 'Poor Maintenance of Public Facilities';
+
 export type UserRole = 'Citizen' | 'Admin' | 'Head';
 
 export interface AppUser {

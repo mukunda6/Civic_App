@@ -53,13 +53,22 @@ import {
   Camera,
 } from 'lucide-react';
 import Image from 'next/image';
-import type { AppUser } from '@/lib/types';
+import type { AppUser, IssueCategory } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { CameraCapture } from './camera-capture';
 
 const formSchema = z.object({
   description: z.string().min(10, 'Please provide a more detailed description.'),
-  category: z.enum(['Garbage', 'Streetlights', 'Manholes', 'Water Quality', 'Potholes']),
+  category: z.enum([
+    'Garbage & Waste Management Problems',
+    'Water Supply & Drainage Issues',
+    'Roads, Footpaths & Infrastructure Damage',
+    'Streetlights & Electricity Failures',
+    'Parks, Trees & Environmental Concerns',
+    'Illegal Constructions & Encroachments',
+    'Stray Animals & Public Health Hazards',
+    'Poor Maintenance of Public Facilities'
+  ]),
   photoDataUri: z.string().nonempty('Please upload or take a photo.'),
   location: z.object({
     lat: z.number(),
@@ -310,11 +319,14 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Potholes">Potholes</SelectItem>
-                    <SelectItem value="Garbage">Garbage</SelectItem>
-                    <SelectItem value="Streetlights">Streetlights</SelectItem>
-                    <SelectItem value="Manholes">Manholes</SelectItem>
-                    <SelectItem value="Water Quality">Water Quality</SelectItem>
+                    <SelectItem value="Garbage & Waste Management Problems">🗑️ Garbage & Waste Management</SelectItem>
+                    <SelectItem value="Water Supply & Drainage Issues">💧 Water Supply & Drainage</SelectItem>
+                    <SelectItem value="Roads, Footpaths & Infrastructure Damage">🚧 Roads & Infrastructure</SelectItem>
+                    <SelectItem value="Streetlights & Electricity Failures">💡 Streetlights & Electricity</SelectItem>
+                    <SelectItem value="Parks, Trees & Environmental Concerns">🌳 Parks & Environment</SelectItem>
+                    <SelectItem value="Illegal Constructions & Encroachments">🏠 Illegal Constructions</SelectItem>
+                    <SelectItem value="Stray Animals & Public Health Hazards">🐕 Stray Animals</SelectItem>
+                    <SelectItem value="Poor Maintenance of Public Facilities">🛠️ Public Facilities</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

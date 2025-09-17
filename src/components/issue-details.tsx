@@ -19,7 +19,11 @@ import {
   Calendar,
   User,
   Droplets,
-  CircleDot,
+  Construction,
+  TreePine,
+  Home,
+  Dog,
+  Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
@@ -36,11 +40,14 @@ function SafeHydrate({ children }: { children: React.ReactNode }) {
 
 
 const categoryIcons: Record<Issue['category'], React.ReactNode> = {
-  Potholes: <Car className="h-4 w-4" />,
-  Streetlights: <Lightbulb className="h-4 w-4" />,
-  Garbage: <Trash2 className="h-4 w-4" />,
-  'Water Quality': <Droplets className="h-4 w-4" />,
-  Manholes: <CircleDot className="h-4 w-4" />,
+  'Garbage & Waste Management Problems': <Trash2 className="h-4 w-4" />,
+  'Water Supply & Drainage Issues': <Droplets className="h-4 w-4" />,
+  'Roads, Footpaths & Infrastructure Damage': <Construction className="h-4 w-4" />,
+  'Streetlights & Electricity Failures': <Lightbulb className="h-4 w-4" />,
+  'Parks, Trees & Environmental Concerns': <TreePine className="h-4 w-4" />,
+  'Illegal Constructions & Encroachments': <Home className="h-4 w-4" />,
+  'Stray Animals & Public Health Hazards': <Dog className="h-4 w-4" />,
+  'Poor Maintenance of Public Facilities': <Wrench className="h-4 w-4" />,
 };
 
 const statusColors: Record<Issue['status'], string> = {

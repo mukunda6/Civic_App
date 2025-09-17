@@ -14,18 +14,25 @@ import {
   Calendar,
   ArrowUpRight,
   Droplets,
-  CircleDot,
+  Construction,
+  TreePine,
+  Home,
+  Dog,
+  Wrench,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { useState, useEffect } from 'react';
 
 const categoryIcons: Record<Issue['category'], React.ReactNode> = {
-  Potholes: <Car className="h-4 w-4" />,
-  Streetlights: <Lightbulb className="h-4 w-4" />,
-  Garbage: <Trash2 className="h-4 w-4" />,
-  'Water Quality': <Droplets className="h-4 w-4" />,
-  Manholes: <CircleDot className="h-4 w-4" />,
+  'Garbage & Waste Management Problems': <Trash2 className="h-4 w-4" />,
+  'Water Supply & Drainage Issues': <Droplets className="h-4 w-4" />,
+  'Roads, Footpaths & Infrastructure Damage': <Construction className="h-4 w-4" />,
+  'Streetlights & Electricity Failures': <Lightbulb className="h-4 w-4" />,
+  'Parks, Trees & Environmental Concerns': <TreePine className="h-4 w-4" />,
+  'Illegal Constructions & Encroachments': <Home className="h-4 w-4" />,
+  'Stray Animals & Public Health Hazards': <Dog className="h-4 w-4" />,
+  'Poor Maintenance of Public Facilities': <Wrench className="h-4 w-4" />,
 };
 
 const statusColors: Record<Issue['status'], string> = {
@@ -85,7 +92,7 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
                 {categoryIcons[issue.category]}
-                <span>{issue.category}</span>
+                <span className="truncate">{issue.category.split('&')[0].trim()}</span>
             </div>
             <div className="flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
