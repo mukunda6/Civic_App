@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useForm } from 'react-hook-form'
@@ -171,7 +172,7 @@ export default function LoginPage() {
             Welcome to CivicSolve
           </CardTitle>
           <CardDescription>
-            Select your role to sign in. The password for all demo accounts is `password`.
+            See it. Snap it. Solve it. Together.
           </CardDescription>
         </CardHeader>
         <CardContent>
