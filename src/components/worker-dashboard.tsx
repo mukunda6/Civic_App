@@ -89,7 +89,7 @@ export function WorkerDashboard() {
         <CardHeader>
           <CardTitle>My Task Queue</CardTitle>
           <CardDescription>
-            These are the active issues assigned to you.
+            These are the active issues assigned to you. Update them as you make progress.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">

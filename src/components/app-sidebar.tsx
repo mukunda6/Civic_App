@@ -20,6 +20,7 @@ import {
   CircleHelp,
   Trophy,
   Users,
+  Shield,
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -86,6 +87,20 @@ export function AppSidebar() {
                   <Link href="/user-leaderboard">
                     <Trophy />
                     <span>Leaderboard &amp; Rewards</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
+             {(user?.role === 'Admin' || user?.role === 'Head') && (
+            <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/worker-leaderboard'}
+                  tooltip="Worker Leaderboard"
+                >
+                  <Link href="/worker-leaderboard">
+                    <Shield />
+                    <span>Worker Leaderboard</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -8,27 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { getIssues, getWorkers, updateIssueAssignment } from '@/lib/firebase-service';
+import { getIssues, getWorkers } from '@/lib/firebase-service';
 import type { Issue, Worker } from '@/lib/types';
-import { formatDistanceToNow } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { ListChecks, Users, Shield } from 'lucide-react';
 
 export function HeadDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -43,7 +27,7 @@ export function HeadDashboard() {
         setIssues(fetchedIssues);
         setWorkers(fetchedWorkers);
       } catch (error) {
-        console.error("Error fetching admin data:", error);
+        console.error("Error fetching head data:", error);
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -56,36 +40,8 @@ export function HeadDashboard() {
     fetchData();
   }, [toast]);
 
-  const openIssues = issues.filter(issue => issue.status !== 'Resolved');
-  const resolvedIssuesCount = issues.length - openIssues.length;
-
-  const handleAssignWorker = async (issueId: string, workerId: string) => {
-    try {
-      await updateIssueAssignment(issueId, workerId);
-      setIssues(prevIssues =>
-        prevIssues.map(issue =>
-          issue.id === issueId
-            ? { ...issue, assignedTo: workerId, status: 'In Progress' }
-            : issue
-        )
-      );
-      toast({
-        title: 'Admin Assigned',
-        description: 'The issue has been updated.',
-      });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Assignment Failed',
-        description: 'Could not assign admin. Please try again.',
-      });
-    }
-  };
-
-  const getWorkerName = (workerId?: string) => {
-    if (!workerId) return 'Unassigned';
-    return workers.find(w => w.id === workerId)?.name || 'Unknown';
-  };
+  const openIssuesCount = issues.filter(issue => issue.status !== 'Resolved').length;
+  const resolvedIssuesCount = issues.length - openIssuesCount;
 
   if (loading) {
     return <div>Loading head dashboard...</div>
@@ -93,91 +49,49 @@ export function HeadDashboard() {
 
   return (
     <div className="grid gap-8">
+      <CardHeader className="px-0">
+        <CardTitle>System-Wide Overview</CardTitle>
+        <CardDescription>High-level metrics for all civic issues and personnel.</CardDescription>
+      </CardHeader>
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Issues</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Open Issues</CardTitle>
+            <ListChecks className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{issues.length}</div>
+            <div className="text-2xl font-bold">{openIssuesCount}</div>
+            <p className="text-xs text-muted-foreground">Across all departments</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Issues</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openIssues.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Resolved Issues</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Resolved Issues</CardTitle>
+            <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{resolvedIssuesCount}</div>
+             <p className="text-xs text-muted-foreground">Successfully completed tasks</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Workers</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{workers.length}</div>
+            <p className="text-xs text-muted-foreground">Active field personnel</p>
           </CardContent>
         </Card>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Manage Issue Assignments</CardTitle>
-          <CardDescription>
-            Assign admins to unresolved issues.
-          </CardDescription>
+            <CardTitle>Monitoring</CardTitle>
+            <CardDescription>Use the leaderboards and other tools to monitor system performance.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Issue</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead className="text-right">Assigned Admin</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {openIssues.map(issue => (
-                <TableRow key={issue.id}>
-                  <TableCell className="font-medium">{issue.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{issue.category}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{issue.status}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {formatDistanceToNow(new Date(issue.submittedAt), {
-                      addSuffix: true,
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Select
-                      value={issue.assignedTo}
-                      onValueChange={workerId =>
-                        handleAssignWorker(issue.id, workerId)
-                      }
-                      disabled={!workers.length}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Assign admin...">
-                          {getWorkerName(issue.assignedTo)}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {workers.map(worker => (
-                          <SelectItem key={worker.id} value={worker.id}>
-                            {worker.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+            <p>Further monitoring tools can be built here, such as charts for issue resolution times, issue hotspots on a map, and worker performance trends.</p>
         </CardContent>
       </Card>
     </div>

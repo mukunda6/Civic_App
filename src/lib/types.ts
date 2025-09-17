@@ -11,7 +11,7 @@ export type IssueCategory =
   | 'Stray Animals & Public Health Hazards'
   | 'Poor Maintenance of Public Facilities';
 
-export type UserRole = 'Citizen' | 'Admin' | 'Head';
+export type UserRole = 'Citizen' | 'Worker' | 'Admin' | 'Head';
 
 export interface AppUser {
     uid: string;
@@ -39,7 +39,7 @@ export interface Issue {
     email: string;
   };
   submittedAt: string;
-  assignedTo?: string;
+  assignedTo?: string; // Worker ID
   updates: {
     status: IssueStatus;
     updatedAt: string;

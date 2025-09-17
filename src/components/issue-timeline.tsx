@@ -42,6 +42,9 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
         // would be to use a state management library.
         window.location.reload();
     }
+    
+    // A worker can only update an issue assigned to them
+    const canUpdate = user?.role === 'Worker' && user.uid === issue.assignedTo;
 
   return (
     <Card>
@@ -82,7 +85,7 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
             </div>
           ))}
         </div>
-        {!isUpdating && issue.status !== 'Resolved' && user?.role === 'Admin' && (
+        {!isUpdating && issue.status !== 'Resolved' && canUpdate && (
             <Button onClick={() => setIsUpdating(true)}>Update Status</Button>
         )}
         {isUpdating && <UpdateForm issueId={issue.id} onCancel={() => setIsUpdating(false)} onUpdateAdded={handleUpdateAdded} />}

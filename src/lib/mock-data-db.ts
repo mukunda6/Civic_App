@@ -15,11 +15,27 @@ export const mockUsers = [
   },
   {
     uid: 'admin-user-01',
-    name: 'Admin User',
+    name: 'Admin Manager',
     email: 'admin@test.com',
     password: 'password',
     role: 'Admin' as UserRole,
     avatarUrl: 'https://picsum.photos/seed/admin/100/100',
+  },
+  {
+    uid: 'worker-user-01',
+    name: 'Field Worker 1',
+    email: 'worker@test.com',
+    password: 'password',
+    role: 'Worker' as UserRole,
+    avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
+  },
+   {
+    uid: 'worker-user-02',
+    name: 'Field Worker 2',
+    email: 'worker2@test.com',
+    password: 'password',
+    role: 'Worker' as UserRole,
+    avatarUrl: 'https://picsum.photos/seed/worker2/100/100',
   },
   {
     uid: 'citizen-user-01',
@@ -32,12 +48,18 @@ export const mockUsers = [
 ];
 
 
-export const mockWorkers: Omit<Worker, 'id'>[] = [
+export const mockWorkers: Worker[] = [
   {
-    name: 'Admin User',
+    id: 'worker-user-01',
+    name: 'Field Worker 1',
     area: 'Downtown',
     avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
-    id: 'admin-user-01', // Match admin user uid
+  },
+   {
+    id: 'worker-user-02',
+    name: 'Field Worker 2',
+    area: 'Uptown',
+    avatarUrl: 'https://picsum.photos/seed/worker2/100/100',
   },
 ];
 
@@ -52,7 +74,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
     imageHint: 'pothole road',
     submittedBy: { name: 'Jane Doe', uid: 'citizen-user-01', email: 'citizen@test.com' },
     submittedAt: '2024-07-15T10:00:00Z',
-    assignedTo: 'admin-user-01',
+    assignedTo: 'worker-user-01',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-15T10:00:00Z', description: 'Issue reported by citizen.' },
       { status: 'In Progress', updatedAt: '2024-07-16T14:30:00Z', description: 'Work crew assigned. ETA: 2 days.' },
@@ -69,7 +91,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
     imageHint: 'tap water',
     submittedBy: { name: 'John Smith', uid: 'citizen-user-01', email: 'citizen@test.com' },
     submittedAt: '2024-07-18T09:15:00Z',
-    assignedTo: 'admin-user-01',
+    assignedTo: 'worker-user-02',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-18T09:15:00Z', description: 'Issue reported by citizen.' },
       { status: 'In Progress', updatedAt: '2024-07-18T11:00:00Z', description: 'Water department has been dispatched to test the supply.' }
@@ -85,7 +107,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
     imageHint: 'street light',
     submittedBy: { name: 'Emily White', uid: 'citizen-user-01', email: 'citizen@test.com' },
     submittedAt: '2024-07-20T21:30:00Z',
-    assignedTo: 'admin-user-01',
+    assignedTo: undefined,
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-20T21:30:00Z', description: 'Issue reported by citizen. Awaiting assignment.' }
     ]

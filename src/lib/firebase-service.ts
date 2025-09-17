@@ -98,11 +98,21 @@ export const addIssue = async (
 
 // Assign a worker to an issue
 export const updateIssueAssignment = async (issueId: string, workerId:string): Promise<void> => {
-    console.log(`Mocking assignment of worker ${workerId} to issue ${issueId}. No data will be saved.`);
-    const issue = sessionIssues.find(i => i.id === issueId);
-    if (issue) {
-        issue.assignedTo = workerId;
-        issue.status = 'In Progress';
+    console.log(`Mocking assignment of worker ${workerId} to issue ${issueId}.`);
+    const issueIndex = sessionIssues.findIndex(i => i.id === issueId);
+    if (issueIndex !== -1) {
+        sessionIssues[issueIndex].assignedTo = workerId;
+        // If it's the first time being assigned, move to "In Progress"
+        if (sessionIssues[issueIndex].status === 'Submitted') {
+            sessionIssues[issueIndex].status = 'In Progress';
+            sessionIssues[issueIndex].updates.push({
+                status: 'In Progress',
+                updatedAt: new Date().toISOString(),
+                description: `Assigned to worker.`
+            });
+        }
+    } else {
+        throw new Error("Mock issue not found for assignment.");
     }
     return Promise.resolve();
 };
@@ -113,7 +123,7 @@ export const addIssueUpdate = async (
     update: { status: Issue['status'], description: string },
     imageFile: File | null
 ): Promise<Issue> => {
-    console.log(`Mocking update for issue ${issueId}. No data will be saved.`);
+    console.log(`Mocking update for issue ${issueId}.`);
     const issue = await getIssueById(issueId);
     if (!issue) {
         throw new Error("Mock issue not found");
