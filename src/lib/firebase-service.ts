@@ -10,7 +10,8 @@ import {
     writeBatch, 
     query, 
     where,
-    serverTimestamp
+    serverTimestamp,
+    setDoc
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -178,69 +179,73 @@ export const addIssueUpdate = async (
 
 // Seed the database with mock data
 export async function seedDatabase() {
-    const batch = writeBatch(db);
+  const batch = writeBatch(db);
 
-    // Seed Users
-    for (const userData of mockUsers) {
-        try {
-            // Check if user already exists
-            const userQuery = query(collection(db, USERS_COLLECTION), where("email", "==", userData.email));
-            const userSnapshot = await getDocs(userQuery);
+  for (const userData of mockUsers) {
+    try {
+      // Check if user already exists in Firestore (as a proxy for Auth)
+      const userQuery = query(
+        collection(db, USERS_COLLECTION),
+        where('email', '==', userData.email)
+      );
+      const userSnapshot = await getDocs(userQuery);
+      let userId: string;
 
-            let userId = '';
+      if (userSnapshot.empty) {
+        // User does not exist, create in Auth and then in Firestore
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          userData.email,
+          userData.password
+        );
+        userId = userCredential.user.uid;
 
-            if (userSnapshot.empty) {
-                // 1. Create user in Firebase Auth if they don't exist
-                const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-                userId = userCredential.user.uid;
-
-                // 2. Add user profile to Firestore
-                 const userDocRef = doc(db, USERS_COLLECTION, userId);
-                 batch.set(userDocRef, {
-                    uid: userId,
-                    name: userData.name,
-                    email: userData.email,
-                    role: userData.role,
-                    avatarUrl: userData.avatarUrl,
-                 });
-
-            } else {
-                console.log(`User ${userData.email} already exists in Auth. Skipping Auth creation.`);
-                userId = userSnapshot.docs[0].id;
-                 // Even if user exists, ensure their Firestore data is up-to-date.
-                 const userDocRef = doc(db, USERS_COLLECTION, userId);
-                 batch.set(userDocRef, {
-                    uid: userId,
-                    name: userData.name,
-                    email: userData.email,
-                    role: userData.role,
-                    avatarUrl: userData.avatarUrl,
-                 }, { merge: true }); // Use merge to avoid overwriting existing data fields unnecessarily
-            }
-
-        } catch (error: any) {
-            // Ignore "email-already-in-use" error as our check handles it, but log other errors
-            if (error.code !== 'auth/email-already-in-use') {
-                console.error(`Error processing user ${userData.email}:`, error);
-                // We don't rethrow, to allow the rest of the seeding to continue if possible
-            } else {
-                 console.log(`Race condition: User ${userData.email} was created by another process. Skipping.`);
-            }
-        }
+        const userDocRef = doc(db, USERS_COLLECTION, userId);
+        batch.set(userDocRef, {
+          uid: userId,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          avatarUrl: userData.avatarUrl,
+        });
+      } else {
+        // User already exists in Auth, just update Firestore if needed
+        console.log(`User ${userData.email} already exists. Skipping Auth creation.`);
+        userId = userSnapshot.docs[0].id;
+        const userDocRef = doc(db, USERS_COLLECTION, userId);
+        // Use set with merge to be non-destructive
+        batch.set(userDocRef, {
+          uid: userId,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          avatarUrl: userData.avatarUrl,
+        }, { merge: true });
+      }
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        console.warn(`Warning: User with email ${userData.email} exists in Auth but might have been missing from Firestore. The seeding process will attempt to reconcile.`);
+      } else {
+        console.error(`Error processing user ${userData.email}:`, error);
+        // Re-throw the error to be caught by the UI
+        throw new Error(`Failed to process user ${userData.email}. ${error.message}`);
+      }
     }
-    
-    // Seed Workers
-    mockWorkers.forEach(worker => {
-        const workerDocRef = doc(db, WORKERS_COLLECTION, worker.id);
-        batch.set(workerDocRef, worker);
-    });
+  }
 
-    // Seed Issues
-    mockIssues.forEach(issue => {
-        const issueDocRef = doc(collection(db, ISSUES_COLLECTION));
-        batch.set(issueDocRef, issue);
-    });
+  // Seed Workers
+  mockWorkers.forEach(worker => {
+    const workerDocRef = doc(db, WORKERS_COLLECTION, worker.id);
+    batch.set(workerDocRef, worker);
+  });
 
-    await batch.commit();
-    console.log("Database seeded successfully!");
+  // Seed Issues
+  mockIssues.forEach(issue => {
+    // Ensure the issue document has an ID for consistency if needed, but Firestore generates one.
+    const issueDocRef = doc(collection(db, ISSUES_COLLECTION));
+    batch.set(issueDocRef, issue);
+  });
+
+  await batch.commit();
+  console.log('Database seeded successfully!');
 }
