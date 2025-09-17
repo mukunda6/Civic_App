@@ -1,6 +1,5 @@
 
 
-
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
 export type SlaStatus = 'On Time' | 'At Risk' | 'Deadline Missed' | 'Extended' | 'Escalated';
 

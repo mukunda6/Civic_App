@@ -1,7 +1,5 @@
 
 
-
-
 import type { Issue, Worker, AppUser, IssueCategory, EmergencyCategory, IssueStatus, SlaStatus } from './types';
 import { mockIssues, mockWorkers, mockUsers } from './mock-data';
 import { addHours, isAfter, isBefore, subHours } from 'date-fns';
