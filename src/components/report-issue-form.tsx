@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -53,13 +54,12 @@ import {
   Camera,
 } from 'lucide-react';
 import Image from 'next/image';
-import type { AppUser, IssueCategory } from '@/lib/types';
+import type { AppUser, IssueCategory, EmergencyCategory } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { CameraCapture } from './camera-capture';
+import { cn } from '@/lib/utils';
 
-const formSchema = z.object({
-  description: z.string().min(10, 'Please provide a more detailed description.'),
-  category: z.enum([
+const allCategories: (IssueCategory | EmergencyCategory)[] = [
     'Garbage & Waste Management Problems',
     'Water Supply Quality',
     'Drainage Issues',
@@ -70,7 +70,16 @@ const formSchema = z.object({
     'Stray Animals & Public Health Hazards',
     'Sanitation & Toiletry Issues',
     'Mosquito Control & Fogging',
-  ]),
+    'Pipeline Burst',
+    'Road Accident',
+    'Fire Hazard',
+    'Medical Waste',
+    'Major Blockage',
+];
+
+const formSchema = z.object({
+  description: z.string().min(10, 'Please provide a more detailed description.'),
+  category: z.enum(allCategories as [string, ...string[]]),
   photoDataUri: z.string().nonempty('Please upload or take a photo.'),
   location: z.object({
     lat: z.number(),
@@ -80,7 +89,21 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function ReportIssueForm({ user }: { user: AppUser }) {
+interface ReportIssueFormProps {
+    user: AppUser,
+    isEmergency?: boolean;
+    allowedCategories?: (IssueCategory | EmergencyCategory)[];
+    categoryTitle?: string;
+    categoryPlaceholder?: string;
+}
+
+export function ReportIssueForm({ 
+    user, 
+    isEmergency = false, 
+    allowedCategories = allCategories,
+    categoryTitle = 'Category',
+    categoryPlaceholder = 'Select an issue category',
+}: ReportIssueFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,6 +127,14 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
   });
 
   const processImage = (file: File) => {
+    // For optional photo on emergency, we can skip clarity check if no file is provided.
+    if (!file && isEmergency) {
+        form.setValue('photoDataUri', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'); // empty pixel
+        form.clearErrors('photoDataUri');
+        return;
+    }
+
+
     setImageClarity({ status: 'checking' });
     setImagePreview(URL.createObjectURL(file));
 
@@ -166,7 +197,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
   }
 
   const onSubmit = async (data: FormData) => {
-    if (imageClarity.status !== 'clear') {
+    if (imageClarity.status === 'unclear') {
         toast({
             variant: 'destructive',
             title: 'Unclear Image',
@@ -188,7 +219,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
         existingIssueData,
       });
 
-      if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.5) {
+      if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.5 && !isEmergency) {
         setDuplicateInfo(duplicateResult);
       } else {
         await finishSubmission();
@@ -211,10 +242,10 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
     const data = form.getValues();
 
     try {
-        const newIssue = await addIssue(data, user);
+        const newIssue = await addIssue({ ...data, isEmergency }, user);
         toast({
         title: 'Report Submitted!',
-        description: 'Thank you for helping improve your community.',
+        description: isEmergency ? 'Your emergency report has been prioritized.' : 'Thank you for helping improve your community.',
         });
         form.reset();
         setImagePreview(null);
@@ -227,6 +258,8 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
         setIsSubmitting(false);
     }
   };
+  
+  const photoInputId = `file-upload-${isEmergency ? 'emergency' : 'standard'}`;
 
   return (
     <>
@@ -237,14 +270,14 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
             name="photoDataUri"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Issue Photo</FormLabel>
+                <FormLabel>Issue Photo {isEmergency && '(Optional)'}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      id="file-upload"
+                      id={photoInputId}
                       onChange={handleFileChange}
                       disabled={imageClarity.status === 'checking'}
                     />
@@ -261,7 +294,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                         <div className="flex flex-col items-center justify-center text-center p-4">
                           <ImageIcon className="w-10 h-10 mb-3 text-muted-foreground" />
                           <label
-                            htmlFor="file-upload"
+                            htmlFor={photoInputId}
                             className="font-semibold text-primary cursor-pointer hover:underline"
                           >
                             Upload a file
@@ -303,27 +336,20 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{categoryTitle}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select an issue category" />
+                      <SelectValue placeholder={categoryPlaceholder} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Garbage & Waste Management Problems">🗑️ Garbage & Waste Management</SelectItem>
-                    <SelectItem value="Water Supply Quality">💧 Water Supply Quality</SelectItem>
-                    <SelectItem value="Drainage Issues">💧 Drainage Issues</SelectItem>
-                    <SelectItem value="Roads, Footpaths & Infrastructure Damage">🚧 Roads & Infrastructure</SelectItem>
-                    <SelectItem value="Streetlights & Electricity Failures">💡 Streetlights & Electricity</SelectItem>
-                    <SelectItem value="Parks, Trees & Environmental Concerns">🌳 Parks & Environment</SelectItem>
-                    <SelectItem value="Illegal Constructions & Encroachments">🏠 Illegal Constructions</SelectItem>
-                    <SelectItem value="Stray Animals & Public Health Hazards">🐕 Stray Animals</SelectItem>
-                    <SelectItem value="Sanitation & Toiletry Issues">🚽 Sanitation & Toiletry</SelectItem>
-                    <SelectItem value="Mosquito Control & Fogging">🦟 Mosquito Control & Fogging</SelectItem>
+                    {allowedCategories.map((cat, index) => (
+                        <SelectItem key={index} value={cat}>{cat}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -348,10 +374,11 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting || imageClarity.status === 'checking'} className="w-full">
+          <Button type="submit" disabled={isSubmitting || imageClarity.status === 'checking'} className={cn("w-full", isEmergency && "bg-destructive hover:bg-destructive/90")}>
             {isSubmitting && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
+            {isEmergency && <AlertTriangle className="mr-2 h-4 w-4" />}
             Submit Report
           </Button>
         </form>

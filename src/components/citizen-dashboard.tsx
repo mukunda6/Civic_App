@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -13,9 +14,10 @@ import { Button } from '@/components/ui/button';
 import { getIssuesByUser } from '@/lib/firebase-service';
 import type { Issue } from '@/lib/types';
 import { IssueCard } from './issue-card';
-import { FilePlus2, Clock, CheckCircle } from 'lucide-react';
+import { FilePlus2, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 export function CitizenDashboard() {
   const { user } = useAuth();
@@ -42,12 +44,34 @@ export function CitizenDashboard() {
     return <div>Loading your issues...</div>;
   }
 
-  const submittedCount = userIssues.filter(i => i.status === 'Submitted').length;
-  const inProgressCount = userIssues.filter(i => i.status === 'In Progress').length;
-  const resolvedCount = userIssues.filter(i => i.status === 'Resolved').length;
+  const submittedCount = userIssues.filter(i => i.status === 'Submitted' && !i.isEmergency).length;
+  const inProgressCount = userIssues.filter(i => i.status === 'In Progress' && !i.isEmergency).length;
+  const resolvedCount = userIssues.filter(i => i.status === 'Resolved' && !i.isEmergency).length;
 
   return (
     <div className="grid gap-8">
+
+       <Alert variant="destructive" className="bg-red-50 dark:bg-red-900/30 border-red-500 text-red-800 dark:text-red-300">
+         <div className="flex items-center justify-between">
+            <div className='flex items-center'>
+                 <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                <div className='ml-4'>
+                    <AlertTitle className="font-bold">Have an Emergency?</AlertTitle>
+                    <AlertDescription>
+                        For critical issues like accidents or fire hazards, use our priority booking system.
+                    </AlertDescription>
+                </div>
+            </div>
+            <Button asChild variant="destructive">
+                <Link href="/report/emergency">
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Instant Emergency Booking
+                </Link>
+            </Button>
+         </div>
+      </Alert>
+
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -59,7 +83,7 @@ export function CitizenDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{submittedCount}</div>
             <p className="text-xs text-muted-foreground">
-              Issues awaiting review
+              Standard issues awaiting review
             </p>
           </CardContent>
         </Card>

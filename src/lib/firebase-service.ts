@@ -1,13 +1,19 @@
 
-import type { Issue, Worker, AppUser, IssueCategory, IssueStatus } from './types';
-import { mockIssues, mockWorkers } from './mock-data';
+
+import type { Issue, Worker, AppUser, IssueCategory, EmergencyCategory, IssueStatus } from './types';
+import { mockIssues, mockWorkers, mockUsers } from './mock-data';
 
 // --- ISSUES ---
 
 export const getIssues = async (): Promise<Issue[]> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
-  return mockIssues.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  return [...mockIssues].sort((a, b) => {
+    // Emergency issues first, then by date
+    if (a.isEmergency && !b.isEmergency) return -1;
+    if (!a.isEmergency && b.isEmergency) return 1;
+    return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+  });
 };
 
 export const getIssueById = async (id: string): Promise<Issue | null> => {
@@ -30,7 +36,7 @@ export const getIssuesByWorker = async (workerId: string): Promise<Issue[]> => {
 }
 
 export const addIssue = async (
-    data: { description: string, category: IssueCategory, location: { lat: number, lng: number }, photoDataUri: string },
+    data: { description: string, category: IssueCategory | EmergencyCategory, location: { lat: number, lng: number }, photoDataUri: string, isEmergency?: boolean },
     user: AppUser
 ): Promise<Issue> => {
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -57,10 +63,11 @@ export const addIssue = async (
                 updatedAt: now,
                 description: 'Issue reported by citizen.'
             }
-        ]
+        ],
+        isEmergency: data.isEmergency || false,
     };
     
-    // In a mock setup, we don't actually save it, but we can log it.
+    mockIssues.unshift(newIssue);
     console.log("New issue reported (mock):", newIssue);
     
     return newIssue;
@@ -74,6 +81,11 @@ export const updateIssueAssignment = async (issueId: string, workerId:string): P
         issue.assignedTo = workerId;
         if(issue.status === 'Submitted') {
             issue.status = 'In Progress';
+             issue.updates.push({
+                status: 'In Progress',
+                updatedAt: new Date().toISOString(),
+                description: 'A worker has been assigned to this issue.'
+            });
         }
     }
 };

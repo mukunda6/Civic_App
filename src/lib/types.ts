@@ -1,4 +1,5 @@
 
+
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
 export type IssueCategory = 
   | 'Garbage & Waste Management Problems'
@@ -11,6 +12,13 @@ export type IssueCategory =
   | 'Stray Animals & Public Health Hazards'
   | 'Sanitation & Toiletry Issues'
   | 'Mosquito Control & Fogging';
+
+export type EmergencyCategory =
+  | 'Pipeline Burst'
+  | 'Road Accident'
+  | 'Fire Hazard'
+  | 'Medical Waste'
+  | 'Major Blockage';
 
 export type UserRole = 'Citizen' | 'Admin' | 'Head';
 
@@ -26,7 +34,7 @@ export interface Issue {
   id: string;
   title: string;
   description: string;
-  category: IssueCategory;
+  category: IssueCategory | EmergencyCategory;
   status: IssueStatus;
   location: {
     lat: number;
@@ -48,6 +56,7 @@ export interface Issue {
     imageUrl?: string;
     imageHint?: string;
   }[];
+  isEmergency?: boolean;
 }
 
 export interface Worker {

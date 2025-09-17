@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -22,6 +23,7 @@ import {
   Users,
   Shield,
   Bot,
+  AlertTriangle,
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -65,18 +67,33 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           {user?.role === 'Citizen' && (
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === '/report'}
-              tooltip="Report an Issue"
-            >
-              <Link href="/report">
-                <FilePlus2 />
-                <span>Report an Issue</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+            <>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/report'}
+                tooltip="Report an Issue"
+              >
+                <Link href="/report">
+                  <FilePlus2 />
+                  <span>Report an Issue</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/report/emergency'}
+                tooltip="Emergency Booking"
+                className="text-destructive-foreground bg-destructive hover:bg-destructive/90"
+              >
+                <Link href="/report/emergency">
+                  <AlertTriangle />
+                  <span>Emergency Booking</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            </>
           )}
            {user?.role === 'Citizen' && (
             <>

@@ -30,6 +30,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { ListChecks, Users, AlertTriangle } from 'lucide-react';
+import { Button } from './ui/button';
+import Link from 'next/link';
 
 export function AdminDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -58,13 +60,14 @@ export function AdminDashboard() {
     fetchData();
   }, [toast]);
 
+  const emergencyIssues = issues.filter(issue => issue.isEmergency && issue.status !== 'Resolved');
+  const normalOpenIssues = issues.filter(issue => !issue.isEmergency && issue.status !== 'Resolved');
   const unassignedIssues = issues.filter(issue => issue.status !== 'Resolved' && !issue.assignedTo);
   const openIssues = issues.filter(issue => issue.status !== 'Resolved');
 
   const handleAssignWorker = async (issueId: string, workerId: string) => {
     try {
       await updateIssueAssignment(issueId, workerId);
-      // Refetch data to show the latest updates
       fetchData();
       toast({
         title: 'Worker Assigned',
@@ -123,15 +126,45 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+       {emergencyIssues.length > 0 && (
+        <Card className="border-destructive border-2">
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <CardTitle className="flex items-center gap-2 text-destructive">
+                        <AlertTriangle />
+                        Emergency Issues
+                    </CardTitle>
+                    <Badge variant="destructive">{emergencyIssues.length} Active</Badge>
+                </div>
+                <CardDescription>These high-priority issues require immediate attention and assignment.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <IssueTable issues={emergencyIssues} workers={workers} onAssign={handleAssignWorker} getWorkerName={getWorkerName} />
+            </CardContent>
+        </Card>
+       )}
+
+
       <Card>
         <CardHeader>
           <CardTitle>Manage Issue Assignments</CardTitle>
           <CardDescription>
-            Assign workers to unresolved issues.
+            Assign workers to unresolved standard issues.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
+          <IssueTable issues={normalOpenIssues} workers={workers} onAssign={handleAssignWorker} getWorkerName={getWorkerName} />
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+
+const IssueTable = ({ issues, workers, onAssign, getWorkerName }: { issues: Issue[], workers: Worker[], onAssign: (issueId: string, workerId: string) => void, getWorkerName: (workerId?: string) => string }) => {
+    return (
+        <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Issue</TableHead>
@@ -142,14 +175,18 @@ export function AdminDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {openIssues.map(issue => (
+              {issues.map(issue => (
                 <TableRow key={issue.id}>
-                  <TableCell className="font-medium">{issue.title}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{issue.category}</Badge>
+                  <TableCell className="font-medium">
+                      <Button variant="link" asChild className="p-0 h-auto">
+                        <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+                      </Button>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={issue.status === 'Submitted' ? 'destructive' : 'secondary'}>{issue.status}</Badge>
+                    <Badge variant={issue.isEmergency ? "destructive" : "outline"}>{issue.category}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={issue.status === 'Submitted' ? 'default' : 'secondary'}>{issue.status}</Badge>
                   </TableCell>
                   <TableCell>
                     {formatDistanceToNow(new Date(issue.submittedAt), {
@@ -160,7 +197,7 @@ export function AdminDashboard() {
                     <Select
                       value={issue.assignedTo || ''}
                       onValueChange={workerId =>
-                        handleAssignWorker(issue.id, workerId)
+                        onAssign(issue.id, workerId)
                       }
                       disabled={!workers.length}
                     >
@@ -182,8 +219,5 @@ export function AdminDashboard() {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </div>
-  )
+    )
 }

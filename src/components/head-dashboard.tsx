@@ -12,7 +12,10 @@ import { getIssues, getWorkers } from '@/lib/firebase-service';
 import type { Issue, Worker } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { ListChecks, Users, Shield } from 'lucide-react';
+import { ListChecks, Users, Shield, AlertTriangle, Clock } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { formatDistanceToNow } from 'date-fns';
 
 export function HeadDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -42,6 +45,7 @@ export function HeadDashboard() {
 
   const openIssuesCount = issues.filter(issue => issue.status !== 'Resolved').length;
   const resolvedIssuesCount = issues.length - openIssuesCount;
+  const emergencyIssues = issues.filter(issue => issue.isEmergency && issue.status !== 'Resolved');
 
   if (loading) {
     return <div>Loading head dashboard...</div>
@@ -53,7 +57,17 @@ export function HeadDashboard() {
         <CardTitle>System-Wide Overview</CardTitle>
         <CardDescription>High-level metrics for all civic issues and personnel.</CardDescription>
       </CardHeader>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
+         <Card className="col-span-1 md:col-span-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-destructive">Active Emergencies</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-destructive" />
+            </CardHeader>
+            <CardContent>
+                <div className="text-2xl font-bold">{emergencyIssues.length}</div>
+                <p className="text-xs text-muted-foreground">Issues requiring immediate action</p>
+            </CardContent>
+        </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Open Issues</CardTitle>
@@ -85,15 +99,53 @@ export function HeadDashboard() {
           </CardContent>
         </Card>
       </div>
-      <Card>
-        <CardHeader>
-            <CardTitle>Monitoring</CardTitle>
-            <CardDescription>Use the leaderboards and other tools to monitor system performance.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <p>Further monitoring tools can be built here, such as charts for issue resolution times, issue hotspots on a map, and worker performance trends.</p>
-        </CardContent>
-      </Card>
+      
+       {emergencyIssues.length > 0 && (
+        <Card className="border-destructive">
+             <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive">
+                    <AlertTriangle />
+                    Emergency Monitoring
+                </CardTitle>
+                <CardDescription>Track the status of high-priority issues. Intervene if SLAs are breached.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Emergency Issue</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Time Elapsed</TableHead>
+                            <TableHead>Assigned To</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {emergencyIssues.map(issue => (
+                            <TableRow key={issue.id}>
+                                <TableCell>
+                                    <p className="font-medium">{issue.title}</p>
+                                    <p className="text-sm text-muted-foreground">{issue.category}</p>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant={issue.status === 'Submitted' ? 'destructive' : 'secondary'}>{issue.status}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <div className='flex items-center gap-2'>
+                                        <Clock className="h-4 w-4"/>
+                                        {formatDistanceToNow(new Date(issue.submittedAt))}
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    {issue.assignedTo ? workers.find(w => w.id === issue.assignedTo)?.name : <span className="text-destructive font-medium">Unassigned</span>}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+       )}
+
     </div>
   )
 }
