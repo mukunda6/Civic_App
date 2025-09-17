@@ -6,6 +6,7 @@ import type { UserRole } from '@/lib/types'
 import { CitizenDashboard } from '@/components/citizen-dashboard'
 import { AdminDashboard } from '@/components/admin-dashboard'
 import { HeadDashboard } from '@/components/head-dashboard'
+import { WorkerDashboard } from '@/components/worker-dashboard';
 import { Suspense } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
