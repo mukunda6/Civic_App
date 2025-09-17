@@ -50,7 +50,7 @@ import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   description: z.string().min(10, 'Please provide a more detailed description.'),
-  category: z.enum(['Pothole', 'Graffiti', 'Broken Streetlight', 'Trash']),
+  category: z.enum(['Garbage', 'Streetlights', 'Manholes', 'Water Quality', 'Potholes']),
   photoDataUri: z.string().nonempty('Please upload a photo.'),
   location: z.object({
     lat: z.number(),
@@ -277,12 +277,11 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Pothole">Pothole</SelectItem>
-                    <SelectItem value="Graffiti">Graffiti</SelectItem>
-                    <SelectItem value="Broken Streetlight">
-                      Broken Streetlight
-                    </SelectItem>
-                    <SelectItem value="Trash">Trash</SelectItem>
+                    <SelectItem value="Potholes">Potholes</SelectItem>
+                    <SelectItem value="Garbage">Garbage</SelectItem>
+                    <SelectItem value="Streetlights">Streetlights</SelectItem>
+                    <SelectItem value="Manholes">Manholes</SelectItem>
+                    <SelectItem value="Water Quality">Water Quality</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

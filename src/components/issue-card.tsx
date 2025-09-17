@@ -8,22 +8,24 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Car,
-  Paintbrush,
-  LightbulbOff,
+  Lightbulb,
   Trash2,
   MapPin,
   Calendar,
   ArrowUpRight,
+  Droplets,
+  CircleDot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { useState, useEffect } from 'react';
 
 const categoryIcons: Record<Issue['category'], React.ReactNode> = {
-  Pothole: <Car className="h-4 w-4" />,
-  Graffiti: <Paintbrush className="h-4 w-4" />,
-  'Broken Streetlight': <LightbulbOff className="h-4 w-4" />,
-  Trash: <Trash2 className="h-4 w-4" />,
+  Potholes: <Car className="h-4 w-4" />,
+  Streetlights: <Lightbulb className="h-4 w-4" />,
+  Garbage: <Trash2 className="h-4 w-4" />,
+  'Water Quality': <Droplets className="h-4 w-4" />,
+  Manholes: <CircleDot className="h-4 w-4" />,
 };
 
 const statusColors: Record<Issue['status'], string> = {

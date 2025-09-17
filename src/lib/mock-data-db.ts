@@ -63,7 +63,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
   {
     title: 'Large pothole on Main St',
     description: 'A large pothole on Main St near the intersection with 1st Ave. It has caused damage to my car\'s suspension.',
-    category: 'Pothole',
+    category: 'Potholes',
     status: 'Resolved',
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
@@ -78,25 +78,25 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
     ]
   },
   {
-    title: 'Graffiti on park bench',
-    description: 'Graffiti spray-painted on a bench in Central Park. It is offensive in nature.',
-    category: 'Graffiti',
+    title: 'Discolored tap water',
+    description: 'The water from my tap has a brown tint and a strange smell.',
+    category: 'Water Quality',
     status: 'In Progress',
     location: { lat: 40.7829, lng: -73.9654 },
-    imageUrl: 'https://picsum.photos/seed/graffiti1/600/400',
-    imageHint: 'graffiti wall',
+    imageUrl: 'https://picsum.photos/seed/water1/600/400',
+    imageHint: 'tap water',
     submittedBy: { name: 'John Smith', uid: 'citizen-user-01', email: 'citizen@test.com' },
     submittedAt: '2024-07-18T09:15:00Z',
     assignedTo: 'worker-2',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-18T09:15:00Z', description: 'Issue reported by citizen.' },
-      { status: 'In Progress', updatedAt: '2024-07-18T11:00:00Z', description: 'Cleaning crew has been dispatched.' }
+      { status: 'In Progress', updatedAt: '2024-07-18T11:00:00Z', description: 'Water department has been dispatched to test the supply.' }
     ]
   },
   {
     title: 'Broken streetlight',
     description: 'The streetlight at the corner of Elm St and Oak Ave is flickering and sometimes goes out completely.',
-    category: 'Broken Streetlight',
+    category: 'Streetlights',
     status: 'Submitted',
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',

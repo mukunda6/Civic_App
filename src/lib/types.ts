@@ -1,6 +1,6 @@
 
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
-export type IssueCategory = 'Pothole' | 'Graffiti' | 'Broken Streetlight' | 'Trash';
+export type IssueCategory = 'Garbage' | 'Streetlights' | 'Manholes' | 'Water Quality' | 'Potholes';
 export type UserRole = 'Citizen' | 'Worker' | 'Admin';
 
 export interface AppUser {

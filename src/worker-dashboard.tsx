@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -13,7 +14,7 @@ export function WorkerDashboard() {
   // Assuming a logged in worker, we'll use the first worker for this demo
   const currentWorkerId = mockWorkers[0].id;
   const assignedIssues = mockIssues.filter(i => i.assignedTo === currentWorkerId && i.status !== 'Resolved');
-  const highPriorityIssues = assignedIssues.filter(i => i.category === 'Pothole' || i.category === 'Broken Streetlight');
+  const highPriorityIssues = assignedIssues.filter(i => i.category === 'Potholes' || i.category === 'Streetlights');
 
   return (
     <div className="grid gap-8">
@@ -31,7 +32,7 @@ export function WorkerDashboard() {
               Open issues assigned to you
             </p>
           </CardContent>
-        </Card>
+        </card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">High Priority</CardTitle>
@@ -43,7 +44,7 @@ export function WorkerDashboard() {
               Urgent tasks requiring attention
             </p>
           </CardContent>
-        </Card>
+        </card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tools & Equipment</CardTitle>
@@ -55,7 +56,7 @@ export function WorkerDashboard() {
               Verify your daily equipment
             </p>
           </CardContent>
-        </Card>
+        </card>
       </div>
 
       <Card>
