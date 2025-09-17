@@ -1,3 +1,6 @@
+
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Issue, UserRole } from '@/lib/types';
@@ -14,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
+import { useState, useEffect } from 'react';
 
 const categoryIcons: Record<Issue['category'], React.ReactNode> = {
   Pothole: <Car className="h-4 w-4" />,
@@ -32,6 +36,15 @@ type IssueCardProps = {
   issue: Issue;
   userRole?: UserRole;
 };
+
+// Component to prevent hydration mismatch for dates
+function SafeHydrate({ children }: { children: React.ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+  return isHydrated ? <>{children}</> : null;
+}
 
 export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
   return (
@@ -78,7 +91,9 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
             </div>
             <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                <span>{format(parseISO(issue.submittedAt), 'MMM d, yyyy')}</span>
+                <SafeHydrate>
+                    <span>{format(parseISO(issue.submittedAt), 'MMM d, yyyy')}</span>
+                </SafeHydrate>
             </div>
         </div>
       </div>
