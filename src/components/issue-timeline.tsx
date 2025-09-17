@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from './ui/select';
 import { Textarea } from './ui/textarea';
+import { Input } from './ui/input';
 
 const statusIcons: Record<Issue['status'], React.ReactNode> = {
   Submitted: <FilePlus2 className="h-5 w-5" />,
