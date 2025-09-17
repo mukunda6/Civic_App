@@ -27,6 +27,8 @@ import { CivicSolveLogo } from '@/components/icons'
 import { useToast } from '@/hooks/use-toast'
 import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Info } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
@@ -39,8 +41,8 @@ export default function LoginPage() {
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // This effect will still handle redirecting an already-logged-in user
   useEffect(() => {
-    // This effect will still handle redirecting an already-logged-in user
     if (!authLoading && user) {
       router.push('/dashboard');
     }
@@ -50,8 +52,8 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: 'citizen@test.com',
+      password: 'password',
     },
   })
 
@@ -59,8 +61,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(values.email, values.password);
-      // Explicitly redirect after login is successful and user state is set
-      router.push('/dashboard');
+      // The redirect is now handled by the AuthProvider's useEffect
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -73,7 +74,7 @@ export default function LoginPage() {
   }
 
   // Show a loading screen if we are checking auth or if a user is already logged in and we are about to redirect.
-  if (authLoading || user) {
+  if (authLoading && !user) {
      return (
         <div className="flex justify-center items-center h-screen">
             <div className="text-lg">Loading...</div>
@@ -133,7 +134,19 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <div className="pt-4">
+               <Alert className="mt-4">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Demo Credentials</AlertTitle>
+                <AlertDescription>
+                  <ul className="list-disc pl-5 text-sm">
+                    <li>admin@test.com</li>
+                    <li>worker@test.com</li>
+                    <li>citizen@test.com</li>
+                  </ul>
+                  (Password can be anything)
+                </AlertDescription>
+              </Alert>
+              <div className="pt-2">
                 <Button
                   type="submit"
                   className="w-full"
