@@ -154,47 +154,28 @@ export async function seedDatabase() {
   const auth = getAuth(firebaseApp);
   const batch = writeBatch(db);
 
-  // Explicitly enable networking to ensure the client is online
-  await enableNetwork(db);
-
-  // 1. Create Auth users
+  // 1. Create Auth users and prepare Firestore user documents
   for (const user of mockUsers) {
     try {
-        // Check if user already exists in Firestore
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-            console.log(`User ${user.email} already exists in Firestore, skipping creation.`);
-            continue;
-        }
-        
         await createUserWithEmailAndPassword(auth, user.email, user.password);
-        const userRef = doc(db, "users", user.uid);
-        batch.set(userRef, {
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            avatarUrl: user.avatarUrl,
-        });
-
+        console.log(`Successfully created auth user: ${user.email}`);
     } catch (error: any) {
         if (error.code === 'auth/email-already-in-use') {
             console.log(`Auth user ${user.email} already exists. Skipping auth creation.`);
-            // Still ensure user doc is written if it's missing for some reason
-            const userRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userRef);
-            if (!userDoc.exists()) {
-                 batch.set(userRef, {
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                    avatarUrl: user.avatarUrl,
-                });
-            }
         } else {
-            console.error("Error creating user:", user.email, error);
-            throw error; // re-throw other errors
+            // For other errors, log them and stop the seeding process.
+            console.error(`Error creating auth user ${user.email}:`, error);
+            throw error;
         }
     }
+    // Prepare user document for batch write regardless of whether auth user was created now or existed before.
+    const userRef = doc(db, "users", user.uid);
+    batch.set(userRef, {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatarUrl: user.avatarUrl,
+    });
   }
 
   // 2. Add Workers
