@@ -4,7 +4,9 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
-// Your web app's Firebase configuration
+// This is a mock configuration and is not used in the demo.
+// In a real application, you would replace this with your actual
+// Firebase project configuration.
 const firebaseConfig: FirebaseOptions = {
   apiKey: "AIzaSyAuSf90ZjT8tmeTKgre0I5CFGWKqs1E1cc",
   authDomain: "studio-9884214501-3e117.firebaseapp.com",
@@ -14,11 +16,10 @@ const firebaseConfig: FirebaseOptions = {
   appId: "1:943006094640:web:f15e92e46d66340ee0e4f5",
 };
 
-// Initialize Firebase
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+// These are mock instances and do not connect to a real Firebase backend.
+const app = {};
+const db = {};
+const auth = {};
+const storage = {};
 
 export { db, auth, storage, app };

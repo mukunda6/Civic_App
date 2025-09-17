@@ -83,7 +83,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred. You may need to seed the database first from the /seed page.',
+        description: error.message || 'An unexpected error occurred. Please use one of the demo accounts.',
       })
     } finally {
         setIsSubmitting(false);
@@ -171,17 +171,10 @@ export default function LoginPage() {
             Welcome to CivicSolve
           </CardTitle>
           <CardDescription>
-            Select your role to sign in.
+            Select your role to sign in. The password for all demo accounts is `password`.
           </CardDescription>
         </CardHeader>
         <CardContent>
-             <Alert className="mb-4">
-                <Info className="h-4 w-4" />
-                <AlertTitle>First time setup</AlertTitle>
-                <AlertDescription>
-                   Before logging in, you must <Link href="/seed" className="font-bold underline">set up the database</Link>. The password for all initial accounts is `password`.
-                </AlertDescription>
-            </Alert>
           <Tabs defaultValue="Citizen" className="w-full" onValueChange={(value) => handleTabChange(value as Role)}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="Citizen">Citizen</TabsTrigger>

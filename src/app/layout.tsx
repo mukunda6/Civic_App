@@ -22,7 +22,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   
   // Determine if the current page is a public-facing page
-  const isPublicPage = ['/', '/signup', '/seed'].includes(pathname);
+  const isPublicPage = ['/', '/signup'].includes(pathname);
 
   if (loading && !isPublicPage) {
      return (

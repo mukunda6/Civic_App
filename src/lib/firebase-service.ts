@@ -1,54 +1,31 @@
 
-import {
-  collection,
-  getDocs,
-  getDoc,
-  addDoc,
-  doc,
-  updateDoc,
-  setDoc,
-  query,
-  where,
-} from 'firebase/firestore';
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { db, storage, auth } from './firebase';
 import type { Issue, Worker, AppUser, IssueCategory, IssueStatus } from './types';
-import { mockIssues as initialMockIssues, mockWorkers, mockUsers as initialMockUsers } from './mock-data-db';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-
+import { mockIssues, mockWorkers } from './mock-data';
 
 // --- ISSUES ---
 
 export const getIssues = async (): Promise<Issue[]> => {
-  const issuesCol = collection(db, 'issues');
-  const issueSnapshot = await getDocs(issuesCol);
-  const issueList = issueSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Issue));
-  return issueList.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return mockIssues.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 };
 
 export const getIssueById = async (id: string): Promise<Issue | null> => {
-  const issueRef = doc(db, 'issues', id);
-  const issueSnap = await getDoc(issueRef);
-  if (issueSnap.exists()) {
-    return { id: issueSnap.id, ...issueSnap.data() } as Issue;
-  } else {
-    return null;
-  }
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  const issue = mockIssues.find(issue => issue.id === id);
+  return issue || null;
 };
 
 export const getIssuesByUser = async (userId: string): Promise<Issue[]> => {
-    const issuesRef = collection(db, 'issues');
-    const q = query(issuesRef, where("submittedBy.uid", "==", userId));
-    const querySnapshot = await getDocs(q);
-    const issues = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}) as Issue);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const issues = mockIssues.filter(issue => issue.submittedBy.uid === userId);
     return issues.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 }
 
 export const getIssuesByWorker = async (workerId: string): Promise<Issue[]> => {
-    const issuesRef = collection(db, 'issues');
-    const q = query(issuesRef, where("assignedTo", "==", workerId));
-    const querySnapshot = await getDocs(q);
-    const issues = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}) as Issue);
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const issues = mockIssues.filter(issue => issue.assignedTo === workerId);
     return issues.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 }
 
@@ -56,20 +33,16 @@ export const addIssue = async (
     data: { description: string, category: IssueCategory, location: { lat: number, lng: number }, photoDataUri: string },
     user: AppUser
 ): Promise<Issue> => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const now = new Date().toISOString();
     
-    // 1. Upload the image to Firebase Storage
-    const imageRef = ref(storage, `issues/${Date.now()}.jpg`);
-    await uploadString(imageRef, data.photoDataUri, 'data_url');
-    const imageUrl = await getDownloadURL(imageRef);
-
-    // 2. Create the issue document in Firestore
-    const newIssueData = {
+    const newIssue: Issue = {
+        id: `mock-${Date.now()}`,
         title: `${data.category} issue reported on ${new Date().toLocaleDateString()}`,
         description: data.description,
         category: data.category,
         location: data.location,
-        imageUrl: imageUrl,
+        imageUrl: data.photoDataUri, // In a real app, this would be an uploaded URL
         imageHint: 'user uploaded issue',
         submittedAt: now,
         submittedBy: {
@@ -87,35 +60,22 @@ export const addIssue = async (
         ]
     };
     
-    const docRef = await addDoc(collection(db, 'issues'), newIssueData);
+    // In a mock setup, we don't actually save it, but we can log it.
+    console.log("New issue reported (mock):", newIssue);
     
-    return { id: docRef.id, ...newIssueData } as Issue;
+    return newIssue;
 };
 
 export const updateIssueAssignment = async (issueId: string, workerId:string): Promise<void> => {
-    const issueRef = doc(db, 'issues', issueId);
-    const issueSnap = await getDoc(issueRef);
-    if (!issueSnap.exists()) throw new Error("Issue not found");
-    
-    const issueData = issueSnap.data() as Issue;
-
-    const updates: Partial<Issue> = {
-        assignedTo: workerId,
-    };
-    
-    if (issueData.status === 'Submitted') {
-        updates.status = 'In Progress';
-        updates.updates = [
-            ...issueData.updates,
-            {
-                status: 'In Progress',
-                updatedAt: new Date().toISOString(),
-                description: `Assigned to worker.`
-            }
-        ]
+    await new Promise(resolve => setTimeout(resolve, 500));
+    console.log(`(Mock) Assigned issue ${issueId} to worker ${workerId}`);
+    const issue = mockIssues.find(i => i.id === issueId);
+    if(issue) {
+        issue.assignedTo = workerId;
+        if(issue.status === 'Submitted') {
+            issue.status = 'In Progress';
+        }
     }
-
-    await updateDoc(issueRef, updates);
 };
 
 export const addIssueUpdate = async (
@@ -123,126 +83,37 @@ export const addIssueUpdate = async (
     update: { status: IssueStatus, description: string },
     imageFile: File | null
 ): Promise<Issue> => {
-    const issueRef = doc(db, 'issues', issueId);
-    const issueSnap = await getDoc(issueRef);
-    if (!issueSnap.exists()) throw new Error("Issue not found");
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const issue = mockIssues.find(i => i.id === issueId);
+    if (!issue) throw new Error("Issue not found");
 
-    const issue = issueSnap.data() as Issue;
-    
-    let updateImageUrl: string | undefined = undefined;
-    if (imageFile) {
-        const imageRef = ref(storage, `updates/${issueId}/${Date.now()}-${imageFile.name}`);
-        await uploadString(imageRef, await fileToDataUri(imageFile), 'data_url');
-        updateImageUrl = await getDownloadURL(imageRef);
-    }
-    
     const newUpdate = {
         ...update,
         updatedAt: new Date().toISOString(),
-        imageUrl: updateImageUrl,
+        imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined,
         imageHint: imageFile ? 'resolved issue' : undefined,
     }
 
     issue.status = update.status;
     issue.updates.push(newUpdate);
-
-    await updateDoc(issueRef, {
-        status: issue.status,
-        updates: issue.updates,
-    });
     
-    return {id: issueId, ...issue} as Issue;
+    console.log("(Mock) Updated issue:", issue);
+    return issue;
 };
-
-const fileToDataUri = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
 
 
 // --- WORKERS ---
 
 export const getWorkers = async (): Promise<Worker[]> => {
-  const workersCol = collection(db, 'workers');
-  const workerSnapshot = await getDocs(workersCol);
-  return workerSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Worker));
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return mockWorkers;
 };
 
 
 // --- USERS ---
 
 export const getUserProfile = async (uid: string): Promise<AppUser | null> => {
-    const userRef = doc(db, 'users', uid);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-        return userSnap.data() as AppUser;
-    }
-    return null;
-}
-
-// --- SEEDING ---
-export async function seedDatabase() {
-  console.log('--- Seeding database... ---');
-
-  // Seed users and auth accounts
-  for (const userData of initialMockUsers) {
-    // Check if user already exists in Firestore
-    const userDocRef = doc(db, 'users', userData.uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (!userDoc.exists()) {
-       try {
-            // 1. Create user in Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-            const user = userCredential.user;
-
-            // 2. Add user profile to Firestore using the Auth UID
-             await setDoc(doc(db, 'users', user.uid), {
-                uid: user.uid,
-                name: userData.name,
-                email: userData.email,
-                role: userData.role,
-                avatarUrl: userData.avatarUrl,
-            });
-
-       } catch (error: any) {
-           if (error.code === 'auth/email-already-in-use') {
-               console.log(`User with email ${userData.email} already exists in Auth. Skipping Auth creation.`);
-               // If user exists in Auth but not Firestore, you might want to add them to Firestore here
-               // For this seed script, we assume if auth exists, firestore doc should too.
-           } else {
-               console.error(`Error creating user ${userData.email} in Auth:`, error);
-           }
-       }
-    } else {
-        console.log(`User ${userData.name} already exists in Firestore. Skipping.`);
-    }
-  }
-
-  // Seed workers
-  for (const workerData of mockWorkers) {
-    const workerDocRef = doc(db, 'workers', workerData.id);
-    const workerDoc = await getDoc(workerDocRef);
-    if (!workerDoc.exists()) {
-      await setDoc(workerDocRef, workerData);
-      console.log(`Added worker: ${workerData.name}`);
-    }
-  }
-
-  // Seed issues
-  const issuesSnapshot = await getDocs(collection(db, 'issues'));
-  if (issuesSnapshot.empty) {
-      for (const issueData of initialMockIssues) {
-          await addDoc(collection(db, 'issues'), issueData);
-          console.log(`Added issue: ${issueData.title}`);
-      }
-  } else {
-      console.log("Issues collection is not empty. Skipping issue seeding.");
-  }
-
-  console.log('--- Seeding complete. ---');
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const user = mockUsers.find(u => u.uid === uid);
+    return user || null;
 }
