@@ -50,28 +50,6 @@ export function CitizenDashboard() {
 
   return (
     <div className="grid gap-8">
-
-       <Alert variant="destructive" className="bg-red-50 dark:bg-red-900/30 border-red-500 text-red-800 dark:text-red-300">
-         <div className="flex items-center justify-between">
-            <div className='flex items-center'>
-                 <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
-                <div className='ml-4'>
-                    <AlertTitle className="font-bold">Have an Emergency?</AlertTitle>
-                    <AlertDescription>
-                        For critical issues like accidents or fire hazards, use our priority booking system.
-                    </AlertDescription>
-                </div>
-            </div>
-            <Button asChild variant="destructive">
-                <Link href="/report/emergency">
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Instant Emergency Booking
-                </Link>
-            </Button>
-         </div>
-      </Alert>
-
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
