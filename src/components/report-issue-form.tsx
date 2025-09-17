@@ -36,6 +36,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { checkImageClarity } from '@/ai/flows/image-clarity-check';
 import { detectDuplicateIssue } from '@/ai/flows/duplicate-issue-detection';
 import {
@@ -43,15 +50,17 @@ import {
   Loader2,
   AlertTriangle,
   CheckCircle,
+  Camera,
 } from 'lucide-react';
 import Image from 'next/image';
 import type { AppUser } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { CameraCapture } from './camera-capture';
 
 const formSchema = z.object({
   description: z.string().min(10, 'Please provide a more detailed description.'),
   category: z.enum(['Garbage', 'Streetlights', 'Manholes', 'Water Quality', 'Potholes']),
-  photoDataUri: z.string().nonempty('Please upload a photo.'),
+  photoDataUri: z.string().nonempty('Please upload or take a photo.'),
   location: z.object({
     lat: z.number(),
     lng: z.number(),
@@ -66,6 +75,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [imageClarity, setImageClarity] = useState<{
     status: 'idle' | 'checking' | 'clear' | 'unclear';
     reason?: string;
@@ -83,12 +93,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
     },
   });
 
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    
+  const processImage = (file: File) => {
     setImageFile(file);
     setImageClarity({ status: 'checking' });
     setImagePreview(URL.createObjectURL(file));
@@ -96,7 +101,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
     const reader = new FileReader();
     reader.onload = async e => {
       const dataUri = e.target?.result as string;
-      form.setValue('photoDataUri', dataUri);
+      form.setValue('photoDataUri', dataUri, { shouldValidate: true });
 
       try {
         const clarityResult = await checkImageClarity({ photoDataUri: dataUri });
@@ -138,6 +143,18 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
       }
     );
   };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      processImage(file);
+    }
+  };
+
+  const handlePhotoTaken = (file: File) => {
+    setIsCameraOpen(false);
+    processImage(file);
+  }
 
   const onSubmit = async (data: FormData) => {
     if (imageClarity.status !== 'clear') {
@@ -223,10 +240,7 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                       onChange={handleFileChange}
                       disabled={imageClarity.status === 'checking'}
                     />
-                    <label
-                      htmlFor="file-upload"
-                      className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
-                    >
+                    <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg">
                       {imagePreview ? (
                         <Image
                           src={imagePreview}
@@ -236,17 +250,32 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                           className="object-cover h-full w-full rounded-lg"
                         />
                       ) : (
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <ImageIcon className="w-8 h-8 mb-4 text-muted-foreground" />
-                          <p className="mb-2 text-sm text-muted-foreground">
-                            <span className="font-semibold">Click to upload</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            PNG, JPG or GIF
-                          </p>
+                        <div className="flex flex-col items-center justify-center text-center p-4">
+                          <ImageIcon className="w-10 h-10 mb-3 text-muted-foreground" />
+                          <label
+                            htmlFor="file-upload"
+                            className="font-semibold text-primary cursor-pointer hover:underline"
+                          >
+                            Upload a file
+                          </label>
+                          <p className="text-sm text-muted-foreground my-1">or</p>
+                          <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                <Camera className="mr-2 h-4 w-4" />
+                                Take Photo
+                              </Button>
+                            </DialogTrigger>
+                             <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle>Live Camera Capture</DialogTitle>
+                                </DialogHeader>
+                                <CameraCapture onPhotoTaken={handlePhotoTaken} />
+                             </DialogContent>
+                          </Dialog>
                         </div>
                       )}
-                    </label>
+                    </div>
                   </div>
                 </FormControl>
                 {imageClarity.status !== 'idle' && (
