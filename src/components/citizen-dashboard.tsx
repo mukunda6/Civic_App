@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { getIssuesByUser } from '@/lib/firebase-service';
 import type { Issue } from '@/lib/types';
 import { IssueCard } from './issue-card';
-import { FilePlus2, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
+import { FilePlus2, Clock, CheckCircle, AlertTriangle, Phone } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
@@ -90,6 +90,14 @@ export function CitizenDashboard() {
           </CardContent>
         </Card>
       </div>
+
+       <Alert>
+        <Phone className="h-4 w-4" />
+        <AlertTitle>Customer Care</AlertTitle>
+        <AlertDescription>
+          For any immediate assistance or queries, you can reach out to our 24/7 customer care at <a href="tel:18001234567" className="font-semibold underline">1800-123-4567</a>.
+        </AlertDescription>
+      </Alert>
 
       <Card>
         <CardHeader className="flex flex-row items-center">
