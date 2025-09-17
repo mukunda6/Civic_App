@@ -3,7 +3,7 @@
 'use client';
 
 import Image from 'next/image';
-import type { Issue } from '@/lib/types';
+import type { Issue, SlaStatus } from '@/lib/types';
 import {
   Card,
   CardContent,
@@ -52,6 +52,11 @@ const categoryIcons: Record<Issue['category'], React.ReactNode> = {
   'Stray Animals & Public Health Hazards': <Dog className="h-4 w-4" />,
   'Sanitation & Toiletry Issues': <Home className="h-4 w-4" />,
   'Mosquito Control & Fogging': <Cloudy className="h-4 w-4" />,
+  'Pipeline Burst': <Droplets className="h-4 w-4" />,
+    'Road Accident': <Car className="h-4 w-4" />,
+    'Fire Hazard': <Lightbulb className="h-4 w-4" />,
+    'Medical Waste': <Trash2 className="h-4 w-4" />,
+    'Major Blockage': <Construction className="h-4 w-4" />,
 };
 
 const statusColors: Record<Issue['status'], string> = {
@@ -60,7 +65,7 @@ const statusColors: Record<Issue['status'], string> = {
   Resolved: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700',
 };
 
-const slaStatusColors: Record<Issue['slaStatus'], string> = {
+const slaStatusColors: Record<SlaStatus, string> = {
   'On Time': 'text-green-600',
   'At Risk': 'text-yellow-600',
   'Deadline Missed': 'text-red-600',

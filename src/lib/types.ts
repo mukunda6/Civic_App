@@ -23,7 +23,7 @@ export type EmergencyCategory =
   | 'Medical Waste'
   | 'Major Blockage';
 
-export type UserRole = 'Citizen' | 'Admin' | 'Head';
+export type UserRole = 'Citizen' | 'Admin' | 'Head' | 'Worker';
 
 export interface AppUser {
     uid: string;
@@ -51,7 +51,7 @@ export interface Issue {
     uid:string;
     name: string;
     email: string;
-a  };
+  };
   submittedAt: string;
   assignedTo?: string; // Worker ID
   updates: {
