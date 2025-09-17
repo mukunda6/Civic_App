@@ -10,7 +10,8 @@ import {
     writeBatch, 
     query, 
     where,
-    serverTimestamp
+    serverTimestamp,
+    enableNetwork
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -153,13 +154,16 @@ export async function seedDatabase() {
   const auth = getAuth(firebaseApp);
   const batch = writeBatch(db);
 
+  // Explicitly enable networking to ensure the client is online
+  await enableNetwork(db);
+
   // 1. Create Auth users
   for (const user of mockUsers) {
     try {
-        // Check if user already exists
-        const userExists = await getDoc(doc(db, 'users', user.uid)).then(d => d.exists());
-        if (userExists) {
-            console.log(`User ${user.email} already exists, skipping creation.`);
+        // Check if user already exists in Firestore
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+            console.log(`User ${user.email} already exists in Firestore, skipping creation.`);
             continue;
         }
         
