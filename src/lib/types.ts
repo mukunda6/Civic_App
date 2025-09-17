@@ -1,6 +1,9 @@
 
 
+
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
+export type SlaStatus = 'On Time' | 'At Risk' | 'Deadline Missed' | 'Extended' | 'Escalated';
+
 export type IssueCategory = 
   | 'Garbage & Waste Management Problems'
   | 'Water Supply Quality'
@@ -36,6 +39,8 @@ export interface Issue {
   description: string;
   category: IssueCategory | EmergencyCategory;
   status: IssueStatus;
+  slaStatus: SlaStatus;
+  slaDeadline: string; // ISO string
   location: {
     lat: number;
     lng: number;
@@ -46,7 +51,7 @@ export interface Issue {
     uid:string;
     name: string;
     email: string;
-  };
+a  };
   submittedAt: string;
   assignedTo?: string; // Worker ID
   updates: {
@@ -55,6 +60,7 @@ export interface Issue {
     description: string;
     imageUrl?: string;
     imageHint?: string;
+    isSlaUpdate?: boolean; // To differentiate SLA remarks from regular updates
   }[];
   isEmergency?: boolean;
 }

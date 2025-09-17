@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -25,13 +26,24 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { getIssues, getWorkers, updateIssueAssignment } from '@/lib/firebase-service';
-import type { Issue, Worker } from '@/lib/types';
+import type { Issue, Worker, SlaStatus } from '@/lib/types';
 import { formatDistanceToNow } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { ListChecks, Users, AlertTriangle } from 'lucide-react';
+import { ListChecks, Users, AlertTriangle, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
+
+
+const slaStatusColors: Record<SlaStatus, string> = {
+  'On Time': 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700',
+  'At Risk': 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700',
+  'Deadline Missed': 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/50 dark:text-red-300 dark:border-red-700',
+  'Extended': 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-700',
+  'Escalated': 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-300 dark:border-purple-700',
+};
+
 
 export function AdminDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -42,7 +54,7 @@ export function AdminDashboard() {
   const fetchData = async () => {
       try {
         const [fetchedIssues, fetchedWorkers] = await Promise.all([getIssues(), getWorkers()]);
-        setIssues(fetchedIssues);
+        setIssues(fetchedIssues.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()));
         setWorkers(fetchedWorkers);
       } catch (error) {
         console.error("Error fetching admin data:", error);
@@ -58,7 +70,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     fetchData();
-  }, [toast]);
+  }, []);
 
   const emergencyIssues = issues.filter(issue => issue.isEmergency && issue.status !== 'Resolved');
   const normalOpenIssues = issues.filter(issue => !issue.isEmergency && issue.status !== 'Resolved');
@@ -169,7 +181,7 @@ const IssueTable = ({ issues, workers, onAssign, getWorkerName }: { issues: Issu
               <TableRow>
                 <TableHead>Issue</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>SLA Status</TableHead>
                 <TableHead>Submitted</TableHead>
                 <TableHead className="text-right">Assigned Worker</TableHead>
               </TableRow>
@@ -185,8 +197,10 @@ const IssueTable = ({ issues, workers, onAssign, getWorkerName }: { issues: Issu
                   <TableCell>
                     <Badge variant={issue.isEmergency ? "destructive" : "outline"}>{issue.category}</Badge>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant={issue.status === 'Submitted' ? 'default' : 'secondary'}>{issue.status}</Badge>
+                   <TableCell>
+                    <Badge variant="outline" className={cn(slaStatusColors[issue.slaStatus])}>
+                      {issue.slaStatus}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     {formatDistanceToNow(new Date(issue.submittedAt), {

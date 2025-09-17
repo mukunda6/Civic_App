@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -24,6 +25,7 @@ import {
   Home,
   Dog,
   Cloudy,
+  Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
@@ -57,6 +59,15 @@ const statusColors: Record<Issue['status'], string> = {
   'In Progress': 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/50 dark:text-yellow-300 dark:border-yellow-700',
   Resolved: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700',
 };
+
+const slaStatusColors: Record<Issue['slaStatus'], string> = {
+  'On Time': 'text-green-600',
+  'At Risk': 'text-yellow-600',
+  'Deadline Missed': 'text-red-600',
+  'Extended': 'text-blue-600',
+  'Escalated': 'text-purple-600',
+};
+
 
 export function IssueDetails({ issue }: { issue: Issue }) {
   return (
@@ -104,6 +115,17 @@ export function IssueDetails({ issue }: { issue: Issue }) {
                     <p className="text-muted-foreground">
                       <SafeHydrate>
                         {format(parseISO(issue.submittedAt), 'PPp')}
+                      </SafeHydrate>
+                    </p>
+                </div>
+            </div>
+             <div className="flex items-start gap-2">
+                <Clock className={cn("h-4 w-4 mt-1", slaStatusColors[issue.slaStatus])} />
+                <div>
+                    <p className="font-semibold">SLA Deadline</p>
+                    <p className={cn("text-muted-foreground", slaStatusColors[issue.slaStatus])}>
+                      <SafeHydrate>
+                        {format(parseISO(issue.slaDeadline), 'PPp')}
                       </SafeHydrate>
                     </p>
                 </div>

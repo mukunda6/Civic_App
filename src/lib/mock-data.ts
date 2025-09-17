@@ -1,5 +1,9 @@
 
+
 import type { Issue, Worker, AppUser } from './types';
+import { addHours, subDays, subHours } from 'date-fns';
+
+const now = new Date();
 
 export const mockUsers: (AppUser & { password?: string })[] = [
   {
@@ -63,16 +67,18 @@ export const mockIssues: Issue[] = [
     description: 'A large pothole on Main St near the intersection with 1st Ave. It has caused damage to my car\'s suspension.',
     category: 'Roads, Footpaths & Infrastructure Damage',
     status: 'Resolved',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(subDays(now, 3), 48).toISOString(),
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
     imageHint: 'pothole road',
     submittedBy: { name: 'Jane Doe', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-15T10:00:00Z',
+    submittedAt: subDays(now, 3).toISOString(),
     assignedTo: 'worker-1',
     updates: [
-      { status: 'Submitted', updatedAt: '2024-07-15T10:00:00Z', description: 'Issue reported by citizen.' },
-      { status: 'In Progress', updatedAt: '2024-07-16T14:30:00Z', description: 'Work crew assigned. ETA: 2 days.' },
-      { status: 'Resolved', updatedAt: '2024-07-17T16:00:00Z', description: 'Pothole has been filled.', imageUrl: 'https://picsum.photos/seed/resolved1/600/400', imageHint: 'road asphalt' }
+      { status: 'Submitted', updatedAt: subDays(now, 3).toISOString(), description: 'Issue reported by citizen.' },
+      { status: 'In Progress', updatedAt: subDays(now, 2).toISOString(), description: 'Work crew assigned. ETA: 2 days.' },
+      { status: 'Resolved', updatedAt: subDays(now, 1).toISOString(), description: 'Pothole has been filled.', imageUrl: 'https://picsum.photos/seed/resolved1/600/400', imageHint: 'road asphalt' }
     ]
   },
   {
@@ -81,15 +87,17 @@ export const mockIssues: Issue[] = [
     description: 'The water from my tap has a brown tint and a strange smell.',
     category: 'Water Supply Quality',
     status: 'In Progress',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(now, 20).toISOString(), // At risk
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
     imageHint: 'tap water',
     submittedBy: { name: 'John Smith', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-18T09:15:00Z',
+    submittedAt: subHours(now, 28).toISOString(),
     assignedTo: 'worker-2',
     updates: [
-      { status: 'Submitted', updatedAt: '2024-07-18T09:15:00Z', description: 'Issue reported by citizen.' },
-      { status: 'In Progress', updatedAt: '2024-07-18T11:00:00Z', description: 'Water department has been dispatched to test the supply.' }
+      { status: 'Submitted', updatedAt: subHours(now, 28).toISOString(), description: 'Issue reported by citizen.' },
+      { status: 'In Progress', updatedAt: subHours(now, 26).toISOString(), description: 'Water department has been dispatched to test the supply.' }
     ]
   },
   {
@@ -98,14 +106,16 @@ export const mockIssues: Issue[] = [
     description: 'The streetlight at the corner of Elm St and Oak Ave is flickering and sometimes goes out completely.',
     category: 'Streetlights & Electricity Failures',
     status: 'Submitted',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(now, 40).toISOString(),
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',
     imageHint: 'street light',
     submittedBy: { name: 'Emily White', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-20T21:30:00Z',
+    submittedAt: subHours(now, 8).toISOString(),
     assignedTo: 'worker-1',
     updates: [
-      { status: 'Submitted', updatedAt: '2024-07-20T21:30:00Z', description: 'Issue reported by citizen. Awaiting assignment.' }
+      { status: 'Submitted', updatedAt: subHours(now, 8).toISOString(), description: 'Issue reported by citizen. Awaiting assignment.' }
     ]
   },
   {
@@ -113,15 +123,18 @@ export const mockIssues: Issue[] = [
     title: 'Overflowing trash can',
     description: 'The public trash can at the bus stop on 5th Ave is overflowing. There is garbage all over the sidewalk.',
     category: 'Garbage & Waste Management Problems',
-    status: 'Submitted',
+    status: 'In Progress',
+    slaStatus: 'Deadline Missed', // Deadline missed
+    slaDeadline: subHours(now, 4).toISOString(),
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/trash1/600/400',
     imageHint: 'trash can',
     submittedBy: { name: 'Michael Brown', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-21T12:00:00Z',
+    submittedAt: subHours(now, 52).toISOString(),
      assignedTo: 'worker-3',
     updates: [
-      { status: 'Submitted', updatedAt: '2024-07-21T12:00:00Z', description: 'Issue reported by citizen.' }
+      { status: 'Submitted', updatedAt: subHours(now, 52).toISOString(), description: 'Issue reported by citizen.' },
+      { status: 'In Progress', updatedAt: subHours(now, 24).toISOString(), description: 'Sanitation crew assigned.' }
     ]
   },
   {
@@ -130,15 +143,19 @@ export const mockIssues: Issue[] = [
     description: 'There are several deep cracks in the sidewalk on Pine St, making it a tripping hazard.',
     category: 'Roads, Footpaths & Infrastructure Damage',
     status: 'In Progress',
+    slaStatus: 'Extended', // Extended
+    slaDeadline: addHours(now, 44).toISOString(),
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/pothole2/600/400',
     imageHint: 'pothole street',
     submittedBy: { name: 'Sarah Green', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-19T15:45:00Z',
+    submittedAt: subHours(now, 52).toISOString(),
     assignedTo: 'worker-1',
     updates: [
-        { status: 'Submitted', updatedAt: '2024-07-19T15:45:00Z', description: 'Issue reported by citizen.' },
-        { status: 'In Progress', updatedAt: '2024-07-21T09:00:00Z', description: 'Maintenance team scheduled to inspect the area.' }
+        { status: 'Submitted', updatedAt: subHours(now, 52).toISOString(), description: 'Issue reported by citizen.' },
+        { status: 'In Progress', updatedAt: subHours(now, 48).toISOString(), description: 'Maintenance team scheduled to inspect the area.' },
+        { status: 'In Progress', updatedAt: subHours(now, 2).toISOString(), description: 'SLA Extended: Material shortage. New materials expected in 1 day.', isSlaUpdate: true }
+
     ]
   },
   {
@@ -147,16 +164,18 @@ export const mockIssues: Issue[] = [
     description: 'A manhole cover is loose and makes a loud noise when cars drive over it.',
     category: 'Roads, Footpaths & Infrastructure Damage',
     status: 'Resolved',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(subDays(now, 4), 48).toISOString(),
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/manhole1/600/400',
     imageHint: 'manhole cover',
     submittedBy: { name: 'David Lee', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-22T08:00:00Z',
+    submittedAt: subDays(now, 4).toISOString(),
     assignedTo: 'worker-2',
     updates: [
-        { status: 'Submitted', updatedAt: '2024-07-22T08:00:00Z', description: 'Issue reported by citizen.' },
-        { status: 'In Progress', updatedAt: '2024-07-22T09:30:00Z', description: 'Public works notified.' },
-        { status: 'Resolved', updatedAt: '2024-07-22T13:00:00Z', description: 'Manhole cover has been secured.' }
+        { status: 'Submitted', updatedAt: subDays(now, 4).toISOString(), description: 'Issue reported by citizen.' },
+        { status: 'In Progress', updatedAt: subDays(now, 4).toISOString(), description: 'Public works notified.' },
+        { status: 'Resolved', updatedAt: subDays(now, 3).toISOString(), description: 'Manhole cover has been secured.' }
     ]
   },
   {
@@ -164,16 +183,19 @@ export const mockIssues: Issue[] = [
     title: 'Damaged bus stop shelter',
     description: 'The glass panel on the bus stop shelter is shattered.',
     category: 'Parks, Trees & Environmental Concerns',
-    status: 'Resolved',
+    status: 'In Progress',
+    slaStatus: 'Escalated', // Escalated
+    slaDeadline: subHours(now, 4).toISOString(),
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/shelter1/600/400',
     imageHint: 'bus stop',
     submittedBy: { name: 'Jessica Miller', uid: 'citizen-user-01', email: 'citizen@test.com' },
-    submittedAt: '2024-07-21T18:00:00Z',
+    submittedAt: subDays(now, 5).toISOString(),
     assignedTo: 'worker-3',
     updates: [
-        { status: 'Submitted', updatedAt: '2024-07-21T18:00:00Z', description: 'Issue reported by citizen.' },
-        { status: 'Resolved', updatedAt: '2024-07-23T11:00:00Z', description: 'Glass panel has been replaced.' }
+        { status: 'Submitted', updatedAt: subDays(now, 5).toISOString(), description: 'Issue reported by citizen.' },
+        { status: 'In Progress', updatedAt: subDays(now, 3).toISOString(), description: 'SLA Extended: Worker unavailable.', isSlaUpdate: true },
+        { status: 'In Progress', updatedAt: subHours(now, 2).toISOString(), description: 'Issue has breached the extended SLA and has been escalated to the Head.', isSlaUpdate: true }
     ]
   }
 ];

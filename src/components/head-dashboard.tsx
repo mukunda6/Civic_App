@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -16,6 +17,9 @@ import { ListChecks, Users, Shield, AlertTriangle, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
+import Link from 'next/link';
 
 export function HeadDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -46,6 +50,7 @@ export function HeadDashboard() {
   const openIssuesCount = issues.filter(issue => issue.status !== 'Resolved').length;
   const resolvedIssuesCount = issues.length - openIssuesCount;
   const emergencyIssues = issues.filter(issue => issue.isEmergency && issue.status !== 'Resolved');
+  const escalatedIssues = issues.filter(issue => issue.slaStatus === 'Escalated');
 
   if (loading) {
     return <div>Loading head dashboard...</div>
@@ -100,52 +105,60 @@ export function HeadDashboard() {
         </Card>
       </div>
       
-       {emergencyIssues.length > 0 && (
-        <Card className="border-destructive">
+       {escalatedIssues.length > 0 && (
+        <Card className="border-purple-500 border-2">
              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-destructive">
+                <CardTitle className="flex items-center gap-2 text-purple-600">
                     <AlertTriangle />
-                    Emergency Monitoring
+                    Escalated Issues
                 </CardTitle>
-                <CardDescription>Track the status of high-priority issues. Intervene if SLAs are breached.</CardDescription>
+                <CardDescription>These critical issues have breached their extended SLA. Intervention is required.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Emergency Issue</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Time Elapsed</TableHead>
+                            <TableHead>Issue</TableHead>
+                            <TableHead>Time Elapsed Since Report</TableHead>
                             <TableHead>Assigned To</TableHead>
+                            <TableHead>Last Remark</TableHead>
+                            <TableHead className='text-right'>Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {emergencyIssues.map(issue => (
-                            <TableRow key={issue.id}>
-                                <TableCell>
-                                    <p className="font-medium">{issue.title}</p>
-                                    <p className="text-sm text-muted-foreground">{issue.category}</p>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant={issue.status === 'Submitted' ? 'destructive' : 'secondary'}>{issue.status}</Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className='flex items-center gap-2'>
-                                        <Clock className="h-4 w-4"/>
-                                        {formatDistanceToNow(new Date(issue.submittedAt))}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    {issue.assignedTo ? workers.find(w => w.id === issue.assignedTo)?.name : <span className="text-destructive font-medium">Unassigned</span>}
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {escalatedIssues.map(issue => {
+                            const lastRemark = issue.updates.filter(u => u.isSlaUpdate).pop()?.description || 'N/A';
+                            return (
+                                <TableRow key={issue.id}>
+                                    <TableCell>
+                                        <p className="font-medium">{issue.title}</p>
+                                        <p className="text-sm text-muted-foreground">{issue.category}</p>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className='flex items-center gap-2'>
+                                            <Clock className="h-4 w-4"/>
+                                            {formatDistanceToNow(new Date(issue.submittedAt))}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {issue.assignedTo ? workers.find(w => w.id === issue.assignedTo)?.name : <span className="text-destructive font-medium">Unassigned</span>}
+                                    </TableCell>
+                                    <TableCell className="max-w-xs truncate italic">"{lastRemark}"</TableCell>
+                                    <TableCell className='text-right'>
+                                        <Button asChild size="sm">
+                                            <Link href={`/issues/${issue.id}`}>
+                                                Review & Reassign
+                                            </Link>
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        })}
                     </TableBody>
                 </Table>
             </CardContent>
         </Card>
        )}
-
     </div>
   )
 }
