@@ -96,10 +96,10 @@ export default function LeaderboardPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-headline flex items-center gap-2">
             <Trophy className="h-8 w-8 text-primary" />
-            Admin Leaderboard
+            Worker Leaderboard
           </CardTitle>
           <CardDescription>
-            Ranking of admins based on resolved issues and open tasks.
+            Ranking of workers based on resolved issues and open tasks. The top worker is selected as "Best Worker of the Month".
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -107,7 +107,7 @@ export default function LeaderboardPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[80px]">Rank</TableHead>
-                <TableHead>Admin</TableHead>
+                <TableHead>Worker</TableHead>
                 <TableHead className="text-center">Area</TableHead>
                 <TableHead className="text-center">Resolved Issues</TableHead>
                 <TableHead className="text-center">Open Tasks</TableHead>

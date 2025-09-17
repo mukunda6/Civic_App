@@ -62,6 +62,7 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          {user?.role === 'Citizen' && (
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
@@ -74,6 +75,7 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          )}
            {user?.role === 'Citizen' && (
             <SidebarMenuItem>
                 <SidebarMenuButton
@@ -93,11 +95,11 @@ export function AppSidebar() {
               <SidebarMenuButton
                 asChild
                 isActive={pathname === '/leaderboard'}
-                tooltip="Admin Leaderboard"
+                tooltip="Worker Leaderboard"
               >
                 <Link href="/leaderboard">
                   <Trophy />
-                  <span>Admin Leaderboard</span>
+                  <span>Worker Leaderboard</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

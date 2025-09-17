@@ -82,7 +82,7 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
             </div>
           ))}
         </div>
-        {!isUpdating && issue.status !== 'Resolved' && user?.role !== 'Citizen' && (
+        {!isUpdating && issue.status !== 'Resolved' && (user?.role === 'Worker' || user?.role === 'Admin') && (
             <Button onClick={() => setIsUpdating(true)}>Update Status</Button>
         )}
         {isUpdating && <UpdateForm issueId={issue.id} onCancel={() => setIsUpdating(false)} onUpdateAdded={handleUpdateAdded} />}
@@ -104,7 +104,7 @@ function UpdateForm({ issueId, onCancel, onUpdateAdded }: { issueId: string, onC
             toast({
                 variant: 'destructive',
                 title: 'Missing Fields',
-                description: 'Please select a status and provide a description.',
+                description: 'Please select a status and provide a description/remark.',
             });
             return;
         }
@@ -131,7 +131,7 @@ function UpdateForm({ issueId, onCancel, onUpdateAdded }: { issueId: string, onC
 
     return (
         <div className="p-4 border-t space-y-4">
-            <h4 className="font-semibold">Add New Update</h4>
+            <h4 className="font-semibold">Add New Update / Remark</h4>
             <div className="grid gap-4">
                 <Select value={status} onValueChange={(value) => setStatus(value as IssueStatus)}>
                     <SelectTrigger>
@@ -143,7 +143,7 @@ function UpdateForm({ issueId, onCancel, onUpdateAdded }: { issueId: string, onC
                     </SelectContent>
                 </Select>
                 <Textarea 
-                    placeholder="Add a description of the update..." 
+                    placeholder="Add a description of the update or a remark for any delays..." 
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />

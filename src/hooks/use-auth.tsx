@@ -16,17 +16,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const MOCK_USERS: Record<string, AppUser> = {
     'head@test.com': {
-        uid: 'admin-user-01',
-        name: 'Head User',
+        uid: 'head-user-01',
+        name: 'GMC Head',
         email: 'head@test.com',
         role: 'Head',
-        avatarUrl: 'https://picsum.photos/seed/admin/100/100',
+        avatarUrl: 'https://picsum.photos/seed/head/100/100',
     },
     'admin@test.com': {
-        uid: 'worker-user-01',
-        name: 'Alice Johnson',
+        uid: 'admin-user-01',
+        name: 'Admin User',
         email: 'admin@test.com',
         role: 'Admin',
+        avatarUrl: 'https://picsum.photos/seed/admin/100/100',
+    },
+    'worker@test.com': {
+        uid: 'worker-user-01',
+        name: 'Alice Johnson',
+        email: 'worker@test.com',
+        role: 'Worker',
         avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
     },
     'citizen@test.com': {

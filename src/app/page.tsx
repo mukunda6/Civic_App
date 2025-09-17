@@ -144,9 +144,10 @@ export default function LoginPage() {
                 <AlertTitle>Demo Credentials</AlertTitle>
                 <AlertDescription>
                   <p>Click a role to pre-fill credentials. The password can be anything.</p>
-                  <div className="flex gap-2 mt-2">
+                  <div className="flex flex-wrap gap-2 mt-2">
                     <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('head@test.com')}>Head</Button>
                     <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('admin@test.com')}>Admin</Button>
+                    <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('worker@test.com')}>Worker</Button>
                     <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('citizen@test.com')}>Citizen</Button>
                   </div>
                 </AlertDescription>

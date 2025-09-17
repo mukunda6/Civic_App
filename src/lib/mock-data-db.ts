@@ -7,7 +7,7 @@ import type { Issue, Worker, UserRole, IssueCategory } from './types';
 export const mockUsers = [
   {
     uid: 'head-user-01',
-    name: 'Head User',
+    name: 'GMC Head',
     email: 'head@test.com',
     password: 'password',
     role: 'Head' as UserRole,
@@ -20,6 +20,14 @@ export const mockUsers = [
     password: 'password',
     role: 'Admin' as UserRole,
     avatarUrl: 'https://picsum.photos/seed/admin/100/100',
+  },
+   {
+    uid: 'worker-user-01',
+    name: 'Alice Johnson',
+    email: 'worker@test.com',
+    password: 'password',
+    role: 'Worker' as UserRole,
+    avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
   },
   {
     uid: 'citizen-user-01',
@@ -37,7 +45,7 @@ export const mockWorkers: Omit<Worker, 'id'>[] = [
     name: 'Alice Johnson',
     area: 'Downtown',
     avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
-    id: 'worker-1',
+    id: 'worker-user-01', // Match worker user uid
   },
   {
     name: 'Bob Williams',
@@ -70,7 +78,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
     imageHint: 'pothole road',
     submittedBy: { name: 'Jane Doe', uid: 'citizen-user-01', email: 'citizen@test.com' },
     submittedAt: '2024-07-15T10:00:00Z',
-    assignedTo: 'worker-1',
+    assignedTo: 'worker-user-01',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-15T10:00:00Z', description: 'Issue reported by citizen.' },
       { status: 'In Progress', updatedAt: '2024-07-16T14:30:00Z', description: 'Work crew assigned. ETA: 2 days.' },
@@ -103,7 +111,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
     imageHint: 'street light',
     submittedBy: { name: 'Emily White', uid: 'citizen-user-01', email: 'citizen@test.com' },
     submittedAt: '2024-07-20T21:30:00Z',
-    assignedTo: 'worker-1',
+    assignedTo: 'worker-user-01',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-20T21:30:00Z', description: 'Issue reported by citizen. Awaiting assignment.' }
     ]
