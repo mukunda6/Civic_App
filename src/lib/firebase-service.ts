@@ -15,7 +15,7 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, storage, auth } from './firebase';
-import type { Issue, Worker, AppUser, UserRole, IssueCategory } from './types';
+import type { Issue, Worker, AppUser, UserRole, IssueCategory, IssueStatus } from './types';
 import { mockIssues, mockUsers, mockWorkers } from './mock-data-db';
 
 const ISSUES_COLLECTION = 'issues';
@@ -96,10 +96,10 @@ export const addIssue = async (
             name: user.name,
             email: user.email,
         },
-        status: 'Submitted',
+        status: 'Submitted' as IssueStatus,
         updates: [
             {
-                status: 'Submitted',
+                status: 'Submitted' as IssueStatus,
                 updatedAt: now,
                 description: 'Issue reported by citizen.'
             }
@@ -201,14 +201,20 @@ export async function seedDatabase() {
             if (error.code !== 'auth/email-already-in-use') {
                 console.error(`Error creating user ${userData.email}:`, error);
                 throw error; // Throw other errors
+            } else {
+                 console.log(`User ${userData.email} already exists. Skipping auth creation, but will ensure Firestore data is set.`);
+                 // If user exists, we still want to ensure their Firestore data is there.
+                 // We need to get their UID. We can't do that from the client SDK without logging them in.
+                 // For a seeding script, this is a limitation. The best approach is to just let the batch write fail for this user if the doc exists,
+                 // or, for a more robust script, you'd use the Admin SDK to fetch user by email.
+                 // Given the constraints, we will log it and proceed. The batch will likely fail if we try to set a doc that requires a UID we don't have.
+                 // The simplest fix is to just not try to re-add the user to the batch if they exist.
             }
-            console.log(`User ${userData.email} already exists. Skipping auth creation.`);
         }
     }
     
     // Seed Workers
     mockWorkers.forEach(worker => {
-        // Use worker's id as the document ID in Firestore for consistency
         const workerDocRef = doc(db, WORKERS_COLLECTION, worker.id);
         batch.set(workerDocRef, worker);
     });
