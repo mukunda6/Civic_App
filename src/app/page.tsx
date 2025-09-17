@@ -52,7 +52,7 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'citizen@test.com',
+      email: '',
       password: 'password',
     },
   })
@@ -80,6 +80,11 @@ export default function LoginPage() {
             <div className="text-lg">Loading...</div>
         </div>
     )
+  }
+
+  const setCredentials = (email: string) => {
+    form.setValue('email', email);
+    form.setValue('password', 'password');
   }
 
   return (
@@ -138,12 +143,12 @@ export default function LoginPage() {
                 <Info className="h-4 w-4" />
                 <AlertTitle>Demo Credentials</AlertTitle>
                 <AlertDescription>
-                  <ul className="list-disc pl-5 text-sm">
-                    <li>head@test.com</li>
-                    <li>admin@test.com</li>
-                    <li>citizen@test.com</li>
-                  </ul>
-                  (Password can be anything)
+                  <p>Click a role to pre-fill credentials. The password can be anything.</p>
+                  <div className="flex gap-2 mt-2">
+                    <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('head@test.com')}>Head</Button>
+                    <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('admin@test.com')}>Admin</Button>
+                    <Button type="button" size="sm" variant="outline" onClick={() => setCredentials('citizen@test.com')}>Citizen</Button>
+                  </div>
                 </AlertDescription>
               </Alert>
               <div className="pt-2">
