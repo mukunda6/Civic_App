@@ -56,13 +56,15 @@ export default function RootLayout({
                       </main>
                     </div>
                   </div>
-                  <Toaster />
                 </SidebarProvider>
               )}
             </div>
+            <Toaster />
           </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
   )
 }
+
+    
