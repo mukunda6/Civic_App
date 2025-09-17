@@ -65,7 +65,7 @@ export const getWorkers = async (): Promise<Worker[]> => {
 
 // Add a new issue
 export const addIssue = async (
-    data: Omit<Issue, 'id' | 'imageUrl' | 'submittedAt' | 'submittedBy' | 'status' | 'updates'>,
+    data: Omit<Issue, 'id' | 'imageUrl' | 'submittedAt' | 'submittedBy' | 'status' | 'updates'> & { photoDataUri: string },
     imageFile: File,
     user: AppUser
 ): Promise<Issue> => {
@@ -75,7 +75,7 @@ export const addIssue = async (
         id: `new-mock-issue-${Date.now()}`,
         ...data,
         title: `${data.category} issue reported on ${new Date().toLocaleDateString()}`,
-        imageUrl: 'https://picsum.photos/seed/newmock/600/400',
+        imageUrl: data.photoDataUri, // Use the actual photo data URI
         imageHint: 'new issue',
         submittedAt: now,
         submittedBy: {

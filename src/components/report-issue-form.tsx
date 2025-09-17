@@ -367,5 +367,3 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
     </>
   );
 }
-
-    
