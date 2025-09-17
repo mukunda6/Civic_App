@@ -34,7 +34,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased h-full">
+      <body className="font-body antialiased h-full flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -42,22 +42,24 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {isLoginPage ? (
-              <main className="flex-1">{children}</main>
-            ) : (
-              <SidebarProvider>
-                <div className="flex min-h-screen">
-                  <AppSidebar />
-                  <div className="flex flex-col flex-1">
-                    <AppHeader />
-                    <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
-                      {children}
-                    </main>
+            <div className="flex flex-col flex-1 h-full">
+              {isLoginPage ? (
+                <main className="flex-1">{children}</main>
+              ) : (
+                <SidebarProvider>
+                  <div className="flex flex-1 min-h-0">
+                    <AppSidebar />
+                    <div className="flex flex-col flex-1">
+                      <AppHeader />
+                      <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background overflow-y-auto">
+                        {children}
+                      </main>
+                    </div>
                   </div>
-                </div>
-                <Toaster />
-              </SidebarProvider>
-            )}
+                  <Toaster />
+                </SidebarProvider>
+              )}
+            </div>
           </AuthProvider>
         </ThemeProvider>
       </body>
