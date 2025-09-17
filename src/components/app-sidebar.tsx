@@ -17,10 +17,10 @@ import {
   FilePlus2,
   Settings,
   CircleHelp,
+  Trophy,
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -56,6 +56,18 @@ export function AppSidebar() {
               <Link href="/report">
                 <FilePlus2 />
                 <span>Report an Issue</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === '/leaderboard'}
+              tooltip="Leaderboard"
+            >
+              <Link href="/leaderboard">
+                <Trophy />
+                <span>Leaderboard</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

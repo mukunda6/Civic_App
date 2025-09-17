@@ -16,6 +16,7 @@ export interface Issue {
   imageHint: string;
   submittedBy: string;
   submittedAt: string;
+  assignedTo?: string;
   updates: {
     status: IssueStatus;
     updatedAt: string;
@@ -23,4 +24,11 @@ export interface Issue {
     imageUrl?: string;
     imageHint?: string;
   }[];
+}
+
+export interface Worker {
+  id: string;
+  name: string;
+  area: string;
+  avatarUrl: string;
 }

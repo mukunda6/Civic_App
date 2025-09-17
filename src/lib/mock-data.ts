@@ -1,4 +1,31 @@
-import type { Issue } from './types';
+import type { Issue, Worker } from './types';
+
+export const mockWorkers: Worker[] = [
+  {
+    id: 'worker-1',
+    name: 'Alice Johnson',
+    area: 'Downtown',
+    avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
+  },
+  {
+    id: 'worker-2',
+    name: 'Bob Williams',
+    area: 'Northside',
+    avatarUrl: 'https://picsum.photos/seed/worker2/100/100',
+  },
+  {
+    id: 'worker-3',
+    name: 'Charlie Brown',
+    area: 'Southside',
+    avatarUrl: 'https://picsum.photos/seed/worker3/100/100',
+  },
+    {
+    id: 'worker-4',
+    name: 'Diana Prince',
+    area: 'West End',
+    avatarUrl: 'https://picsum.photos/seed/worker4/100/100',
+  },
+];
 
 export const mockIssues: Issue[] = [
   {
@@ -12,6 +39,7 @@ export const mockIssues: Issue[] = [
     imageHint: 'pothole road',
     submittedBy: 'Jane Doe',
     submittedAt: '2024-07-15T10:00:00Z',
+    assignedTo: 'worker-1',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-15T10:00:00Z', description: 'Issue reported by citizen.' },
       { status: 'In Progress', updatedAt: '2024-07-16T14:30:00Z', description: 'Work crew assigned. ETA: 2 days.' },
@@ -29,6 +57,7 @@ export const mockIssues: Issue[] = [
     imageHint: 'graffiti wall',
     submittedBy: 'John Smith',
     submittedAt: '2024-07-18T09:15:00Z',
+    assignedTo: 'worker-2',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-18T09:15:00Z', description: 'Issue reported by citizen.' },
       { status: 'In Progress', updatedAt: '2024-07-18T11:00:00Z', description: 'Cleaning crew has been dispatched.' }
@@ -45,6 +74,7 @@ export const mockIssues: Issue[] = [
     imageHint: 'street light',
     submittedBy: 'Emily White',
     submittedAt: '2024-07-20T21:30:00Z',
+    assignedTo: 'worker-1',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-20T21:30:00Z', description: 'Issue reported by citizen. Awaiting assignment.' }
     ]
@@ -60,6 +90,7 @@ export const mockIssues: Issue[] = [
     imageHint: 'trash can',
     submittedBy: 'Michael Brown',
     submittedAt: '2024-07-21T12:00:00Z',
+     assignedTo: 'worker-3',
     updates: [
       { status: 'Submitted', updatedAt: '2024-07-21T12:00:00Z', description: 'Issue reported by citizen.' }
     ]
@@ -75,9 +106,45 @@ export const mockIssues: Issue[] = [
     imageHint: 'pothole street',
     submittedBy: 'Sarah Green',
     submittedAt: '2024-07-19T15:45:00Z',
+    assignedTo: 'worker-1',
     updates: [
         { status: 'Submitted', updatedAt: '2024-07-19T15:45:00Z', description: 'Issue reported by citizen.' },
         { status: 'In Progress', updatedAt: '2024-07-21T09:00:00Z', description: 'Maintenance team scheduled to inspect the area.' }
+    ]
+  },
+  {
+    id: '6',
+    title: 'Fallen tree branch',
+    description: 'A large tree branch has fallen and is blocking the bike path in the park.',
+    category: 'Trash',
+    status: 'Resolved',
+    location: { lat: 40.7829, lng: -73.9654 },
+    imageUrl: 'https://picsum.photos/seed/tree1/600/400',
+    imageHint: 'fallen tree',
+    submittedBy: 'David Lee',
+    submittedAt: '2024-07-22T08:00:00Z',
+    assignedTo: 'worker-2',
+    updates: [
+        { status: 'Submitted', updatedAt: '2024-07-22T08:00:00Z', description: 'Issue reported by citizen.' },
+        { status: 'In Progress', updatedAt: '2024-07-22T09:30:00Z', description: 'Park services notified.' },
+        { status: 'Resolved', updatedAt: '2024-07-22T13:00:00Z', description: 'Branch has been removed.' }
+    ]
+  },
+  {
+    id: '7',
+    title: 'Damaged bus stop shelter',
+    description: 'The glass panel on the bus stop shelter is shattered.',
+    category: 'Graffiti',
+    status: 'Resolved',
+    location: { lat: 40.7580, lng: -73.9855 },
+    imageUrl: 'https://picsum.photos/seed/shelter1/600/400',
+    imageHint: 'bus stop',
+    submittedBy: 'Jessica Miller',
+    submittedAt: '2024-07-21T18:00:00Z',
+    assignedTo: 'worker-3',
+    updates: [
+        { status: 'Submitted', updatedAt: '2024-07-21T18:00:00Z', description: 'Issue reported by citizen.' },
+        { status: 'Resolved', updatedAt: '2024-07-23T11:00:00Z', description: 'Glass panel has been replaced.' }
     ]
   }
 ];
