@@ -10,7 +10,6 @@ import { AppHeader } from '@/components/app-header'
 import { ThemeProvider } from 'next-themes'
 import { usePathname } from 'next/navigation'
 import { AuthProvider } from '@/hooks/use-auth'
-import { useState, useEffect } from 'react';
 
 const metadata: Metadata = {
   title: 'CivicSolve',
