@@ -13,6 +13,20 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import type { IssueCategory } from '@/lib/types';
+
+const standardCategories: IssueCategory[] = [
+    'Garbage & Waste Management Problems',
+    'Water Supply Quality',
+    'Drainage Issues',
+    'Roads, Footpaths & Infrastructure Damage',
+    'Streetlights & Electricity Failures',
+    'Parks, Trees & Environmental Concerns',
+    'Illegal Constructions & Encroachments',
+    'Stray Animals & Public Health Hazards',
+    'Sanitation & Toiletry Issues',
+    'Mosquito Control & Fogging',
+];
 
 export default function ReportPage() {
     const { user, loading } = useAuth();
@@ -44,7 +58,10 @@ export default function ReportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ReportIssueForm user={user} />
+          <ReportIssueForm 
+            user={user} 
+            allowedCategories={standardCategories}
+          />
         </CardContent>
       </Card>
     </div>
