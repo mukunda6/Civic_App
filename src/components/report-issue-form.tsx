@@ -85,7 +85,6 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [imageClarity, setImageClarity] = useState<{
     status: 'idle' | 'checking' | 'clear' | 'unclear';
@@ -105,7 +104,6 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
   });
 
   const processImage = (file: File) => {
-    setImageFile(file);
     setImageClarity({ status: 'checking' });
     setImagePreview(URL.createObjectURL(file));
 
@@ -211,14 +209,9 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
     setIsSubmitting(true);
 
     const data = form.getValues();
-    if (!imageFile) {
-        toast({ variant: 'destructive', title: 'Error', description: 'No image file selected.' });
-        setIsSubmitting(false);
-        return;
-    }
 
     try {
-        const newIssue = await addIssue(data, imageFile, user);
+        const newIssue = await addIssue(data, user);
         toast({
         title: 'Report Submitted!',
         description: 'Thank you for helping improve your community.',

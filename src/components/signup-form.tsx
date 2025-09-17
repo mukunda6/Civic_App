@@ -16,9 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import type { UserRole } from '@/lib/types';
 import { Loader2, UserPlus } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
 
 const baseSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -39,15 +37,8 @@ const formSchemas = {
   Head: headSchema,
 };
 
-type CitizenFormData = z.infer<typeof citizenSchema>;
-type AdminFormData = z.infer<typeof adminSchema>;
-type HeadFormData = z.infer<typeof headSchema>;
-
-
 export function SignupForm({ role }: { role: Exclude<UserRole, 'Worker'> }) {
-  const { signUp, loading } = useAuth();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchemas[role]),
@@ -60,28 +51,14 @@ export function SignupForm({ role }: { role: Exclude<UserRole, 'Worker'> }) {
     },
   });
 
-  const onSubmit = async (data: CitizenFormData | AdminFormData | HeadFormData) => {
-    setIsSubmitting(true);
-    try {
-      await signUp(data.email, data.password, data.fullName, role);
-      toast({
-        title: 'Account Created',
-        description: "Welcome! You've been logged in successfully.",
-      });
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Sign Up Failed',
-        description: error.code === 'auth/email-already-in-use' 
-          ? 'This email is already registered. Please log in.' 
-          : error.message || 'An unexpected error occurred.',
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = async () => {
+    toast({
+        title: 'Demonstration',
+        description: "This form is for demonstration purposes only. Please use the pre-configured accounts on the login page.",
+    });
   };
   
-  const isLoading = loading || isSubmitting;
+  const isLoading = true; // Always disabled in demo
 
   const CommonFields = () => (
     <>

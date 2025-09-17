@@ -79,14 +79,12 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(values.email, values.password);
-      // The auth provider will handle the redirect on successful login
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.code === 'auth/invalid-credential' 
-            ? 'Invalid email or password. Have you seeded the database?' 
-            : error.message || 'An unexpected error occurred.',
+        description: error.message || 'An unexpected error occurred.',
       })
     } finally {
         setIsSubmitting(false);
@@ -180,9 +178,9 @@ export default function LoginPage() {
         <CardContent>
             <Alert className="mb-4">
                 <Info className="h-4 w-4" />
-                <AlertTitle>First Time Setup</AlertTitle>
+                <AlertTitle>Demo Application</AlertTitle>
                 <AlertDescription>
-                   New here? Go to the <Link href="/seed" className="underline font-semibold">Database Setup</Link> page to create the initial user accounts before logging in. The password for all demo accounts is `password`.
+                   This is a demonstration application. Use the pre-configured accounts to log in. The password for all accounts is `password`.
                 </AlertDescription>
             </Alert>
           <Tabs defaultValue="Citizen" className="w-full" onValueChange={(value) => handleTabChange(value as Role)}>

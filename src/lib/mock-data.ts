@@ -1,5 +1,33 @@
 
-import type { Issue, Worker } from './types';
+import type { Issue, Worker, AppUser } from './types';
+
+export const mockUsers: (AppUser & { password?: string })[] = [
+  {
+    uid: 'head-user-01',
+    name: 'GMC Head',
+    email: 'head@test.com',
+    password: 'password',
+    role: 'Head',
+    avatarUrl: 'https://picsum.photos/seed/head/100/100',
+  },
+  {
+    uid: 'admin-user-01',
+    name: 'Admin Manager',
+    email: 'admin@test.com',
+    password: 'password',
+    role: 'Admin',
+    avatarUrl: 'https://picsum.photos/seed/admin/100/100',
+  },
+  {
+    uid: 'citizen-user-01',
+    name: 'John Citizen',
+    email: 'citizen@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/citizen/100/100',
+  },
+];
+
 
 export const mockWorkers: Worker[] = [
   {
