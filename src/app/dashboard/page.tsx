@@ -6,7 +6,6 @@ import type { UserRole } from '@/lib/types'
 import { CitizenDashboard } from '@/components/citizen-dashboard'
 import { AdminDashboard } from '@/components/admin-dashboard'
 import { HeadDashboard } from '@/components/head-dashboard'
-import { WorkerDashboard } from '@/components/worker-dashboard'
 import { Suspense } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
@@ -42,8 +41,6 @@ function DashboardContent() {
         return <AdminDashboard />
       case 'Head':
         return <HeadDashboard />
-      case 'Worker':
-        return <WorkerDashboard />
       default:
         // Fallback to citizen dashboard if role is unknown
         return <CitizenDashboard />
@@ -58,8 +55,6 @@ function DashboardContent() {
         return 'Assign issues and manage field workers.'
       case 'Head':
         return 'Top-level overview of the entire system.'
-      case 'Worker':
-        return 'View and manage your assigned tasks.'
       default:
         return 'Track your reports and see community issues.'
     }
@@ -73,8 +68,6 @@ function DashboardContent() {
         return 'Admin Dashboard';
       case 'Head':
         return 'Head Dashboard';
-      case 'Worker':
-        return 'Worker Dashboard';
       default:
         return 'Dashboard';
     }

@@ -10,10 +10,12 @@ import { IssueTimeline } from '@/components/issue-timeline';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function IssueDetailPage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const { user } = useAuth();
   const [issue, setIssue] = useState<Issue | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -58,7 +60,7 @@ export default function IssueDetailPage() {
         </Button>
         <IssueDetails issue={issue} />
       </div>
-      <IssueTimeline issue={issue} />
+      <IssueTimeline issue={issue} user={user} />
     </div>
   );
 }

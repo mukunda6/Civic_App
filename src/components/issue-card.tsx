@@ -56,6 +56,13 @@ function SafeHydrate({ children }: { children: React.ReactNode }) {
 }
 
 export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
+  const getButtonText = () => {
+    if (userRole === 'Admin' || userRole === 'Head') {
+        return 'View Details';
+    }
+    // Default for citizen
+    return 'View Details';
+  }
   return (
     <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 border-b pb-6 last:border-none">
       <div className="w-full sm:w-48 md:w-56 flex-shrink-0">
@@ -75,7 +82,7 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
             </Badge>
             <Button asChild variant="outline" size="sm" className="ml-auto gap-1.5">
                 <Link href={`/issues/${issue.id}`}>
-                    {userRole === 'Worker' ? 'Update Task' : 'View Details'}
+                    {getButtonText()}
                 </Link>
             </Button>
         </div>

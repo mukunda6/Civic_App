@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Issue, IssueStatus } from '@/lib/types';
+import type { Issue, IssueStatus, AppUser } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   CheckCircle,
@@ -23,7 +23,6 @@ import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { addIssueUpdate } from '@/lib/firebase-service';
-import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
 
 
@@ -33,9 +32,8 @@ const statusIcons: Record<Issue['status'], React.ReactNode> = {
   Resolved: <CheckCircle className="h-5 w-5 text-green-500" />,
 };
 
-export function IssueTimeline({ issue }: { issue: Issue }) {
+export function IssueTimeline({ issue, user }: { issue: Issue, user: AppUser | null }) {
     const [isUpdating, setIsUpdating] = useState(false);
-    const { user } = useAuth();
 
     const handleUpdateAdded = (newIssue: Issue) => {
         // This is a bit of a hack to refresh the page. A better solution
@@ -43,8 +41,8 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
         window.location.reload();
     }
     
-    // A worker can only update an issue assigned to them
-    const canUpdate = user?.role === 'Worker' && user.uid === issue.assignedTo;
+    // An admin can update any issue to add remarks, change status, etc.
+    const canUpdate = user?.role === 'Admin';
 
   return (
     <Card>
@@ -86,7 +84,7 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
           ))}
         </div>
         {!isUpdating && issue.status !== 'Resolved' && canUpdate && (
-            <Button onClick={() => setIsUpdating(true)}>Update Status</Button>
+            <Button onClick={() => setIsUpdating(true)}>Update Status / Add Remark</Button>
         )}
         {isUpdating && <UpdateForm issueId={issue.id} onCancel={() => setIsUpdating(false)} onUpdateAdded={handleUpdateAdded} />}
       </CardContent>
