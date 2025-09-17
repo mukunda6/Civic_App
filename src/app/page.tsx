@@ -58,7 +58,7 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await login(values.email, values.password)
-      router.push('/dashboard')
+      // No longer need to redirect here, the useEffect will handle it
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -70,7 +70,7 @@ export default function LoginPage() {
     }
   }
 
-  if (authLoading || user) {
+  if (authLoading) {
      return (
         <div className="flex justify-center items-center h-screen">
             <div className="text-lg">Loading...</div>
