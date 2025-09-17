@@ -39,7 +39,9 @@ const prompt = ai.definePrompt({
 
 You will use this information to determine if the image is clear enough for assessing a civic issue. You will make a determination as to whether the image is clear or not, and set the isClear output field appropriately.
 
-If the image is not clear, provide a reason in the reason field.
+An image is considered unclear if it is blurry, too dark, too bright, or if the main subject is obstructed or too far away.
+
+If the image is not clear, provide a brief, user-friendly reason in the reason field (e.g., "Image is too blurry", "It's too dark to see details").
 
 Image: {{media url=photoDataUri}}`,
 });
@@ -55,3 +57,5 @@ const checkImageClarityFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

@@ -191,7 +191,6 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
         title: 'Submission Failed',
         description: 'An unexpected error occurred. Please try again.',
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -354,11 +353,11 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
             <AlertDialogTitle>Possible Duplicate Detected</AlertDialogTitle>
             <AlertDialogDescription>
               Our AI has detected that your report might be a duplicate of an
-              existing issue. Please review before submitting. You can view the original report <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} className="underline">here</a>.
+              existing issue. Please review before submitting. You can view the original report <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer" className="underline">here</a>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsSubmitting(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => { setDuplicateInfo(null); setIsSubmitting(false); }}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={finishSubmission}>
               Submit Anyway
             </AlertDialogAction>
@@ -368,3 +367,5 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
     </>
   );
 }
+
+    
