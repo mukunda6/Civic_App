@@ -1,6 +1,6 @@
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
 export type IssueCategory = 'Pothole' | 'Graffiti' | 'Broken Streetlight' | 'Trash';
-export type UserRole = 'Citizen' | 'Worker';
+export type UserRole = 'Citizen' | 'Worker' | 'Admin';
 
 export interface Issue {
   id: string;
