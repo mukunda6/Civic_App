@@ -7,7 +7,6 @@ import type { Issue, UserRole } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Car,
   Lightbulb,
   Trash2,
   MapPin,

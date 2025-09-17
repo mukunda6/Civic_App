@@ -40,7 +40,7 @@ export function AdminDashboard() {
     return <div>Loading your assigned tasks...</div>;
   }
 
-  const highPriorityIssues = assignedIssues.filter(i => i.category === 'Potholes' || i.category === 'Streetlights');
+  const highPriorityIssues = assignedIssues.filter(i => i.category === 'Roads, Footpaths & Infrastructure Damage' || i.category === 'Streetlights & Electricity Failures');
 
   return (
     <div className="grid gap-8">
