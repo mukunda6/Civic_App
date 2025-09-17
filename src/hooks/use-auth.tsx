@@ -23,32 +23,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const auth = getAuth(firebaseApp);
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseAuthUser | null) => {
-      if (firebaseUser) {
-        const userDocRef = doc(db, 'users', firebaseUser.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setUser({ uid: firebaseUser.uid, ...userDoc.data() } as AppUser);
-        } else {
-            // This case would be for a user that exists in Auth but not Firestore
-            setUser(null);
-        }
+  const handleUser = async (firebaseUser: FirebaseAuthUser | null) => {
+    if (firebaseUser) {
+      const userDocRef = doc(db, 'users', firebaseUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const appUser = { uid: firebaseUser.uid, ...userDoc.data() } as AppUser;
+        setUser(appUser);
       } else {
         setUser(null);
       }
-      setLoading(false);
-    });
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  }
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, handleUser);
     return () => unsubscribe();
   }, [auth]);
 
   const login = async (email: string, pass: string) => {
-    await signInWithEmailAndPassword(auth, email, pass);
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    // After successful sign-in, manually trigger user handling to ensure
+    // the user state is set before the promise resolves.
+    await handleUser(userCredential.user);
   };
 
   const logout = async () => {
     await signOut(auth);
+    setUser(null);
     router.push('/');
   };
 

@@ -40,10 +40,11 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   useEffect(() => {
-    if (user) {
+    // This effect will still handle redirecting an already-logged-in user
+    if (!authLoading && user) {
       router.push('/dashboard');
     }
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,20 +58,23 @@ export default function LoginPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      await login(values.email, values.password)
-      // No longer need to redirect here, the useEffect will handle it
+      await login(values.email, values.password);
+      // Explicitly redirect after login is successful and user state is set
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
         description: error.message || 'An unexpected error occurred.',
       })
-    } finally {
-        setIsSubmitting(false);
+      setIsSubmitting(false);
     }
+    // No need for finally block, as we only want to stop submitting on error.
+    // On success, the page will navigate away.
   }
 
-  if (authLoading) {
+  // Show a loading screen if the user is already logged in and we are redirecting
+  if (authLoading || user) {
      return (
         <div className="flex justify-center items-center h-screen">
             <div className="text-lg">Loading...</div>
