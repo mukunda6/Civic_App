@@ -64,12 +64,12 @@ Analyze the new issue and compare it to the existing issues. Your goal is to det
 
 **Output:**
 Return a JSON object with your assessment.
-- `isDuplicate`: A boolean. Set to \`true\` if you are confident it is a duplicate, otherwise \`false\'.
-- `confidence`: A number between 0 and 1 representing your confidence. High confidence (e.g., > 0.8) means it's very likely a duplicate. Low confidence means it is likely not a duplicate.
-- `duplicateIssueId`: If \`isDuplicate\` is true, provide the \`id\` of the existing issue that it matches.
+- isDuplicate: A boolean. Set to true if you are confident it is a duplicate, otherwise false.
+- confidence: A number between 0 and 1 representing your confidence. High confidence (e.g., > 0.8) means it's very likely a duplicate. Low confidence means it is likely not a duplicate.
+- duplicateIssueId: If isDuplicate is true, provide the id of the existing issue that it matches.
 
 **IMPORTANT RULES:**
-- If \`existingIssueData\` is an empty array or not provided, you MUST return \`{ "isDuplicate": false, "confidence": 0 }\`.
+- If existingIssueData is an empty array or not provided, you MUST return { "isDuplicate": false, "confidence": 0 }.
 - Base your decision on a holistic view of the image, description, and location. For example, two "pothole" reports at the same coordinates are very likely duplicates. A "pothole" and "broken streetlight" at the same coordinates are not.
 `,
 });
