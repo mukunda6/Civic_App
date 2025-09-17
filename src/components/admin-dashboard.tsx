@@ -24,31 +24,72 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { mockIssues, mockWorkers } from '@/lib/mock-data'
-import type { Issue } from '@/lib/types'
+import { getIssues, getWorkers, updateIssueAssignment } from '@/lib/firebase-service'
+import type { Issue, Worker } from '@/lib/types'
 import { formatDistanceToNow } from 'date-fns'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useToast } from '@/hooks/use-toast'
 
 export function AdminDashboard() {
-  const [issues, setIssues] = useState<Issue[]>(mockIssues);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [workers, setWorkers] = useState<Worker[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [fetchedIssues, fetchedWorkers] = await Promise.all([getIssues(), getWorkers()]);
+        setIssues(fetchedIssues);
+        setWorkers(fetchedWorkers);
+      } catch (error) {
+        console.error("Error fetching admin data:", error);
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not fetch dashboard data.'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [toast]);
 
   const openIssues = issues.filter(issue => issue.status !== 'Resolved');
   const resolvedIssuesCount = issues.length - openIssues.length;
 
-  const handleAssignWorker = (issueId: string, workerId: string) => {
-    setIssues(prevIssues =>
-      prevIssues.map(issue =>
-        issue.id === issueId
-          ? { ...issue, assignedTo: workerId, status: 'In Progress' }
-          : issue
-      )
-    );
+  const handleAssignWorker = async (issueId: string, workerId: string) => {
+    try {
+      await updateIssueAssignment(issueId, workerId);
+      setIssues(prevIssues =>
+        prevIssues.map(issue =>
+          issue.id === issueId
+            ? { ...issue, assignedTo: workerId, status: 'In Progress' }
+            : issue
+        )
+      );
+      toast({
+        title: 'Worker Assigned',
+        description: 'The issue has been updated.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Assignment Failed',
+        description: 'Could not assign worker. Please try again.',
+      });
+    }
   };
 
   const getWorkerName = (workerId?: string) => {
     if (!workerId) return 'Unassigned';
-    return mockWorkers.find(w => w.id === workerId)?.name || 'Unknown';
+    return workers.find(w => w.id === workerId)?.name || 'Unknown';
   };
+
+  if (loading) {
+    return <div>Loading admin dashboard...</div>
+  }
 
   return (
     <div className="grid gap-8">
@@ -117,6 +158,7 @@ export function AdminDashboard() {
                       onValueChange={workerId =>
                         handleAssignWorker(issue.id, workerId)
                       }
+                      disabled={!workers.length}
                     >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Assign worker...">
@@ -124,7 +166,7 @@ export function AdminDashboard() {
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        {mockWorkers.map(worker => (
+                        {workers.map(worker => (
                           <SelectItem key={worker.id} value={worker.id}>
                             {worker.name}
                           </SelectItem>

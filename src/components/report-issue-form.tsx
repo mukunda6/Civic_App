@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { mockIssues } from '@/lib/mock-data';
+import { addIssue, getIssues } from '@/lib/firebase-service';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +45,8 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import Image from 'next/image';
+import type { AppUser } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   description: z.string().min(10, 'Please provide a more detailed description.'),
@@ -57,10 +60,12 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export function ReportIssueForm() {
+export function ReportIssueForm({ user }: { user: AppUser }) {
+  const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageClarity, setImageClarity] = useState<{
     status: 'idle' | 'checking' | 'clear' | 'unclear';
     reason?: string;
@@ -83,7 +88,8 @@ export function ReportIssueForm() {
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
+    
+    setImageFile(file);
     setImageClarity({ status: 'checking' });
     setImagePreview(URL.createObjectURL(file));
 
@@ -145,8 +151,9 @@ export function ReportIssueForm() {
     
     setIsSubmitting(true);
     try {
+      const existingIssues = await getIssues();
       const existingIssueData = JSON.stringify(
-        mockIssues.map(i => ({ id: i.id, description: i.description }))
+        existingIssues.map(i => ({ id: i.id, description: i.description }))
       );
 
       const duplicateResult = await detectDuplicateIssue({
@@ -158,8 +165,7 @@ export function ReportIssueForm() {
       if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.5) {
         setDuplicateInfo(duplicateResult);
       } else {
-        // This is a new issue
-        finishSubmission();
+        await finishSubmission();
       }
     } catch (error) {
       console.error('Submission failed:', error);
@@ -173,16 +179,28 @@ export function ReportIssueForm() {
     }
   };
   
-  const finishSubmission = () => {
-    console.log('Submitting new issue:', form.getValues());
-    toast({
-      title: 'Report Submitted!',
-      description: 'Thank you for helping improve your community.',
-    });
-    form.reset();
-    setImagePreview(null);
-    setImageClarity({status: 'idle'});
-    setDuplicateInfo(null);
+  const finishSubmission = async () => {
+    const data = form.getValues();
+    if (!imageFile) {
+        toast({ variant: 'destructive', title: 'Error', description: 'No image file selected.' });
+        return;
+    }
+
+    try {
+        const newIssue = await addIssue(data, imageFile, user);
+        toast({
+        title: 'Report Submitted!',
+        description: 'Thank you for helping improve your community.',
+        });
+        form.reset();
+        setImagePreview(null);
+        setImageClarity({status: 'idle'});
+        setDuplicateInfo(null);
+        router.push(`/issues/${newIssue.id}`);
+    } catch (error) {
+        console.error('Error adding issue:', error);
+        toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});
+    }
   };
 
   return (

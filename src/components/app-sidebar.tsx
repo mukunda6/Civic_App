@@ -22,9 +22,11 @@ import {
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useAuth } from '@/hooks/use-auth';
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground dark:bg-card dark:text-foreground">
@@ -60,18 +62,20 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === '/leaderboard'}
-              tooltip="Leaderboard"
-            >
-              <Link href="/leaderboard">
-                <Trophy />
-                <span>Leaderboard</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {user?.role !== 'Citizen' && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/leaderboard'}
+                tooltip="Leaderboard"
+              >
+                <Link href="/leaderboard">
+                  <Trophy />
+                  <span>Leaderboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
 
         <SidebarMenu>
@@ -103,16 +107,18 @@ export function AppSidebar() {
       </SidebarContent>
       <Separator className="my-0 bg-border/50" />
       <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src="https://picsum.photos/seed/avatar/40/40" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium text-sm">Demo User</span>
-            <span className="text-xs text-muted-foreground">user@example.com</span>
+        {user && (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user.avatarUrl} />
+              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium text-sm">{user.name}</span>
+              <span className="text-xs text-muted-foreground">{user.email}</span>
+            </div>
           </div>
-        </div>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

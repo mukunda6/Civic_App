@@ -1,5 +1,9 @@
 
-import { mockIssues } from '@/lib/mock-data';
+'use client'
+
+import { useEffect, useState } from 'react';
+import { getIssueById } from '@/lib/firebase-service';
+import type { Issue } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import { IssueDetails } from '@/components/issue-details';
 import { IssueTimeline } from '@/components/issue-timeline';
@@ -8,10 +12,35 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 export default function IssueDetailPage({ params }: { params: { id: string } }) {
-  const issue = mockIssues.find(i => i.id === params.id);
+  const [issue, setIssue] = useState<Issue | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchIssue = async () => {
+      try {
+        const fetchedIssue = await getIssueById(params.id);
+        if (fetchedIssue) {
+          setIssue(fetchedIssue);
+        } else {
+          notFound();
+        }
+      } catch (error) {
+        console.error("Error fetching issue:", error);
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchIssue();
+  }, [params.id]);
+
+  if (loading) {
+    return <div>Loading issue details...</div>;
+  }
 
   if (!issue) {
-    notFound();
+    return notFound();
   }
 
   return (

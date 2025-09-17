@@ -1,3 +1,6 @@
+
+'use client';
+
 import Link from 'next/link';
 import {
   Card,
@@ -7,17 +10,37 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { mockIssues } from '@/lib/mock-data';
+import { getIssuesByUser } from '@/lib/firebase-service';
+import type { Issue } from '@/lib/types';
 import { IssueCard } from './issue-card';
-import { ArrowUpRight } from 'lucide-react';
-import {
-  FilePlus2,
-  Clock,
-  CheckCircle,
-} from 'lucide-react';
+import { FilePlus2, Clock, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect, useState } from 'react';
 
 export function CitizenDashboard() {
-  const userIssues = mockIssues.slice(0, 3); // Simulate issues submitted by the current user
+  const { user } = useAuth();
+  const [userIssues, setUserIssues] = useState<Issue[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      const fetchIssues = async () => {
+        try {
+          const issues = await getIssuesByUser(user.uid);
+          setUserIssues(issues);
+        } catch (error) {
+          console.error("Error fetching user issues:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchIssues();
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div>Loading your issues...</div>;
+  }
 
   const submittedCount = userIssues.filter(i => i.status === 'Submitted').length;
   const inProgressCount = userIssues.filter(i => i.status === 'In Progress').length;

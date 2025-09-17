@@ -1,3 +1,6 @@
+
+'use client';
+
 import {
   Card,
   CardContent,
@@ -5,12 +8,38 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { mockIssues } from '@/lib/mock-data';
+import { getIssuesByWorker } from '@/lib/firebase-service';
+import type { Issue } from '@/lib/types';
 import { IssueCard } from './issue-card';
 import { Wrench, AlertTriangle, ListTodo } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useState, useEffect } from 'react';
 
 export function WorkerDashboard() {
-  const assignedIssues = mockIssues.filter(i => i.status !== 'Resolved');
+  const { user } = useAuth();
+  const [assignedIssues, setAssignedIssues] = useState<Issue[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user && user.role === 'Worker') {
+      const fetchIssues = async () => {
+        try {
+          const issues = await getIssuesByWorker(user.uid);
+          setAssignedIssues(issues.filter(i => i.status !== 'Resolved'));
+        } catch (error) {
+          console.error("Error fetching worker issues:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchIssues();
+    }
+  }, [user]);
+
+  if (loading) {
+    return <div>Loading your assigned tasks...</div>;
+  }
+
   const highPriorityIssues = assignedIssues.filter(i => i.category === 'Pothole' || i.category === 'Broken Streetlight');
 
   return (

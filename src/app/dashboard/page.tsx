@@ -7,13 +7,32 @@ import { CitizenDashboard } from '@/components/citizen-dashboard'
 import { WorkerDashboard } from '@/components/worker-dashboard'
 import { AdminDashboard } from '@/components/admin-dashboard'
 import { Suspense } from 'react'
+import { useAuth } from '@/hooks/use-auth'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
 
 function DashboardContent() {
-  const searchParams = useSearchParams()
-  const role = (searchParams.get('role') as UserRole) || 'Citizen'
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+
+
+  if (loading || !user) {
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="text-lg">Loading...</div>
+        </div>
+    )
+  }
 
   const renderDashboard = () => {
-    switch (role) {
+    switch (user.role) {
       case 'Citizen':
         return <CitizenDashboard />
       case 'Worker':
@@ -26,7 +45,7 @@ function DashboardContent() {
   }
 
   const getDashboardDescription = () => {
-    switch (role) {
+    switch (user.role) {
       case 'Citizen':
         return 'Track your reports and see community issues.'
       case 'Worker':
@@ -39,7 +58,7 @@ function DashboardContent() {
   }
   
   const getRoleTitle = () => {
-     switch (role) {
+     switch (user.role) {
       case 'Citizen':
         return 'Citizen Dashboard';
       case 'Worker':

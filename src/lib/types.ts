@@ -1,6 +1,15 @@
+
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
 export type IssueCategory = 'Pothole' | 'Graffiti' | 'Broken Streetlight' | 'Trash';
 export type UserRole = 'Citizen' | 'Worker' | 'Admin';
+
+export interface AppUser {
+    uid: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    avatarUrl: string;
+}
 
 export interface Issue {
   id: string;
@@ -14,7 +23,11 @@ export interface Issue {
   };
   imageUrl: string;
   imageHint: string;
-  submittedBy: string;
+  submittedBy: {
+    uid: string;
+    name: string;
+    email: string;
+  };
   submittedAt: string;
   assignedTo?: string;
   updates: {

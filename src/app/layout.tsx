@@ -9,6 +9,7 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { AppHeader } from '@/components/app-header'
 import { ThemeProvider } from 'next-themes'
 import { usePathname } from 'next/navigation'
+import { AuthProvider } from '@/hooks/use-auth'
 
 const metadata: Metadata = {
   title: 'CivicSolve',
@@ -40,22 +41,24 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {isLoginPage ? (
-             <main className="flex-1">{children}</main>
-          ) : (
-            <SidebarProvider>
-              <div className="flex min-h-screen">
-                <AppSidebar />
-                <div className="flex flex-col flex-1">
-                  <AppHeader />
-                  <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
-                    {children}
-                  </main>
+          <AuthProvider>
+            {isLoginPage ? (
+              <main className="flex-1">{children}</main>
+            ) : (
+              <SidebarProvider>
+                <div className="flex min-h-screen">
+                  <AppSidebar />
+                  <div className="flex flex-col flex-1">
+                    <AppHeader />
+                    <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-background">
+                      {children}
+                    </main>
+                  </div>
                 </div>
-              </div>
-              <Toaster />
-            </SidebarProvider>
-          )}
+                <Toaster />
+              </SidebarProvider>
+            )}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

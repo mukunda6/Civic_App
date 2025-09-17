@@ -16,6 +16,7 @@ import { Sun, Moon, LogOut } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from './ui/dropdown-menu';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
 
 export function AppHeader() {
   return (
@@ -31,23 +32,24 @@ export function AppHeader() {
 
 function UserMenu() {
   const { setTheme } = useTheme();
+  const { user, logout } = useAuth();
   
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src="https://picsum.photos/seed/avatar/40/40" alt="@shadcn" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarImage src={user?.avatarUrl} alt={user?.name || 'User'} />
+            <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Demo User</p>
+            <p className="text-sm font-medium leading-none">{user?.name || 'Demo User'}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              user@example.com
+              {user?.email || 'user@example.com'}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -73,11 +75,9 @@ function UserMenu() {
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-            <Link href="/">
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-            </Link>
+        <DropdownMenuItem onClick={logout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

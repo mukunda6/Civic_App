@@ -1,3 +1,6 @@
+
+'use client';
+
 import {
   Card,
   CardContent,
@@ -13,11 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { mockWorkers, mockIssues } from '@/lib/mock-data';
+import { getWorkers, getIssues } from '@/lib/firebase-service';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Trophy, Award, Star } from 'lucide-react';
 import type { Worker } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
 
 type WorkerStats = Worker & {
   resolved: number;
@@ -25,25 +29,45 @@ type WorkerStats = Worker & {
 };
 
 export default function LeaderboardPage() {
-  const workerStats: WorkerStats[] = mockWorkers.map(worker => {
-    const assignedIssues = mockIssues.filter(
-      issue => issue.assignedTo === worker.id
-    );
-    return {
-      ...worker,
-      resolved: assignedIssues.filter(issue => issue.status === 'Resolved')
-        .length,
-      open: assignedIssues.filter(issue => issue.status !== 'Resolved')
-        .length,
-    };
-  });
+  const [workerStats, setWorkerStats] = useState<WorkerStats[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  workerStats.sort((a, b) => {
-    if (b.resolved !== a.resolved) {
-      return b.resolved - a.resolved;
-    }
-    return a.open - b.open;
-  });
+  useEffect(() => {
+    const fetchLeaderboardData = async () => {
+      try {
+        const workers = await getWorkers();
+        const issues = await getIssues();
+        
+        const stats: WorkerStats[] = workers.map(worker => {
+          const assignedIssues = issues.filter(
+            issue => issue.assignedTo === worker.id
+          );
+          return {
+            ...worker,
+            resolved: assignedIssues.filter(issue => issue.status === 'Resolved')
+              .length,
+            open: assignedIssues.filter(issue => issue.status !== 'Resolved')
+              .length,
+          };
+        });
+
+        stats.sort((a, b) => {
+          if (b.resolved !== a.resolved) {
+            return b.resolved - a.resolved;
+          }
+          return a.open - b.open;
+        });
+        
+        setWorkerStats(stats);
+      } catch (error) {
+        console.error("Error fetching leaderboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchLeaderboardData();
+  }, []);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -61,6 +85,10 @@ export default function LeaderboardPage() {
         );
     }
   };
+
+  if (loading) {
+    return <div>Loading leaderboard...</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

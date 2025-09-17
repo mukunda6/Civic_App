@@ -1,13 +1,12 @@
+
 'use client';
 
-import type { Issue } from '@/lib/types';
+import type { Issue, IssueStatus } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   CheckCircle,
   Clock,
   FilePlus2,
-  MessageSquare,
-  Image as ImageIcon,
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import Image from 'next/image';
@@ -22,6 +21,11 @@ import {
 } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Input } from './ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { addIssueUpdate } from '@/lib/firebase-service';
+import { useAuth } from '@/hooks/use-auth';
+import { Loader2 } from 'lucide-react';
+
 
 const statusIcons: Record<Issue['status'], React.ReactNode> = {
   Submitted: <FilePlus2 className="h-5 w-5" />,
@@ -31,6 +35,14 @@ const statusIcons: Record<Issue['status'], React.ReactNode> = {
 
 export function IssueTimeline({ issue }: { issue: Issue }) {
     const [isUpdating, setIsUpdating] = useState(false);
+    const { user } = useAuth();
+
+    const handleUpdateAdded = (newIssue: Issue) => {
+        // This is a bit of a hack to refresh the page. A better solution
+        // would be to use a state management library.
+        window.location.reload();
+    }
+
   return (
     <Card>
       <CardHeader>
@@ -70,22 +82,58 @@ export function IssueTimeline({ issue }: { issue: Issue }) {
             </div>
           ))}
         </div>
-        {!isUpdating && issue.status !== 'Resolved' && (
+        {!isUpdating && issue.status !== 'Resolved' && user?.role !== 'Citizen' && (
             <Button onClick={() => setIsUpdating(true)}>Update Status</Button>
         )}
-        {isUpdating && <UpdateForm onCancel={() => setIsUpdating(false)} />}
+        {isUpdating && <UpdateForm issueId={issue.id} onCancel={() => setIsUpdating(false)} onUpdateAdded={handleUpdateAdded} />}
       </CardContent>
     </Card>
   );
 }
 
 
-function UpdateForm({ onCancel }: { onCancel: () => void }) {
+function UpdateForm({ issueId, onCancel, onUpdateAdded }: { issueId: string, onCancel: () => void, onUpdateAdded: (issue: Issue) => void }) {
+    const [status, setStatus] = useState<IssueStatus | ''>('');
+    const [description, setDescription] = useState('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { toast } = useToast();
+
+    const handleSubmit = async () => {
+        if (!status || !description) {
+            toast({
+                variant: 'destructive',
+                title: 'Missing Fields',
+                description: 'Please select a status and provide a description.',
+            });
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const updatedIssue = await addIssueUpdate(issueId, { status, description }, imageFile);
+            toast({
+                title: 'Update Submitted',
+                description: 'The issue progress has been updated.',
+            });
+            onUpdateAdded(updatedIssue);
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Update Failed',
+                description: 'Could not submit the update. Please try again.',
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="p-4 border-t space-y-4">
             <h4 className="font-semibold">Add New Update</h4>
             <div className="grid gap-4">
-                <Select>
+                <Select value={status} onValueChange={(value) => setStatus(value as IssueStatus)}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select new status" />
                     </SelectTrigger>
@@ -94,12 +142,23 @@ function UpdateForm({ onCancel }: { onCancel: () => void }) {
                         <SelectItem value="Resolved">Resolved</SelectItem>
                     </SelectContent>
                 </Select>
-                <Textarea placeholder="Add a description of the update..." />
-                <Input type="file" accept="image/*" />
+                <Textarea 
+                    placeholder="Add a description of the update..." 
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+                <Input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                />
             </div>
             <div className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={onCancel}>Cancel</Button>
-                <Button>Submit Update</Button>
+                <Button variant="ghost" onClick={onCancel} disabled={isSubmitting}>Cancel</Button>
+                <Button onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Submit Update
+                </Button>
             </div>
         </div>
     )
