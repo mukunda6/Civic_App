@@ -19,6 +19,7 @@ import {
   Settings,
   CircleHelp,
   Trophy,
+  Users,
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -73,16 +74,28 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+           <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/user-leaderboard'}
+                tooltip="Community Leaders"
+              >
+                <Link href="/user-leaderboard">
+                  <Users />
+                  <span>Community Leaders</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           {user?.role !== 'Citizen' && (
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
                 isActive={pathname === '/leaderboard'}
-                tooltip="Leaderboard"
+                tooltip="Worker Leaderboard"
               >
                 <Link href="/leaderboard">
                   <Trophy />
-                  <span>Leaderboard</span>
+                  <span>Worker Leaderboard</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
