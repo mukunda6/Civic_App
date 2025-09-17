@@ -28,6 +28,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import Link from 'next/link'
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
@@ -189,6 +190,12 @@ export default function LoginPage() {
               <LoginForm role="Head" />
             </TabsContent>
           </Tabs>
+           <div className="mt-4 text-center text-sm">
+            Don't have an account?{' '}
+            <Link href="/seed" className="underline">
+              Sign Up
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
