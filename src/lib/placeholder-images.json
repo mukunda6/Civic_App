@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "pothole-1",
+      "description": "A large pothole on a residential street.",
+      "imageUrl": "https://picsum.photos/seed/pothole1/600/400",
+      "imageHint": "pothole road"
+    },
+    {
+      "id": "graffiti-1",
+      "description": "Spray paint on a brick wall.",
+      "imageUrl": "https://picsum.photos/seed/graffiti1/600/400",
+      "imageHint": "graffiti wall"
+    },
+    {
+      "id": "streetlight-1",
+      "description": "A broken streetlight that is not turning on at night.",
+      "imageUrl": "https://picsum.photos/seed/light1/600/400",
+      "imageHint": "street light"
+    },
+    {
+      "id": "trash-1",
+      "description": "An overflowing public trash can.",
+      "imageUrl": "https://picsum.photos/seed/trash1/600/400",
+      "imageHint": "trash can"
+    },
+    {
+      "id": "pothole-2",
+      "description": "Multiple potholes creating a hazard.",
+      "imageUrl": "https://picsum.photos/seed/pothole2/600/400",
+      "imageHint": "pothole street"
+    },
+    {
+      "id": "resolved-pothole-1",
+      "description": "The pothole has been filled and the road surface is smooth.",
+      "imageUrl": "https://picsum.photos/seed/resolved1/600/400",
+      "imageHint": "road asphalt"
+    },
+    {
+      "id": "resolved-graffiti-1",
+      "description": "The graffiti has been cleaned from the wall.",
+      "imageUrl": "https://picsum.photos/seed/resolved2/600/400",
+      "imageHint": "clean wall"
+    }
+  ]
 }
