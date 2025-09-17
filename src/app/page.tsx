@@ -85,7 +85,7 @@ export default function LoginPage() {
         variant: 'destructive',
         title: 'Login Failed',
         description: error.code === 'auth/invalid-credential' 
-            ? 'Invalid email or password.' 
+            ? 'Invalid email or password. Have you seeded the database?' 
             : error.message || 'An unexpected error occurred.',
       })
     } finally {
@@ -180,9 +180,9 @@ export default function LoginPage() {
         <CardContent>
             <Alert className="mb-4">
                 <Info className="h-4 w-4" />
-                <AlertTitle>Demo Credentials</AlertTitle>
+                <AlertTitle>First Time Setup</AlertTitle>
                 <AlertDescription>
-                   Use the pre-filled credentials below or <Link href="/signup" className="underline font-semibold">sign up</Link> to create a new account. The password for all demo accounts is `password`.
+                   New here? Go to the <Link href="/seed" className="underline font-semibold">Database Setup</Link> page to create the initial user accounts before logging in. The password for all demo accounts is `password`.
                 </AlertDescription>
             </Alert>
           <Tabs defaultValue="Citizen" className="w-full" onValueChange={(value) => handleTabChange(value as Role)}>
@@ -202,7 +202,7 @@ export default function LoginPage() {
             </TabsContent>
           </Tabs>
            <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
+            Want a new account?{' '}
             <Link href="/signup" className="underline">
               Sign Up
             </Link>
