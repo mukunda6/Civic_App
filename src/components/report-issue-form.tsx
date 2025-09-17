@@ -61,7 +61,8 @@ const formSchema = z.object({
   description: z.string().min(10, 'Please provide a more detailed description.'),
   category: z.enum([
     'Garbage & Waste Management Problems',
-    'Water Supply & Drainage Issues',
+    'Water Supply Quality',
+    'Drainage Issues',
     'Roads, Footpaths & Infrastructure Damage',
     'Streetlights & Electricity Failures',
     'Parks, Trees & Environmental Concerns',
@@ -320,7 +321,8 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="Garbage & Waste Management Problems">🗑️ Garbage & Waste Management</SelectItem>
-                    <SelectItem value="Water Supply & Drainage Issues">💧 Water Supply & Drainage</SelectItem>
+                    <SelectItem value="Water Supply Quality">💧 Water Supply Quality</SelectItem>
+                    <SelectItem value="Drainage Issues">💧 Drainage Issues</SelectItem>
                     <SelectItem value="Roads, Footpaths & Infrastructure Damage">🚧 Roads & Infrastructure</SelectItem>
                     <SelectItem value="Streetlights & Electricity Failures">💡 Streetlights & Electricity</SelectItem>
                     <SelectItem value="Parks, Trees & Environmental Concerns">🌳 Parks & Environment</SelectItem>

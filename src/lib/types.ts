@@ -2,7 +2,8 @@
 export type IssueStatus = 'Submitted' | 'In Progress' | 'Resolved';
 export type IssueCategory = 
   | 'Garbage & Waste Management Problems'
-  | 'Water Supply & Drainage Issues'
+  | 'Water Supply Quality'
+  | 'Drainage Issues'
   | 'Roads, Footpaths & Infrastructure Damage'
   | 'Streetlights & Electricity Failures'
   | 'Parks, Trees & Environmental Concerns'

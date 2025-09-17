@@ -41,7 +41,8 @@ function SafeHydrate({ children }: { children: React.ReactNode }) {
 
 const categoryIcons: Record<Issue['category'], React.ReactNode> = {
   'Garbage & Waste Management Problems': <Trash2 className="h-4 w-4" />,
-  'Water Supply & Drainage Issues': <Droplets className="h-4 w-4" />,
+  'Water Supply Quality': <Droplets className="h-4 w-4" />,
+  'Drainage Issues': <Droplets className="h-4 w-4" />,
   'Roads, Footpaths & Infrastructure Damage': <Construction className="h-4 w-4" />,
   'Streetlights & Electricity Failures': <Lightbulb className="h-4 w-4" />,
   'Parks, Trees & Environmental Concerns': <TreePine className="h-4 w-4" />,

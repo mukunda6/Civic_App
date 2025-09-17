@@ -62,7 +62,7 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
   {
     title: 'Discolored tap water',
     description: 'The water from my tap has a brown tint and a strange smell.',
-    category: 'Water Supply & Drainage Issues',
+    category: 'Water Supply Quality',
     status: 'In Progress',
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
