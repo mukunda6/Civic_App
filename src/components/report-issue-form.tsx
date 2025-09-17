@@ -219,8 +219,9 @@ export function ReportIssueForm({
         existingIssueData,
       });
 
-      if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.5 && !isEmergency) {
+      if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.8 && !isEmergency) {
         setDuplicateInfo(duplicateResult);
+        setIsSubmitting(false);
       } else {
         await finishSubmission();
       }
@@ -386,16 +387,14 @@ export function ReportIssueForm({
       <AlertDialog open={!!duplicateInfo} onOpenChange={() => setDuplicateInfo(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Possible Duplicate Detected</AlertDialogTitle>
+            <AlertDialogTitle>Duplicate Report Detected</AlertDialogTitle>
             <AlertDialogDescription>
-              Our AI has detected that your report might be a duplicate of an
-              existing issue. Please review before submitting. You can view the original report <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer" className="underline">here</a>.
+              This issue has already been reported. Your report cannot be submitted. You can view the original report <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer" className="underline font-semibold">here</a>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => { setDuplicateInfo(null); setIsSubmitting(false); }}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={finishSubmission}>
-              Submit Anyway
+            <AlertDialogAction onClick={() => setDuplicateInfo(null)}>
+              OK
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
