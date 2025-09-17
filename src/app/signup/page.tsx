@@ -12,8 +12,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
 import { CivicSolveLogo } from '@/components/icons';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
 
 type Role = 'Citizen' | 'Admin' | 'Head';
 
@@ -25,31 +23,24 @@ export default function SignupPage() {
            <div className="flex justify-center items-center gap-2 mb-4">
             <CivicSolveLogo className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-headline">Create an Account (Demo)</CardTitle>
-          <CardDescription>Select your role to see the sign-up form.</CardDescription>
+          <CardTitle className="text-3xl font-headline">Create an Account</CardTitle>
+          <CardDescription>Select your role to sign up.</CardDescription>
         </CardHeader>
         <CardContent>
-            <Alert variant="destructive" className="mb-4">
-                <Info className="h-4 w-4" />
-                <AlertTitle>Demonstration Only</AlertTitle>
-                <AlertDescription>
-                   The form below is for demonstration only. New accounts cannot be created. Please use the pre-configured accounts on the login page.
-                </AlertDescription>
-            </Alert>
           <Tabs defaultValue="Citizen" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="Citizen">Citizen</TabsTrigger>
-              <TabsTrigger value="Admin">Admin</TabsTrigger>
-              <TabsTrigger value="Head">Head</TabsTrigger>
+              <TabsTrigger value="Admin" disabled>Admin</TabsTrigger>
+              <TabsTrigger value="Head" disabled>Head</TabsTrigger>
             </TabsList>
             <TabsContent value="Citizen">
               <SignupForm role="Citizen" />
             </TabsContent>
             <TabsContent value="Admin">
-              <SignupForm role="Admin" />
+               <p className="text-center text-sm text-muted-foreground p-8">Admin accounts are created by a system administrator.</p>
             </TabsContent>
             <TabsContent value="Head">
-              <SignupForm role="Head" />
+                <p className="text-center text-sm text-muted-foreground p-8">Head accounts are created by a system administrator.</p>
             </TabsContent>
           </Tabs>
            <div className="mt-4 text-center text-sm">

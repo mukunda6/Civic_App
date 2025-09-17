@@ -5,25 +5,17 @@ import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
-// This is a placeholder and not used in the mock environment.
 const firebaseConfig: FirebaseOptions = {
-  apiKey: "AIzaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
+  apiKey: "AIzaSyAuSf90ZjT8tmeTKgre0I5CFGWKqs1E1cc",
+  authDomain: "studio-9884214501-3e117.firebaseapp.com",
+  projectId: "studio-9884214501-3e117",
+  storageBucket: "studio-9884214501-3e117.appspot.com",
+  messagingSenderId: "943006094640",
+  appId: "1:943006094640:web:f15e92e46d66340ee0e4f5",
 };
 
-
 // Initialize Firebase
-let app;
-if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-} else {
-    app = getApps()[0];
-}
-
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 const db = getFirestore(app);
 const auth = getAuth(app);

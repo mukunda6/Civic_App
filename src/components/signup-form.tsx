@@ -17,6 +17,9 @@ import { Input } from '@/components/ui/input';
 import type { UserRole } from '@/lib/types';
 import { Loader2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 const baseSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -37,8 +40,11 @@ const formSchemas = {
   Head: headSchema,
 };
 
-export function SignupForm({ role }: { role: Exclude<UserRole, 'Worker'> }) {
+export function SignupForm({ role }: { role: 'Citizen' | 'Admin' | 'Head' }) {
   const { toast } = useToast();
+  const { signUp } = useAuth();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(formSchemas[role]),
@@ -51,94 +57,68 @@ export function SignupForm({ role }: { role: Exclude<UserRole, 'Worker'> }) {
     },
   });
 
-  const onSubmit = async () => {
-    toast({
-        title: 'Demonstration',
-        description: "This form is for demonstration purposes only. Please use the pre-configured accounts on the login page.",
-    });
+  const onSubmit = async (values: z.infer<typeof baseSchema>) => {
+    setIsLoading(true);
+    try {
+        await signUp(values.email, values.password, values.fullName, role);
+        toast({
+            title: 'Account Created!',
+            description: "You have been successfully signed up.",
+        });
+        router.push('/dashboard');
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Sign Up Failed',
+            description: error.message || 'An unexpected error occurred.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
-  
-  const isLoading = true; // Always disabled in demo
-
-  const CommonFields = () => (
-    <>
-      <FormField
-        control={form.control}
-        name="fullName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Full Name</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter your full name" {...field} disabled={isLoading} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="email"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{role === 'Citizen' ? 'Email' : 'Official Email'}</FormLabel>
-            <FormControl>
-              <Input placeholder="Enter your email" {...field} type="email" disabled={isLoading} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="password"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Password</FormLabel>
-            <FormControl>
-              <Input placeholder="Create a password (min. 6 characters)" {...field} type="password" disabled={isLoading} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
-  );
-
-  const AdminFields = () => (
-     <FormField control={form.control} name="employeeId" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Employee ID</FormLabel>
-          <FormControl><Input placeholder="Enter your GHMC Employee ID" {...field} disabled={isLoading} /></FormControl>
-           <FormMessage />
-        </FormItem>
-      )} />
-  );
-
-  const HeadFields = () => (
-    <>
-      <FormField control={form.control} name="employeeId" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Employee ID</FormLabel>
-          <FormControl><Input placeholder="Enter your GHMC Employee ID" {...field} disabled={isLoading} /></FormControl>
-          <FormMessage />
-        </FormItem>
-      )} />
-       <FormField control={form.control} name="designation" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Designation / Department</FormLabel>
-          <FormControl><Input placeholder="Enter your designation" {...field} disabled={isLoading} /></FormControl>
-          <FormMessage />
-        </FormItem>
-      )} />
-    </>
-  )
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <CommonFields />
-        {role === 'Admin' && <AdminFields />}
-        {role === 'Head' && <HeadFields />}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+       <FormField
+            control={form.control}
+            name="fullName"
+            render={({ field }) => (
+            <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                <Input placeholder="Enter your full name" {...field} disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
+        <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+            <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                <Input placeholder="Enter your email" {...field} type="email" disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
+        <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+            <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                <Input placeholder="Create a password (min. 6 characters)" {...field} type="password" disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
         
         <div className="pt-4">
             <Button type="submit" className="w-full" disabled={isLoading}>

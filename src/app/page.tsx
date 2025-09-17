@@ -83,7 +83,7 @@ export default function LoginPage() {
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred.',
+        description: error.message || 'An unexpected error occurred. You may need to seed the database first from the /seed page.',
       })
     } finally {
         setIsSubmitting(false);
@@ -175,11 +175,11 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-            <Alert className="mb-4">
+             <Alert className="mb-4">
                 <Info className="h-4 w-4" />
-                <AlertTitle>Demo Application</AlertTitle>
+                <AlertTitle>First time setup</AlertTitle>
                 <AlertDescription>
-                   This is a demonstration application. Use the pre-configured accounts to log in. The password for all accounts is `password`.
+                   Before logging in, you must <Link href="/seed" className="font-bold underline">set up the database</Link>. The password for all initial accounts is `password`.
                 </AlertDescription>
             </Alert>
           <Tabs defaultValue="Citizen" className="w-full" onValueChange={(value) => handleTabChange(value as Role)}>

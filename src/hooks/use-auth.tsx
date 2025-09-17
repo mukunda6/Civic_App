@@ -2,9 +2,12 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, type User } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import type { AppUser } from '@/lib/types';
 import { useRouter } from 'next/navigation';
-import { mockUsers } from '@/lib/mock-data-db';
+import { getUserProfile } from '@/lib/firebase-service';
 
 interface AuthContextType {
   user: AppUser | null;
@@ -16,71 +19,48 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Find users from mock data
-const citizenUser = mockUsers.find(u => u.role === 'Citizen')!;
-const adminUser = mockUsers.find(u => u.role === 'Admin')!;
-const headUser = mockUsers.find(u => u.role === 'Head')!;
-
-const usersForAuth: Record<string, AppUser> = {
-  [citizenUser.email]: { ...citizenUser, password: 'password' } as AppUser,
-  [adminUser.email]: { ...adminUser, password: 'password' } as AppUser,
-  [headUser.email]: { ...headUser, password: 'password' } as AppUser,
-};
-
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    // Simulate checking for a logged-in user
-    const storedUser = sessionStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
+      if (firebaseUser) {
+        const profile = await getUserProfile(firebaseUser.uid);
+        setUser(profile);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const login = async (email: string, pass: string) => {
-    setLoading(true);
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const potentialUser = usersForAuth[email];
-    
-    if (potentialUser && pass === 'password') {
-      const userToSave = { ...potentialUser };
-      // @ts-ignore
-      delete userToSave.password; // Don't store password in state/session
-      setUser(userToSave);
-      sessionStorage.setItem('user', JSON.stringify(userToSave));
-    } else {
-      setLoading(false);
-      throw new Error('Invalid email or password. The password for all demo accounts is `password`.');
-    }
-    setLoading(false);
+     await signInWithEmailAndPassword(auth, email, pass);
   };
 
   const logout = async () => {
-    setUser(null);
-    sessionStorage.removeItem('user');
+    await signOut(auth);
     router.push('/');
   };
   
   const signUp = async (email: string, pass: string, name: string, role: AppUser['role']) => {
-    setLoading(true);
-    // This is a mock sign up. In a real app, you'd call a backend service.
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    const firebaseUser = userCredential.user;
+
     const newUser: AppUser = {
-      uid: `new-user-${Date.now()}`,
+      uid: firebaseUser.uid,
       name,
       email,
       role,
       avatarUrl: `https://picsum.photos/seed/${name.split(' ')[0]}/100/100`,
     };
+
+    await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
     setUser(newUser);
-    sessionStorage.setItem('user', JSON.stringify(newUser));
-    setLoading(false);
   }
 
   return (
