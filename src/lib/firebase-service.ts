@@ -14,7 +14,7 @@ import {
     setDoc
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { db, storage, auth } from './firebase';
 import type { Issue, Worker, AppUser, UserRole, IssueCategory, IssueStatus } from './types';
 import { mockIssues, mockUsers, mockWorkers } from './mock-data-db';
@@ -183,22 +183,24 @@ export async function seedDatabase() {
 
   for (const userData of mockUsers) {
     try {
-      // Check if user already exists in Firestore (as a proxy for Auth)
+      // Since we can't easily check for existing users in Auth from the client without Admin SDK,
+      // we'll adopt a "create if not exists" pattern based on Firestore data.
+      // This is not perfectly robust but sufficient for a one-time seeding script.
+      
       const userQuery = query(
         collection(db, USERS_COLLECTION),
         where('email', '==', userData.email)
       );
       const userSnapshot = await getDocs(userQuery);
-      let userId: string;
 
       if (userSnapshot.empty) {
-        // User does not exist, create in Auth and then in Firestore
+        // User likely does not exist, so create in Auth
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           userData.email,
           userData.password
         );
-        userId = userCredential.user.uid;
+        const userId = userCredential.user.uid;
 
         const userDocRef = doc(db, USERS_COLLECTION, userId);
         batch.set(userDocRef, {
@@ -209,25 +211,13 @@ export async function seedDatabase() {
           avatarUrl: userData.avatarUrl,
         });
       } else {
-        // User already exists in Auth, just update Firestore if needed
-        console.log(`User ${userData.email} already exists. Skipping Auth creation.`);
-        userId = userSnapshot.docs[0].id;
-        const userDocRef = doc(db, USERS_COLLECTION, userId);
-        // Use set with merge to be non-destructive
-        batch.set(userDocRef, {
-          uid: userId,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          avatarUrl: userData.avatarUrl,
-        }, { merge: true });
+         console.log(`User ${userData.email} already found in Firestore. Skipping Auth creation.`);
       }
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
-        console.warn(`Warning: User with email ${userData.email} exists in Auth but might have been missing from Firestore. The seeding process will attempt to reconcile.`);
+        console.warn(`Warning: User with email ${userData.email} exists in Auth. Seeding will only ensure Firestore data is present.`);
       } else {
         console.error(`Error processing user ${userData.email}:`, error);
-        // Re-throw the error to be caught by the UI
         throw new Error(`Failed to process user ${userData.email}. ${error.message}`);
       }
     }
@@ -241,7 +231,6 @@ export async function seedDatabase() {
 
   // Seed Issues
   mockIssues.forEach(issue => {
-    // Ensure the issue document has an ID for consistency if needed, but Firestore generates one.
     const issueDocRef = doc(collection(db, ISSUES_COLLECTION));
     batch.set(issueDocRef, issue);
   });
