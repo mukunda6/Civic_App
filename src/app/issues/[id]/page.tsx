@@ -4,21 +4,25 @@
 import { useEffect, useState } from 'react';
 import { getIssueById } from '@/lib/firebase-service';
 import type { Issue } from '@/lib/types';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { IssueDetails } from '@/components/issue-details';
 import { IssueTimeline } from '@/components/issue-timeline';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
-export default function IssueDetailPage({ params }: { params: { id: string } }) {
+export default function IssueDetailPage() {
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const [issue, setIssue] = useState<Issue | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) return;
+    
     const fetchIssue = async () => {
       try {
-        const fetchedIssue = await getIssueById(params.id);
+        const fetchedIssue = await getIssueById(id);
         if (fetchedIssue) {
           setIssue(fetchedIssue);
         } else {
@@ -33,7 +37,7 @@ export default function IssueDetailPage({ params }: { params: { id: string } }) 
     };
 
     fetchIssue();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return <div>Loading issue details...</div>;
