@@ -112,4 +112,19 @@ export const mockIssues: Omit<Issue, 'id'>[] = [
       { status: 'Submitted', updatedAt: '2024-07-20T21:30:00Z', description: 'Issue reported by citizen. Awaiting assignment.' }
     ]
   },
+  {
+    title: 'Mosquitoes in stagnant water',
+    description: 'There is a large puddle of stagnant water behind the community hall, and it has become a breeding ground for mosquitoes.',
+    category: 'Mosquito Control & Fogging',
+    status: 'Submitted',
+    location: { lat: 34.0530, lng: -118.2445 },
+    imageUrl: 'https://picsum.photos/seed/mosquito1/600/400',
+    imageHint: 'stagnant water',
+    submittedBy: { name: 'Michael Johnson', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedAt: '2024-07-21T10:00:00Z',
+    assignedTo: undefined,
+    updates: [
+      { status: 'Submitted', updatedAt: '2024-07-21T10:00:00Z', description: 'Issue reported by citizen. Awaiting assignment.' }
+    ]
+  },
 ];

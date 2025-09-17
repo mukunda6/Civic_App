@@ -9,7 +9,8 @@ export type IssueCategory =
   | 'Parks, Trees & Environmental Concerns'
   | 'Illegal Constructions & Encroachments'
   | 'Stray Animals & Public Health Hazards'
-  | 'Poor Maintenance of Public Facilities';
+  | 'Sanitation & Toiletry Issues'
+  | 'Mosquito Control & Fogging';
 
 export type UserRole = 'Citizen' | 'Admin' | 'Head';
 

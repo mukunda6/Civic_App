@@ -68,7 +68,8 @@ const formSchema = z.object({
     'Parks, Trees & Environmental Concerns',
     'Illegal Constructions & Encroachments',
     'Stray Animals & Public Health Hazards',
-    'Poor Maintenance of Public Facilities'
+    'Sanitation & Toiletry Issues',
+    'Mosquito Control & Fogging',
   ]),
   photoDataUri: z.string().nonempty('Please upload or take a photo.'),
   location: z.object({
@@ -328,7 +329,8 @@ export function ReportIssueForm({ user }: { user: AppUser }) {
                     <SelectItem value="Parks, Trees & Environmental Concerns">🌳 Parks & Environment</SelectItem>
                     <SelectItem value="Illegal Constructions & Encroachments">🏠 Illegal Constructions</SelectItem>
                     <SelectItem value="Stray Animals & Public Health Hazards">🐕 Stray Animals</SelectItem>
-                    <SelectItem value="Poor Maintenance of Public Facilities">🛠️ Public Facilities</SelectItem>
+                    <SelectItem value="Sanitation & Toiletry Issues">🚽 Sanitation & Toiletry</SelectItem>
+                    <SelectItem value="Mosquito Control & Fogging">🦟 Mosquito Control & Fogging</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

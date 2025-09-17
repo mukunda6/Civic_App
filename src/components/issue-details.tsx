@@ -23,7 +23,7 @@ import {
   TreePine,
   Home,
   Dog,
-  Wrench,
+  Cloudy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
@@ -48,7 +48,8 @@ const categoryIcons: Record<Issue['category'], React.ReactNode> = {
   'Parks, Trees & Environmental Concerns': <TreePine className="h-4 w-4" />,
   'Illegal Constructions & Encroachments': <Home className="h-4 w-4" />,
   'Stray Animals & Public Health Hazards': <Dog className="h-4 w-4" />,
-  'Poor Maintenance of Public Facilities': <Wrench className="h-4 w-4" />,
+  'Sanitation & Toiletry Issues': <Home className="h-4 w-4" />,
+  'Mosquito Control & Fogging': <Cloudy className="h-4 w-4" />,
 };
 
 const statusColors: Record<Issue['status'], string> = {
