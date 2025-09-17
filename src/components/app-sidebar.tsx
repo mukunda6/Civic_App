@@ -74,18 +74,20 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-           <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/user-leaderboard'}
-                tooltip="Community Leaders"
-              >
-                <Link href="/user-leaderboard">
-                  <Users />
-                  <span>Community Leaders</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+           {user?.role === 'Citizen' && (
+            <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/user-leaderboard'}
+                  tooltip="Community Leaders"
+                >
+                  <Link href="/user-leaderboard">
+                    <Users />
+                    <span>Community Leaders</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           {user?.role !== 'Citizen' && (
             <SidebarMenuItem>
               <SidebarMenuButton
