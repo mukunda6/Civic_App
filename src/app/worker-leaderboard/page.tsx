@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table';
 import { getIssues, getWorkers } from '@/lib/firebase-service';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Award, Star, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
+import { Trophy, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
 import type { Issue, Worker } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -80,21 +80,12 @@ export default function WorkerLeaderboardPage() {
     fetchLeaderboardData();
   }, []);
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 0:
-        return <Trophy className="h-6 w-6 text-yellow-500" />;
-      case 1:
-        return <Award className="h-6 w-6 text-gray-400" />;
-      case 2:
-        return <Star className="h-6 w-6 text-yellow-700" />;
-      default:
-        return (
-          <span className="flex h-6 w-6 items-center justify-center text-sm font-bold text-muted-foreground">
-            {rank + 1}
-          </span>
-        );
-    }
+  const getRankNumber = (rank: number) => {
+    return (
+      <span className="flex h-6 w-6 items-center justify-center text-sm font-bold text-primary">
+        {rank + 1}
+      </span>
+    );
   };
   
   const topPerformer = workerStats.length > 0 ? workerStats[0] : null;
@@ -141,7 +132,7 @@ export default function WorkerLeaderboardPage() {
                 <TableRow key={worker.id} className={index < 3 ? 'bg-muted/50' : ''}>
                   <TableCell>
                     <div className="flex items-center justify-center">
-                        {getRankIcon(index)}
+                        {getRankNumber(index)}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -187,4 +178,3 @@ export default function WorkerLeaderboardPage() {
     </div>
   );
 }
-
