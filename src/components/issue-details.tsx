@@ -1,3 +1,6 @@
+
+'use client';
+
 import Image from 'next/image';
 import type { Issue } from '@/lib/types';
 import {
@@ -19,6 +22,17 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
+import { useState, useEffect } from 'react';
+
+// Component to prevent hydration mismatch for dates
+function SafeHydrate({ children }: { children: React.ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+  return isHydrated ? <>{children}</> : null;
+}
+
 
 const categoryIcons: Record<Issue['category'], React.ReactNode> = {
   Pothole: <Car className="h-4 w-4" />,
@@ -76,14 +90,18 @@ export function IssueDetails({ issue }: { issue: Issue }) {
                 <Calendar className="h-4 w-4 mt-1" />
                 <div>
                     <p className="font-semibold">Submitted</p>
-                    <p className="text-muted-foreground">{format(parseISO(issue.submittedAt), 'PPp')}</p>
+                    <p className="text-muted-foreground">
+                      <SafeHydrate>
+                        {format(parseISO(issue.submittedAt), 'PPp')}
+                      </SafeHydrate>
+                    </p>
                 </div>
             </div>
             <div className="flex items-start gap-2">
                 <User className="h-4 w-4 mt-1" />
                 <div>
                     <p className="font-semibold">Reporter</p>
-                    <p className="text-muted-foreground">{issue.submittedBy}</p>
+                    <p className="text-muted-foreground">{issue.submittedBy.name}</p>
                 </div>
             </div>
         </div>
