@@ -21,6 +21,7 @@ import {
   Trophy,
   Users,
   Shield,
+  Bot,
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -78,7 +79,8 @@ export function AppSidebar() {
           </SidebarMenuItem>
           )}
            {user?.role === 'Citizen' && (
-            <SidebarMenuItem>
+            <>
+              <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === '/user-leaderboard'}
@@ -90,6 +92,19 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/chatbot'}
+                  tooltip="Chatbot Assistant"
+                >
+                  <Link href="/chatbot">
+                    <Bot />
+                    <span>Chatbot Assistant</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </>
             )}
              {(user?.role === 'Admin' || user?.role === 'Head') && (
             <SidebarMenuItem>
