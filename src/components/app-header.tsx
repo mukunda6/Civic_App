@@ -17,13 +17,25 @@ import { useTheme } from 'next-themes';
 import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from './ui/dropdown-menu';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useEffect, useState } from 'react';
+
 
 export function AppHeader() {
+    const isMobile = useIsMobile();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-card px-4 sm:px-6">
-      <div className="md:hidden">
-        <SidebarTrigger />
-      </div>
+      {isClient && isMobile && (
+        <div className="md:hidden">
+            <SidebarTrigger />
+        </div>
+      )}
       <div className="flex-1" />
       <UserMenu />
     </header>
