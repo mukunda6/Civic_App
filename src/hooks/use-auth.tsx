@@ -11,7 +11,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
-  signUp: (email: string, pass: string, name: string, role: AppUser['role']) => Promise<void>;
+  signUp: (email: string, pass: string, name: string, role: AppUser['role'], details?: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -56,17 +56,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/');
   };
 
-  const signUp = async (email: string, pass: string, name: string, role: AppUser['role']) => {
+  const signUp = async (email: string, pass: string, name: string, role: AppUser['role'], details: any = {}) => {
     // This is a mock sign-up. In a real app, this would create a user in the database.
-    console.log('Mock sign up for:', { email, name, role });
-    // For the demo, we'll just log them in as a new citizen user.
+    console.log('Mock sign up for:', { email, name, role, details });
+    
+    // Check if user already exists in our mock data
+    if (mockUsers.some(u => u.email === email)) {
+        throw new Error('An account with this email already exists.');
+    }
+    
+    // For the demo, we'll just log them in as a new user.
     const newUser: AppUser = {
         uid: `new-${Date.now()}`,
         name,
         email,
-        role: 'Citizen',
+        role,
         avatarUrl: `https://picsum.photos/seed/${name.split(' ')[0]}/100/100`,
     };
+
+    // Add to mock users array to allow login later in the session
+    mockUsers.push({ ...newUser, password: pass });
+
     setUser(newUser);
     sessionStorage.setItem('user', JSON.stringify(newUser));
   };
