@@ -21,7 +21,7 @@ const DuplicateIssueDetectionInputSchema = z.object({
     ),
   location: z.string().describe('The GPS coordinates of the issue.'),
   description: z.string().optional().describe('Optional description of the issue.'),
-  existingIssueData: z.string().describe('JSON array of existing issues, with each issue containing an id and description.'),
+  existingIssueData: z.string().describe('JSON array of existing issues, with each issue containing an id, title, description and location object.'),
 });
 export type DuplicateIssueDetectionInput = z.infer<typeof DuplicateIssueDetectionInputSchema>;
 
@@ -58,9 +58,9 @@ You will be provided with a new issue submission and a list of existing issues.
 
 **Your Task:**
 Analyze the new issue and compare it to the existing issues. Your goal is to determine if the new issue is a duplicate of an existing one.
-- **Visual Similarity:** Compare the image of the new issue with the implicit images of the existing issues (represented by their descriptions).
-- **Semantic Similarity:** Compare the description of the new issue with the descriptions of the existing ones.
-- **Location Proximity:** The provided location is a key factor, but do not rely on it exclusively. Issues can be near each other without being duplicates.
+- **Visual Similarity:** Compare the image of the new issue with the implicit images of the existing issues (represented by their descriptions and titles).
+- **Semantic Similarity:** Compare the description and title of the new issue with the descriptions and titles of the existing ones.
+- **Location Proximity:** The provided location is a key factor. Issues at very similar GPS coordinates with similar descriptions/images are highly likely to be duplicates.
 
 **Output:**
 Return a JSON object with your assessment.
@@ -70,7 +70,7 @@ Return a JSON object with your assessment.
 
 **IMPORTANT RULES:**
 - If existingIssueData is an empty array or not provided, you MUST return { "isDuplicate": false, "confidence": 0 }.
-- Base your decision on a holistic view of the image, description, and location. For example, two "pothole" reports at the same coordinates are very likely duplicates. A "pothole" and "broken streetlight" at the same coordinates are not.
+- Base your decision on a holistic view of the image, description, title, and location. For example, two "pothole" reports at the same coordinates are very likely duplicates. A "pothole" and "broken streetlight" at the same coordinates are not.
 `,
 });
 

@@ -210,7 +210,7 @@ export function ReportIssueForm({
     try {
       const existingIssues = await getIssues();
       const existingIssueData = JSON.stringify(
-        existingIssues.map(i => ({ id: i.id, description: i.description }))
+        existingIssues.map(i => ({ id: i.id, description: i.description, title: i.title, location: i.location }))
       );
 
       const duplicateResult = await detectDuplicateIssue({
@@ -271,7 +271,7 @@ export function ReportIssueForm({
             name="photoDataUri"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Issue Photo {isEmergency && '(Optional)'}</FormLabel>
+                <FormLabel>Issue Photo</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -389,12 +389,13 @@ export function ReportIssueForm({
           <AlertDialogHeader>
             <AlertDialogTitle>Duplicate Report Detected</AlertDialogTitle>
             <AlertDialogDescription>
-              This issue has already been reported. Your report cannot be submitted. You can view the original report <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer" className="underline font-semibold">here</a>.
+              This issue has already been reported and cannot be submitted again. You can view the original report by clicking the button below.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setDuplicateInfo(null)}>
-              OK
+            <AlertDialogCancel onClick={() => setDuplicateInfo(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction asChild>
+                <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer">View Original Report</a>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
