@@ -5,17 +5,20 @@ import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import en from '@/locales/en.json';
 import te from '@/locales/te.json';
 import hi from '@/locales/hi.json';
+import ur from '@/locales/ur.json';
 
 export const languages = [
     { code: 'en', name: 'English' },
     { code: 'te', name: 'Telugu' },
     { code: 'hi', name: 'Hindi' },
+    { code: 'ur', name: 'Urdu' },
 ];
 
 const translations: Record<string, Record<string, string>> = {
     en,
     te,
-    hi
+    hi,
+    ur
 };
 
 interface LanguageContextType {
