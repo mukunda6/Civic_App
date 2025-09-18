@@ -43,6 +43,7 @@ export function CitizenDashboard() {
   const [userIssues, setUserIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
   const [highlightedIssueId, setHighlightedIssueId] = useState<string | null>(null);
+  const [showAllReports, setShowAllReports] = useState(false);
 
   useEffect(() => {
     // Check for a recently submitted issue ID from the query params
@@ -82,6 +83,8 @@ export function CitizenDashboard() {
   const submittedCount = userIssues.filter(i => i.status === 'Submitted').length;
   const inProgressCount = userIssues.filter(i => i.status === 'In Progress').length;
   const resolvedCount = userIssues.filter(i => i.status === 'Resolved').length;
+
+  const displayedIssues = showAllReports ? userIssues : userIssues.slice(0, 3);
 
 
   return (
@@ -156,6 +159,33 @@ export function CitizenDashboard() {
           </CardContent>
         </Card>
       </div>
+
+       {userIssues.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle>My Recent Reports</CardTitle>
+              {userIssues.length > 3 && (
+                 <Button variant="outline" onClick={() => setShowAllReports(!showAllReports)}>
+                    {showAllReports ? 'Show Less' : 'View All Reports'}
+                </Button>
+              )}
+            </div>
+            <CardDescription>
+              A summary of your most recent submissions.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            {displayedIssues.map(issue => (
+                <IssueCard 
+                    key={issue.id} 
+                    issue={issue} 
+                    isHighlighted={issue.id === highlightedIssueId}
+                />
+            ))}
+          </CardContent>
+        </Card>
+       )}
 
     </div>
   );
