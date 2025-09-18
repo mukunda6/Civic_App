@@ -73,6 +73,36 @@ export function CitizenDashboard() {
 
   return (
     <div className="grid gap-8">
+       <Card>
+         <CardHeader>
+            <CardTitle>Report a New Issue</CardTitle>
+            <CardDescription>Select a category to begin your report.</CardDescription>
+         </CardHeader>
+         <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {categoryDetails.map(({ category, icon, description }) => (
+                    <button
+                        key={category}
+                        onClick={() => handleCategoryClick(category)}
+                        className="text-center p-4 rounded-lg border bg-card hover:bg-accent hover:text-accent-foreground transition-all flex flex-col items-center justify-center shadow-sm"
+                    >
+                        <div className="text-primary mb-2">{icon}</div>
+                        <h3 className="font-semibold text-sm">{category.split('&')[0].trim()}</h3>
+                        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                    </button>
+                ))}
+                 <Link
+                    href="/report/emergency"
+                    className="col-span-2 md:col-span-1 lg:col-span-1 text-center p-4 rounded-lg border border-destructive bg-destructive/10 hover:bg-destructive/20 transition-all flex flex-col items-center justify-center shadow-sm"
+                >
+                    <div className="text-destructive mb-2"><AlertTriangle className="h-8 w-8" /></div>
+                    <h3 className="font-semibold text-sm text-destructive">Emergency Report</h3>
+                    <p className="text-xs text-destructive/80 mt-1">For critical, urgent issues.</p>
+                </Link>
+            </div>
+         </CardContent>
+       </Card>
+      
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -113,36 +143,6 @@ export function CitizenDashboard() {
           </CardContent>
         </Card>
       </div>
-
-       <Card>
-         <CardHeader>
-            <CardTitle>Report a New Issue</CardTitle>
-            <CardDescription>Select a category to begin your report.</CardDescription>
-         </CardHeader>
-         <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {categoryDetails.map(({ category, icon, description }) => (
-                    <button
-                        key={category}
-                        onClick={() => handleCategoryClick(category)}
-                        className="text-center p-4 rounded-lg border bg-card hover:bg-accent hover:text-accent-foreground transition-all flex flex-col items-center justify-center shadow-sm"
-                    >
-                        <div className="text-primary mb-2">{icon}</div>
-                        <h3 className="font-semibold text-sm">{category.split('&')[0].trim()}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{description}</p>
-                    </button>
-                ))}
-                 <Link
-                    href="/report/emergency"
-                    className="col-span-2 md:col-span-1 lg:col-span-1 text-center p-4 rounded-lg border border-destructive bg-destructive/10 hover:bg-destructive/20 transition-all flex flex-col items-center justify-center shadow-sm"
-                >
-                    <div className="text-destructive mb-2"><AlertTriangle className="h-8 w-8" /></div>
-                    <h3 className="font-semibold text-sm text-destructive">Emergency Report</h3>
-                    <p className="text-xs text-destructive/80 mt-1">For critical, urgent issues.</p>
-                </Link>
-            </div>
-         </CardContent>
-       </Card>
 
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1">
