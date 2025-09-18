@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { useSearchParams } from 'next/navigation'
@@ -7,10 +8,9 @@ import { CitizenDashboard } from '@/components/citizen-dashboard'
 import { AdminDashboard } from '@/components/admin-dashboard'
 import { HeadDashboard } from '@/components/head-dashboard'
 import { WorkerDashboard } from '@/components/worker-dashboard';
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 
 
 function DashboardContent() {
@@ -18,7 +18,6 @@ function DashboardContent() {
   const { user, loading } = useAuth();
   
   useEffect(() => {
-    // If auth is done loading and there's still no user, redirect to login.
     if (!loading && !user) {
       router.push('/');
     }
