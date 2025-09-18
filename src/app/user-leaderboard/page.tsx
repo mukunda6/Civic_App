@@ -16,9 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { getIssues } from '@/lib/firebase-service';
+import { getIssues, getWorkers } from '@/lib/firebase-service';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Gift, DollarSign } from 'lucide-react';
+import { Trophy, Gift, DollarSign, Star, TrendingUp, Zap } from 'lucide-react';
 import type { Issue } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -41,12 +41,10 @@ export default function UserLeaderboardPage() {
         const issues = await getIssues();
         
         const statsMap = new Map<string, UserStats>();
-        const userIssueCounts = new Map<string, Map<string, number>>(); // Map<userId, Map<issueTitle, count>>
 
         issues.forEach(issue => {
           const { uid, name } = issue.submittedBy;
 
-          // Initialize user stats if not present
           if (!statsMap.has(uid)) {
             statsMap.set(uid, {
               uid,
@@ -55,30 +53,23 @@ export default function UserLeaderboardPage() {
               reportCount: 0,
               score: 0,
             });
-            userIssueCounts.set(uid, new Map());
           }
 
           const userStat = statsMap.get(uid)!;
-          const issueCounts = userIssueCounts.get(uid)!;
           
-          // Simplified way to identify a unique issue for scoring
-          const issueIdentifier = issue.title.toLowerCase().trim();
-          
-          const reportCountForThisIssue = issueCounts.get(issueIdentifier) || 0;
-
-          // Calculate score based on the rules
           let points = 0;
-          if (reportCountForThisIssue === 0) {
-            points = 5; // First submission
-          } else if (reportCountForThisIssue >= 1 && reportCountForThisIssue < 5) {
-            points = 3; // 2nd to 5th submission
+          if (issue.status === 'Resolved') {
+            points = 10; // 10 points for a resolved issue
           } else {
-            points = 1; // More than 5 submissions
+            points = 3; // 3 points for any submitted issue
+          }
+
+          if (issue.isEmergency) {
+            points += 5; // Extra 5 points for emergency reports
           }
           
           userStat.score += points;
           userStat.reportCount += 1;
-          issueCounts.set(issueIdentifier, reportCountForThisIssue + 1);
         });
 
         const stats = Array.from(statsMap.values());
@@ -96,8 +87,11 @@ export default function UserLeaderboardPage() {
   }, []);
 
   const getRankNumber = (rank: number) => {
+    if (rank === 0) return <Trophy className="h-6 w-6 text-yellow-500" />;
+    if (rank === 1) return <Trophy className="h-6 w-6 text-slate-400" />;
+    if (rank === 2) return <Trophy className="h-6 w-6 text-amber-700" />;
     return (
-      <span className="flex h-6 w-6 items-center justify-center text-sm font-bold text-primary">
+      <span className="flex h-6 w-6 items-center justify-center text-sm font-bold text-muted-foreground">
         {rank + 1}
       </span>
     );
@@ -136,17 +130,51 @@ export default function UserLeaderboardPage() {
                 </AlertDescription>
               </Alert>
            </div>
+
+            <Card className="mb-6 bg-muted/50">
+                <CardHeader>
+                    <CardTitle className="text-xl flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5"/>
+                        How It Works
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="grid sm:grid-cols-3 gap-4 text-sm">
+                   <div className="flex items-start gap-3">
+                        <Star className="h-5 w-5 mt-1 text-primary flex-shrink-0"/>
+                        <div>
+                            <h4 className="font-semibold">Base Points</h4>
+                            <p className="text-muted-foreground">Earn <span className="font-bold">3 points</span> for every issue you report.</p>
+                        </div>
+                   </div>
+                    <div className="flex items-start gap-3">
+                        <Zap className="h-5 w-5 mt-1 text-yellow-500 flex-shrink-0"/>
+                        <div>
+                            <h4 className="font-semibold">Emergency Bonus</h4>
+                            <p className="text-muted-foreground">Get an extra <span className="font-bold">5 points</span> for reporting critical, emergency issues.</p>
+                        </div>
+                   </div>
+                    <div className="flex items-start gap-3">
+                        <CheckCircle className="h-5 w-5 mt-1 text-green-500 flex-shrink-0"/>
+                        <div>
+                            <h4 className="font-semibold">Resolution Bonus</h4>
+                            <p className="text-muted-foreground">Receive a big bonus of <span className="font-bold">10 points</span> once your reported issue is successfully resolved.</p>
+                        </div>
+                   </div>
+                </CardContent>
+            </Card>
+
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[80px]">Rank</TableHead>
                 <TableHead>Citizen</TableHead>
-                <TableHead className="text-center">Score</TableHead>
+                <TableHead className="text-center">Reports</TableHead>
+                <TableHead className="text-right">Score</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {userStats.map((user, index) => (
-                <TableRow key={user.uid} className={index < 3 ? 'bg-muted/50' : ''}>
+                <TableRow key={user.uid} className={index < 3 ? 'bg-muted/50 font-bold' : ''}>
                   <TableCell>
                     <div className="flex items-center justify-center">
                         {getRankNumber(index)}
@@ -162,13 +190,13 @@ export default function UserLeaderboardPage() {
                       </Avatar>
                       <div>
                         <p className="font-semibold">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Reports: {user.reportCount}
-                        </p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-center text-lg font-bold text-primary">
+                   <TableCell className="text-center font-medium text-muted-foreground">
+                        {user.reportCount}
+                    </TableCell>
+                  <TableCell className="text-right text-lg font-bold text-primary">
                     {user.score}
                   </TableCell>
                 </TableRow>

@@ -44,8 +44,80 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     email: 'citizen@test.com',
     password: 'password',
     role: 'Citizen',
-    avatarUrl: 'https://picsum.photos/seed/citizen/100/100',
+    avatarUrl: 'https://picsum.photos/seed/John/100/100',
   },
+  {
+    uid: 'citizen-user-02',
+    name: 'Jane Doe',
+    email: 'jane.doe@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Jane/100/100',
+    },
+    {
+    uid: 'citizen-user-03',
+    name: 'Peter Jones',
+    email: 'peter.jones@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Peter/100/100',
+    },
+    {
+    uid: 'citizen-user-04',
+    name: 'Mary Smith',
+    email: 'mary.smith@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Mary/100/100',
+    },
+    {
+    uid: 'citizen-user-05',
+    name: 'David Williams',
+    email: 'david.williams@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/David/100/100',
+    },
+    {
+    uid: 'citizen-user-06',
+    name: 'Susan Brown',
+    email: 'susan.brown@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Susan/100/100',
+    },
+    {
+    uid: 'citizen-user-07',
+    name: 'Michael Miller',
+    email: 'michael.miller@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Michael/100/100',
+    },
+    {
+    uid: 'citizen-user-08',
+    name: 'Karen Wilson',
+    email: 'karen.wilson@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Karen/100/100',
+    },
+    {
+    uid: 'citizen-user-09',
+    name: 'James Moore',
+    email: 'james.moore@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/James/100/100',
+    },
+    {
+    uid: 'citizen-user-10',
+    name: 'Patricia Taylor',
+    email: 'patricia.taylor@test.com',
+    password: 'password',
+    role: 'Citizen',
+    avatarUrl: 'https://picsum.photos/seed/Patricia/100/100',
+    },
 ];
 
 
@@ -76,6 +148,8 @@ export const mockWorkers: Worker[] = [
   },
 ];
 
+const citizens = mockUsers.filter(u => u.role === 'Citizen');
+
 export const mockIssues: Issue[] = [
   {
     id: '1',
@@ -88,7 +162,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: 'Jane Doe', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[1].name, uid: citizens[1].uid, email: citizens[1].email },
     submittedAt: subDays(now, 3).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -108,7 +182,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
     imageHint: 'tap water',
-    submittedBy: { name: 'John Smith', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[2].name, uid: citizens[2].uid, email: citizens[2].email },
     submittedAt: subHours(now, 28).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -127,7 +201,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',
     imageHint: 'street light',
-    submittedBy: { name: 'Emily White', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[0].name, uid: citizens[0].uid, email: citizens[0].email },
     submittedAt: subHours(now, 8).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -145,7 +219,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/trash1/600/400',
     imageHint: 'trash can',
-    submittedBy: { name: 'Michael Brown', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[3].name, uid: citizens[3].uid, email: citizens[3].email },
     submittedAt: subHours(now, 52).toISOString(),
      assignedTo: 'worker-3',
     updates: [
@@ -164,7 +238,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/pothole2/600/400',
     imageHint: 'pothole street',
-    submittedBy: { name: 'Sarah Green', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[4].name, uid: citizens[4].uid, email: citizens[4].email },
     submittedAt: subHours(now, 52).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -185,7 +259,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/manhole1/600/400',
     imageHint: 'manhole cover',
-    submittedBy: { name: 'David Lee', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[5].name, uid: citizens[5].uid, email: citizens[5].email },
     submittedAt: subDays(now, 4).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -205,13 +279,126 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/shelter1/600/400',
     imageHint: 'bus stop',
-    submittedBy: { name: 'Jessica Miller', uid: 'citizen-user-01', email: 'citizen@test.com' },
+    submittedBy: { name: citizens[6].name, uid: citizens[6].uid, email: citizens[6].email },
     submittedAt: subDays(now, 5).toISOString(),
     assignedTo: 'worker-3',
     updates: [
         { status: 'Submitted', updatedAt: subDays(now, 5).toISOString(), description: 'Issue reported by citizen.' },
         { status: 'In Progress', updatedAt: subDays(now, 3).toISOString(), description: 'SLA Extended: Worker unavailable.', isSlaUpdate: true },
         { status: 'In Progress', updatedAt: subHours(now, 2).toISOString(), description: 'Issue has breached the extended SLA and has been escalated to the Head.', isSlaUpdate: true }
+    ]
+  },
+  // Add more issues to get to 10 users with scores
+  {
+    id: '8',
+    title: 'Another pothole',
+    description: 'Another pothole on 2nd Ave.',
+    category: 'Roads, Footpaths & Infrastructure Damage',
+    status: 'Resolved',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(subDays(now, 5), 48).toISOString(),
+    location: { lat: 40.7128, lng: -74.0060 },
+    imageUrl: 'https://picsum.photos/seed/pothole3/600/400',
+    imageHint: 'pothole road',
+    submittedBy: { name: citizens[1].name, uid: citizens[1].uid, email: citizens[1].email },
+    submittedAt: subDays(now, 5).toISOString(),
+    assignedTo: 'worker-1',
+    updates: [
+        { status: 'Submitted', updatedAt: subDays(now, 5).toISOString(), description: 'Issue reported by citizen.' },
+        { status: 'Resolved', updatedAt: subDays(now, 4).toISOString(), description: 'Pothole has been filled.'}
+    ]
+  },
+    {
+    id: '9',
+    title: 'Yet another pothole',
+    description: 'Pothole on 3rd Ave.',
+    category: 'Roads, Footpaths & Infrastructure Damage',
+    status: 'Resolved',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(subDays(now, 6), 48).toISOString(),
+    location: { lat: 40.7128, lng: -74.0060 },
+    imageUrl: 'https://picsum.photos/seed/pothole4/600/400',
+    imageHint: 'pothole road',
+    submittedBy: { name: citizens[1].name, uid: citizens[1].uid, email: citizens[1].email },
+    submittedAt: subDays(now, 6).toISOString(),
+    assignedTo: 'worker-1',
+    updates: [
+        { status: 'Submitted', updatedAt: subDays(now, 6).toISOString(), description: 'Issue reported by citizen.' },
+        { status: 'Resolved', updatedAt: subDays(now, 5).toISOString(), description: 'Pothole has been filled.'}
+    ]
+  },
+  {
+    id: '10',
+    title: 'Graffiti on wall',
+    description: 'Graffiti on the wall of the public library.',
+    category: 'Illegal Constructions & Encroachments',
+    status: 'Submitted',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(subDays(now, 1), 48).toISOString(),
+    location: { lat: 34.0522, lng: -118.2437 },
+    imageUrl: 'https://picsum.photos/seed/graffiti1/600/400',
+    imageHint: 'graffiti wall',
+    submittedBy: { name: citizens[7].name, uid: citizens[7].uid, email: citizens[7].email },
+    submittedAt: subDays(now, 1).toISOString(),
+    assignedTo: undefined,
+    updates: [
+        { status: 'Submitted', updatedAt: subDays(now, 1).toISOString(), description: 'Issue reported by citizen.' }
+    ]
+  },
+  {
+    id: '11',
+    title: 'Broken park bench',
+    description: 'A bench in the park is broken.',
+    category: 'Parks, Trees & Environmental Concerns',
+    status: 'Submitted',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(subDays(now, 2), 48).toISOString(),
+    location: { lat: 34.0522, lng: -118.2437 },
+    imageUrl: 'https://picsum.photos/seed/bench1/600/400',
+    imageHint: 'park bench',
+    submittedBy: { name: citizens[8].name, uid: citizens[8].uid, email: citizens[8].email },
+    submittedAt: subDays(now, 2).toISOString(),
+    assignedTo: undefined,
+    updates: [
+        { status: 'Submitted', updatedAt: subDays(now, 2).toISOString(), description: 'Issue reported by citizen.' }
+    ]
+  },
+  {
+    id: '12',
+    title: 'Stray dog',
+    description: 'A stray dog is roaming the neighborhood.',
+    category: 'Stray Animals & Public Health Hazards',
+    status: 'In Progress',
+    slaStatus: 'At Risk',
+    slaDeadline: addHours(subDays(now, 1), 24).toISOString(),
+    location: { lat: 34.0522, lng: -118.2437 },
+    imageUrl: 'https://picsum.photos/seed/dog1/600/400',
+    imageHint: 'stray dog',
+    submittedBy: { name: citizens[9].name, uid: citizens[9].uid, email: citizens[9].email },
+    submittedAt: subDays(now, 1).toISOString(),
+    assignedTo: 'worker-4',
+    updates: [
+        { status: 'Submitted', updatedAt: subDays(now, 1).toISOString(), description: 'Issue reported by citizen.' },
+        { status: 'In Progress', updatedAt: subHours(now, 2).toISOString(), description: 'Animal control has been notified.' }
+    ]
+  },
+  {
+    id: '13',
+    title: 'Leaking fire hydrant',
+    description: 'A fire hydrant is leaking water.',
+    category: 'Water Supply Quality',
+    status: 'Submitted',
+    slaStatus: 'On Time',
+    isEmergency: true,
+    slaDeadline: addHours(now, 24).toISOString(),
+    location: { lat: 40.7128, lng: -74.0060 },
+    imageUrl: 'https://picsum.photos/seed/hydrant1/600/400',
+    imageHint: 'fire hydrant',
+    submittedBy: { name: citizens[0].name, uid: citizens[0].uid, email: citizens[0].email },
+    submittedAt: subHours(now, 1).toISOString(),
+    assignedTo: undefined,
+    updates: [
+        { status: 'Submitted', updatedAt: subHours(now, 1).toISOString(), description: 'Issue reported by citizen.' }
     ]
   }
 ];
