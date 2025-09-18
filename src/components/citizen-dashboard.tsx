@@ -157,34 +157,6 @@ export function CitizenDashboard() {
         </Card>
       </div>
 
-      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-        <AccordionItem value="item-1">
-          <AccordionTrigger className="text-lg font-semibold">
-            <div className="flex items-center gap-2">
-                My Recent Reports 
-                <Badge>{userIssues.length}</Badge>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent>
-            <Card className="mt-4">
-              <CardContent className="grid gap-6 pt-6">
-                {userIssues.length > 0 ? (
-                  userIssues.map(issue => <IssueCard key={issue.id} issue={issue} isHighlighted={issue.id === highlightedIssueId} />)
-                ) : (
-                  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-                      <h3 className="text-xl font-semibold tracking-tight">
-                          You have no reports
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-2 mb-4">
-                          Get started by submitting your first issue.
-                      </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
     </div>
   );
 }
