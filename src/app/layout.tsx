@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from '@/hooks/use-auth'
 import { Loader2 } from 'lucide-react';
 import { CustomerCareButton } from '@/components/customer-care-button';
 import { ChatbotWidget } from '@/components/chatbot-widget';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 const metadata: Metadata = {
   title: 'CivicSolve',
@@ -64,6 +65,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
       ) : (
          <main className="flex-1">{children}</main>
       )}
+      { isCitizen && <LanguageSwitcher /> }
       { isCitizen && <ChatbotWidget /> }
       { isCitizen && <CustomerCareButton /> }
     </div>
