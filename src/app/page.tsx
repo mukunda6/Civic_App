@@ -171,7 +171,7 @@ export default function LoginPage() {
           <CardTitle className="text-3xl font-headline">
             Welcome to CivicSolve
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-lg font-semibold text-primary !mt-2" style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.1)'}}>
             See it. Snap it. Solve it. Together.
           </CardDescription>
         </CardHeader>
