@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table';
 import { getIssues, getWorkers } from '@/lib/firebase-service';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Gift, DollarSign, Star, TrendingUp, Zap } from 'lucide-react';
+import { Trophy, Gift, DollarSign, Star, TrendingUp, Zap, CheckCircle } from 'lucide-react';
 import type { Issue } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
