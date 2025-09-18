@@ -166,7 +166,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-2xl">
         <CardHeader className="text-center">
           <div className="flex justify-center items-center gap-2 mb-4">
-            <CivicSolveLogo className="h-12 w-12 text-primary" />
+            <CivicSolveLogo className="h-16 w-16 text-primary" />
           </div>
           <CardTitle className="text-3xl font-headline">
             Welcome to CivicSolve
