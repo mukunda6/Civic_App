@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Camera, RefreshCw, AlertTriangle, VideoOff } from 'lucide-react';
+import { Camera, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 interface CameraCaptureProps {
@@ -20,22 +20,28 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   const getCameraPermission = useCallback(async () => {
+    // Stop any existing stream before getting a new one
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+
     const videoConstraints: MediaStreamConstraints = {
-        video: { facingMode: 'environment' }
+        video: { facingMode: { ideal: 'environment' } }
     };
+
     try {
         const mediaStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
         setStream(mediaStream);
         setHasCameraPermission(true);
     } catch (err) {
         console.warn('Could not get environment camera, trying default camera.', err);
-        // If environment camera fails, try with no facingMode constraint.
+        // Fallback to any available camera if the environment camera is not found
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
             setStream(mediaStream);
             setHasCameraPermission(true);
         } catch (error) {
-            console.error('Error accessing camera:', error);
+            console.error('Error accessing any camera:', error);
             setHasCameraPermission(false);
             toast({
                 variant: 'destructive',
@@ -44,17 +50,19 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
             });
         }
     }
-  }, [toast]);
+  }, [toast, stream]);
 
   useEffect(() => {
     getCameraPermission();
+
     return () => {
-      stream?.getTracks().forEach(track => track.stop());
+      // Clean up the stream when the component unmounts
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
     };
-    // The stream dependency is removed to prevent re-running when stream is set.
-    // getCameraPermission is stable due to useCallback.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getCameraPermission]);
+  }, []); // Run only once on mount
 
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -73,12 +81,15 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
         const dataUrl = canvas.toDataURL('image/jpeg');
         setCapturedImage(dataUrl);
+        // Stop the camera stream after capturing the image
+        stream?.getTracks().forEach(track => track.stop());
       }
     }
   };
 
   const handleRetake = () => {
     setCapturedImage(null);
+    getCameraPermission(); // Re-request the camera stream
   };
 
   const handleConfirm = () => {
