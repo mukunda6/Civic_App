@@ -88,22 +88,6 @@ export default function SettingsPage() {
                     </Button>
                 </div>
             </div>
-            <Separator />
-             <div>
-                <Label>Language</Label>
-                <p className="text-sm text-muted-foreground mb-2">Choose your preferred language.</p>
-                <Select defaultValue="en">
-                    <SelectTrigger className="w-[200px]">
-                        <SelectValue placeholder="Language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="te">Telugu</SelectItem>
-                        <SelectItem value="hi">Hindi</SelectItem>
-                        <SelectItem value="ur">Urdu</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
         </CardContent>
       </Card>
       
