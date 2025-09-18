@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Camera, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Camera, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 interface CameraCaptureProps {
@@ -19,50 +19,57 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
-  const requestCameraPermission = useCallback(async () => {
-    // Stop any existing stream before getting a new one
+  const cleanupStream = useCallback(() => {
     if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        setStream(null);
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
     }
-    setHasCameraPermission(null);
+  }, [stream]);
 
-    try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { ideal: 'environment' } }
-        });
-        setStream(mediaStream);
-        setHasCameraPermission(true);
-    } catch (err) {
-        console.warn('Could not get environment camera, trying default camera.', err);
-        // Fallback to any available camera
+  const requestCameraPermission = useCallback(async () => {
+    setHasCameraPermission(null);
+    cleanupStream();
+
+    const getCamera = async (constraints: MediaStreamConstraints) => {
         try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
             setStream(mediaStream);
             setHasCameraPermission(true);
-        } catch (error) {
-            console.error('Error accessing any camera:', error);
-            setHasCameraPermission(false);
-            toast({
-                variant: 'destructive',
-                title: 'Camera Access Denied',
-                description: 'Please enable camera permissions in your browser settings.',
-            });
+            return true;
+        } catch (err) {
+            return false;
         }
     }
-  }, [toast, stream]);
+
+    // 1. Try environment camera
+    if (await getCamera({ video: { facingMode: { ideal: 'environment' } } })) return;
+    
+    console.warn('Could not get environment camera, trying default camera.');
+    
+    // 2. Fallback to any camera
+    if (await getCamera({ video: true })) return;
+
+    // 3. If all fail, show error
+    console.error('Error accessing any camera.');
+    setHasCameraPermission(false);
+    toast({
+        variant: 'destructive',
+        title: 'Camera Access Denied',
+        description: 'Please enable camera permissions in your browser settings.',
+    });
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toast]); // cleanupStream is not needed here as it's stable
 
   useEffect(() => {
     requestCameraPermission();
 
+    // Ensure stream is cleaned up when the component unmounts.
     return () => {
-      // Clean up the stream when the component unmounts
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
+      cleanupStream();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, []);
 
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -81,9 +88,7 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
         const dataUrl = canvas.toDataURL('image/jpeg');
         setCapturedImage(dataUrl);
-        // Stop the camera stream after capturing the image
-        stream?.getTracks().forEach(track => track.stop());
-        setStream(null); // Clear the stream state
+        cleanupStream(); // Stop the camera stream after capturing the image
       }
     }
   };
@@ -117,7 +122,12 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   }
   
   if (hasCameraPermission === null) {
-      return <div className="text-center p-8">Requesting camera permission...</div>
+      return (
+        <div className="flex items-center justify-center h-48 text-center p-8">
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Requesting camera permission...
+        </div>
+      );
   }
 
   return (
