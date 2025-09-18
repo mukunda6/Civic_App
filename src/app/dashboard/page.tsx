@@ -42,6 +42,8 @@ function DashboardContent() {
         return <AdminDashboard />
       case 'Head':
         return <HeadDashboard />
+      case 'Worker':
+        return <WorkerDashboard user={user}/>
       default:
         // Fallback to citizen dashboard if role is unknown
         return <CitizenDashboard />
@@ -56,6 +58,8 @@ function DashboardContent() {
         return 'Assign issues and manage field workers.'
       case 'Head':
         return 'Top-level overview of the entire system.'
+      case 'Worker':
+        return 'View and manage your assigned tasks.'
       default:
         return 'Track your reports and see community issues.'
     }
@@ -69,6 +73,8 @@ function DashboardContent() {
         return 'Admin Dashboard';
       case 'Head':
         return 'Head Dashboard';
+       case 'Worker':
+        return 'Worker Dashboard';
       default:
         return 'Dashboard';
     }

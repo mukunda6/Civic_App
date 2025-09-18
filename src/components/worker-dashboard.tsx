@@ -9,14 +9,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { getIssuesByWorker } from '@/lib/firebase-service';
-import type { Issue } from '@/lib/types';
+import type { Issue, AppUser } from '@/lib/types';
 import { IssueCard } from './issue-card';
 import { Wrench, AlertTriangle, ListTodo } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 import { useState, useEffect } from 'react';
 
-export function WorkerDashboard() {
-  const { user } = useAuth();
+export function WorkerDashboard({ user }: { user: AppUser }) {
   const [assignedIssues, setAssignedIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
 
