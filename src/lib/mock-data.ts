@@ -217,7 +217,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: citizens[1].name, uid: citizens[1].uid, email: citizens[1].email },
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subDays(now, 3).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -237,7 +237,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
     imageHint: 'tap water',
-    submittedBy: { name: citizens[2].name, uid: citizens[2].uid, email: citizens[2].email },
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subHours(now, 28).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -256,7 +256,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',
     imageHint: 'street light',
-    submittedBy: { name: citizens[0].name, uid: citizens[0].uid, email: citizens[0].email },
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subHours(now, 8).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -449,7 +449,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/hydrant1/600/400',
     imageHint: 'fire hydrant',
-    submittedBy: { name: citizens[0].name, uid: citizens[0].uid, email: citizens[0].email },
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subHours(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [
