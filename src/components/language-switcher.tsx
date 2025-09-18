@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -9,25 +10,21 @@ import {
 } from '@/components/ui/popover';
 import { Globe, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/use-language';
+import { languages } from '@/hooks/use-language';
 
-const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'te', name: 'Telugu' },
-    { code: 'hi', name: 'Hindi' },
-];
 
 export function LanguageSwitcher() {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedLang, setSelectedLang] = useState('en');
+    const { language, setLanguage, t } = useLanguage();
     const { toast } = useToast();
 
     const handleLanguageChange = (langCode: string) => {
-        setSelectedLang(langCode);
+        setLanguage(langCode);
         setIsOpen(false);
         toast({
-            title: 'Language Switched',
-            description: `Language has been set to ${languages.find(l => l.code === langCode)?.name}. (UI text will not change yet.)`,
+            title: t('language_switched'),
+            description: `${t('language_set_to')} ${languages.find(l => l.code === langCode)?.name}.`,
         });
     }
 
@@ -53,7 +50,7 @@ export function LanguageSwitcher() {
                             onClick={() => handleLanguageChange(lang.code)}
                         >
                             <span className="flex-1">{lang.name}</span>
-                            {selectedLang === lang.code && <Check className="h-4 w-4" />}
+                            {language === lang.code && <Check className="h-4 w-4" />}
                         </Button>
                     ))}
                 </div>

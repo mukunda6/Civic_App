@@ -21,6 +21,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/use-language';
 
 const categoryDetails: { category: IssueCategory; icon: React.ReactNode; description: string; }[] = [
     { category: 'Garbage & Waste Management Problems', icon: <Trash2 className="h-8 w-8" />, description: 'Overflowing bins, illegal dumping.'},
@@ -44,6 +45,7 @@ export function CitizenDashboard() {
   const [loading, setLoading] = useState(true);
   const [highlightedIssueId, setHighlightedIssueId] = useState<string | null>(null);
   const [showAllReports, setShowAllReports] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     // Check for a recently submitted issue ID from the query params
@@ -91,8 +93,8 @@ export function CitizenDashboard() {
     <div className="grid gap-8">
        <Card>
          <CardHeader>
-            <CardTitle>Report a New Issue</CardTitle>
-            <CardDescription>Select a category to begin your report. For urgent issues, select Emergency Report.</CardDescription>
+            <CardTitle>{t('report_new_issue')}</CardTitle>
+            <CardDescription>{t('report_new_issue_desc')}</CardDescription>
          </CardHeader>
          <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -101,8 +103,8 @@ export function CitizenDashboard() {
                     className="col-span-2 md:col-span-1 lg:col-span-1 text-center p-4 rounded-lg border border-destructive bg-destructive/10 hover:bg-destructive/20 transition-all flex flex-col items-center justify-center shadow-sm"
                 >
                     <div className="text-destructive mb-2"><AlertTriangle className="h-8 w-8" /></div>
-                    <h3 className="font-semibold text-sm text-destructive">Emergency Report</h3>
-                    <p className="text-xs text-destructive/80 mt-1">For critical, urgent issues.</p>
+                    <h3 className="font-semibold text-sm text-destructive">{t('emergency_report')}</h3>
+                    <p className="text-xs text-destructive/80 mt-1">{t('emergency_report_desc')}</p>
                 </Link>
                 {categoryDetails.map(({ category, icon, description }) => (
                     <button
@@ -111,8 +113,8 @@ export function CitizenDashboard() {
                         className="text-center p-4 rounded-lg border bg-card hover:bg-accent hover:text-accent-foreground transition-all flex flex-col items-center justify-center shadow-sm"
                     >
                         <div className="text-primary mb-2">{icon}</div>
-                        <h3 className="font-semibold text-sm">{category.split('&')[0].trim()}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                        <h3 className="font-semibold text-sm">{t(category.split(' & ')[0].trim().toLowerCase().replace(/ /g, '_'))}</h3>
+                        <p className="text-xs text-muted-foreground mt-1">{t(description.toLowerCase().replace(/, /g, '_').replace(/ /g, '_'))}</p>
                     </button>
                 ))}
             </div>
@@ -123,38 +125,38 @@ export function CitizenDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Submitted Reports
+              {t('submitted_reports')}
             </CardTitle>
             <FilePlus2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{submittedCount}</div>
             <p className="text-xs text-muted-foreground">
-              Issues awaiting review
+              {t('issues_awaiting_review')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('in_progress')}</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{inProgressCount}</div>
             <p className="text-xs text-muted-foreground">
-              Issues actively being worked on
+              {t('issues_actively_worked_on')}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Solved</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('solved')}</CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{resolvedCount}</div>
             <p className="text-xs text-muted-foreground">
-              Issues that have been solved
+              {t('issues_solved')}
             </p>
           </CardContent>
         </Card>
@@ -164,15 +166,15 @@ export function CitizenDashboard() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>My Recent Reports</CardTitle>
+              <CardTitle>{t('my_recent_reports')}</CardTitle>
               {userIssues.length > 3 && (
                  <Button variant="outline" onClick={() => setShowAllReports(!showAllReports)}>
-                    {showAllReports ? 'Show Less' : 'View All Reports'}
+                    {showAllReports ? t('show_less') : t('view_all_reports')}
                 </Button>
               )}
             </div>
             <CardDescription>
-              A summary of your most recent submissions.
+              {t('my_recent_reports_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">

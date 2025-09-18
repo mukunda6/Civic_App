@@ -30,11 +30,13 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 export function AppSidebar() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const [isClient, setIsClient] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     setIsClient(true);
@@ -58,11 +60,11 @@ export function AppSidebar() {
             <SidebarMenuButton
               asChild
               isActive={pathname === '/dashboard'}
-              tooltip="Dashboard"
+              tooltip={t('dashboard')}
             >
               <Link href="/dashboard">
                 <LayoutDashboard />
-                <span>Dashboard</span>
+                <span>{t('dashboard')}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -72,11 +74,11 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === '/user-leaderboard'}
-                  tooltip="Leaderboard and Rewards"
+                  tooltip={t('leaderboard_rewards')}
                 >
                   <Link href="/user-leaderboard">
                     <Trophy />
-                    <span>Leaderboard &amp; Rewards</span>
+                    <span>{t('leaderboard_rewards')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -87,11 +89,11 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === '/worker-leaderboard'}
-                  tooltip="Worker Leaderboard"
+                  tooltip={t('worker_leaderboard')}
                 >
                   <Link href="/worker-leaderboard">
                     <Shield />
-                    <span>Worker Leaderboard</span>
+                    <span>{t('worker_leaderboard')}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

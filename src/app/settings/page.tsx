@@ -17,19 +17,21 @@ import { Sun, Moon, Laptop, Bell, Palette, User, CircleHelp, Mail, Phone, Messag
 import { useAuth } from '@/hooks/use-auth';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Link from 'next/link';
+import { useLanguage } from '@/hooks/use-language';
 
 export default function SettingsPage() {
   const { setTheme } = useTheme();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight font-headline">
-          Settings
+          {t('settings')}
         </h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences.
+          {t('settings_desc')}
         </p>
       </div>
 
@@ -37,22 +39,22 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
-            Profile
+            {t('profile')}
           </CardTitle>
           <CardDescription>
-            This is your public display name and email.
+            {t('profile_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">{t('full_name')}</Label>
             <Input id="name" defaultValue={user?.name || ''} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('email')}</Label>
             <Input id="email" type="email" defaultValue={user?.email || ''} readOnly />
           </div>
-           <Button>Update Profile</Button>
+           <Button>{t('update_profile')}</Button>
         </CardContent>
       </Card>
 
@@ -60,25 +62,25 @@ export default function SettingsPage() {
         <CardHeader>
            <CardTitle className="flex items-center gap-2">
             <Palette className="w-5 h-5" />
-            Appearance
+            {t('appearance')}
           </CardTitle>
           <CardDescription>
-            Customize the look and feel of the application.
+            {t('appearance_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
             <div>
-                <Label>Theme</Label>
-                 <p className="text-sm text-muted-foreground mb-2">Select the color scheme for the app.</p>
+                <Label>{t('theme')}</Label>
+                 <p className="text-sm text-muted-foreground mb-2">{t('theme_desc')}</p>
                 <div className="flex items-center space-x-2">
                     <Button variant="outline" size="sm" onClick={() => setTheme('light')}>
-                        <Sun className="h-4 w-4 mr-2" /> Light
+                        <Sun className="h-4 w-4 mr-2" /> {t('light')}
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => setTheme('dark')}>
-                        <Moon className="h-4 w-4 mr-2" /> Dark
+                        <Moon className="h-4 w-4 mr-2" /> {t('dark')}
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => setTheme('system')}>
-                        <Laptop className="h-4 w-4 mr-2" /> System
+                        <Laptop className="h-4 w-4 mr-2" /> {t('system')}
                     </Button>
                 </div>
             </div>
@@ -89,27 +91,27 @@ export default function SettingsPage() {
         <CardHeader>
            <CardTitle className="flex items-center gap-2">
             <Bell className="w-5 h-5" />
-            Notifications
+            {t('notifications')}
           </CardTitle>
           <CardDescription>
-            Manage how you receive notifications.
+            {t('notifications_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="space-y-0.5">
-              <Label>Email Notifications</Label>
+              <Label>{t('email_notifications')}</Label>
               <p className="text-sm text-muted-foreground">
-                Receive email updates on your reported issues.
+                {t('email_notifications_desc')}
               </p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
             <div className="space-y-0.5">
-              <Label>Push Notifications</Label>
+              <Label>{t('push_notifications')}</Label>
                <p className="text-sm text-muted-foreground">
-                Get real-time alerts on your device.
+                {t('push_notifications_desc')}
               </p>
             </div>
             <Switch />
@@ -121,39 +123,39 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CircleHelp className="w-5 h-5" />
-            Help & Support
+            {t('help_support')}
           </CardTitle>
           <CardDescription>
-            Find answers to common questions and get in touch with our team.
+            {t('help_support_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
            <div>
-             <h3 className="text-lg font-semibold mb-2">Frequently Asked Questions</h3>
+             <h3 className="text-lg font-semibold mb-2">{t('faq')}</h3>
              <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">
-                  <AccordionTrigger>How do I report a new issue?</AccordionTrigger>
+                  <AccordionTrigger>{t('faq_q1')}</AccordionTrigger>
                   <AccordionContent>
-                    You can report a new issue from the Dashboard by clicking on one of the categories like "Garbage" or "Potholes". This will take you to a form where you can upload a photo and provide details.
+                    {t('faq_a1')}
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
-                  <AccordionTrigger>How can I track the status of my report?</AccordionTrigger>
+                  <AccordionTrigger>{t('faq_q2')}</AccordionTrigger>
                   <AccordionContent>
-                    Your submitted reports appear on the Dashboard under "My Recent Reports". You can click on any report card to view its detailed timeline and current status.
+                    {t('faq_a2')}
                   </AccordionContent>
                 </AccordionItem>
                  <AccordionItem value="item-3">
-                  <AccordionTrigger>What do the different SLA statuses mean?</AccordionTrigger>
+                  <AccordionTrigger>{t('faq_q3')}</AccordionTrigger>
                   <AccordionContent>
-                    SLA (Service Level Agreement) statuses indicate how your report is doing against its target resolution time. 'On Time' is good, 'At Risk' means the deadline is approaching, and 'Deadline Missed' means it's overdue.
+                    {t('faq_a3')}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
            </div>
 
            <div>
-                <h3 className="text-lg font-semibold mb-2">Contact Us</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('contact_us')}</h3>
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
                         <Mail className="h-4 w-4 text-muted-foreground"/>
@@ -170,11 +172,11 @@ export default function SettingsPage() {
                 <Button asChild>
                     <Link href="/report">
                         <MessageSquarePlus className="mr-2 h-4 w-4" />
-                        Report a New Issue
+                        {t('report_new_issue')}
                     </Link>
                 </Button>
                 <Button variant="outline" asChild>
-                     <a href="mailto:feedback@civicsolve.com">Submit Feedback</a>
+                     <a href="mailto:feedback@civicsolve.com">{t('submit_feedback')}</a>
                 </Button>
             </div>
         </CardContent>
