@@ -1,5 +1,4 @@
 
-
 import type { Issue, Worker, AppUser } from './types';
 import { addHours, subDays, subHours } from 'date-fns';
 
@@ -163,7 +162,7 @@ export const mockIssues: Issue[] = [
     slaDeadline: addHours(now, 24).toISOString(),
     location: { lat: 40.7145, lng: -74.0080 },
     imageUrl: 'https://picsum.photos/seed/pipeburst/600/400',
-    imageHint: 'pipe burst',
+    imageHint: 'pipe flooding',
     submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subHours(now, 2).toISOString(),
     assignedTo: undefined,
@@ -181,7 +180,7 @@ export const mockIssues: Issue[] = [
     slaDeadline: addHours(now, 48).toISOString(),
     location: { lat: 40.7295, lng: -73.9965 },
     imageUrl: 'https://picsum.photos/seed/parktrash/600/400',
-    imageHint: 'park trash',
+    imageHint: 'park litter',
     submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subHours(now, 10).toISOString(),
     assignedTo: undefined,
@@ -199,7 +198,7 @@ export const mockIssues: Issue[] = [
     slaDeadline: addHours(now, 48).toISOString(),
     location: { lat: 40.7420, lng: -74.0015 },
     imageUrl: 'https://picsum.photos/seed/roaddamage/600/400',
-    imageHint: 'road damage',
+    imageHint: 'damaged road',
     submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: undefined,
