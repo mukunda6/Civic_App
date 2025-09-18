@@ -65,7 +65,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
       ) : (
          <main className="flex-1">{children}</main>
       )}
-      <LanguageSwitcher />
+      { user && <LanguageSwitcher /> }
       { user && <ChatbotWidget /> }
       { user && <CustomerCareButton /> }
     </div>
