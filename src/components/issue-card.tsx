@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -18,23 +19,30 @@ import {
   Home,
   Dog,
   Cloudy,
+  Car,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { useState, useEffect } from 'react';
 
-const categoryIcons: Record<Issue['category'], React.ReactNode> = {
-  'Garbage & Waste Management Problems': <Trash2 className="h-4 w-4" />,
-  'Water Supply Quality': <Droplets className="h-4 w-4" />,
-  'Drainage Issues': <Droplets className="h-4 w-4" />,
-  'Roads, Footpaths & Infrastructure Damage': <Construction className="h-4 w-4" />,
-  'Streetlights & Electricity Failures': <Lightbulb className="h-4 w-4" />,
-  'Parks, Trees & Environmental Concerns': <TreePine className="h-4 w-4" />,
-  'Illegal Constructions & Encroachments': <Home className="h-4 w-4" />,
-  'Stray Animals & Public Health Hazards': <Dog className="h-4 w-4" />,
-  'Sanitation & Toiletry Issues': <Home className="h-4 w-4" />,
-  'Mosquito Control & Fogging': <Cloudy className="h-4 w-4" />,
+const categoryDetails: Record<Issue['category'], { icon: React.ReactNode, imageHint: string }> = {
+  'Garbage & Waste Management Problems': { icon: <Trash2 className="h-4 w-4" />, imageHint: 'trash can' },
+  'Water Supply Quality': { icon: <Droplets className="h-4 w-4" />, imageHint: 'tap water' },
+  'Drainage Issues': { icon: <Droplets className="h-4 w-4" />, imageHint: 'drainage sewer' },
+  'Roads, Footpaths & Infrastructure Damage': { icon: <Construction className="h-4 w-4" />, imageHint: 'pothole road' },
+  'Streetlights & Electricity Failures': { icon: <Lightbulb className="h-4 w-4" />, imageHint: 'street light' },
+  'Parks, Trees & Environmental Concerns': { icon: <TreePine className="h-4 w-4" />, imageHint: 'park tree' },
+  'Illegal Constructions & Encroachments': { icon: <Home className="h-4 w-4" />, imageHint: 'construction site' },
+  'Stray Animals & Public Health Hazards': { icon: <Dog className="h-4 w-4" />, imageHint: 'stray dog' },
+  'Sanitation & Toiletry Issues': { icon: <Home className="h-4 w-4" />, imageHint: 'public toilet' },
+  'Mosquito Control & Fogging': { icon: <Cloudy className="h-4 w-4" />, imageHint: 'stagnant water' },
+  'Pipeline Burst': { icon: <Droplets className="h-4 w-4" />, imageHint: 'pipe burst' },
+  'Road Accident': { icon: <Car className="h-4 w-4" />, imageHint: 'car accident' },
+  'Fire Hazard': { icon: <Lightbulb className="h-4 w-4" />, imageHint: 'fire smoke' },
+  'Medical Waste': { icon: <Trash2 className="h-4 w-4" />, imageHint: 'medical waste' },
+  'Major Blockage': { icon: <Construction className="h-4 w-4" />, imageHint: 'road blockage' },
 };
+
 
 const statusColors: Record<Issue['status'], string> = {
   Submitted: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-700',
@@ -64,16 +72,23 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
     // Default for citizen
     return 'View Details';
   }
+  
+  const details = categoryDetails[issue.category] || { icon: <Construction className="h-4 w-4" />, imageHint: 'issue placeholder' };
+  const imageHint = issue.imageHint || details.imageHint;
+  // Use a unique part of the issue to seed the image, like its ID or a hash of its title
+  const imageSeed = issue.id.replace(/-/g, '');
+
+
   return (
-    <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 border-b pb-6 last:border-none">
+    <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 border-b pb-6">
       <div className="w-full sm:w-48 md:w-56 flex-shrink-0">
         <Image
-          src={issue.imageUrl}
+          src={issue.imageUrl || `https://picsum.photos/seed/${imageSeed}/600/400`}
           alt={issue.title}
           width={600}
           height={400}
           className="rounded-lg aspect-video object-cover"
-          data-ai-hint={issue.imageHint}
+          data-ai-hint={imageHint}
         />
       </div>
       <div className="flex-1">
@@ -98,7 +113,7 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
 
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
-                {categoryIcons[issue.category]}
+                {details.icon}
                 <span className="truncate">{issue.category.split('&')[0].trim()}</span>
             </div>
             <div className="flex items-center gap-1.5">

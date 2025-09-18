@@ -12,15 +12,31 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { getIssuesByUser } from '@/lib/firebase-service';
-import type { Issue } from '@/lib/types';
+import type { Issue, IssueCategory } from '@/lib/types';
 import { IssueCard } from './issue-card';
-import { FilePlus2, Clock, CheckCircle, AlertTriangle, Phone } from 'lucide-react';
+import { FilePlus2, Clock, CheckCircle, AlertTriangle, Phone, Droplets, Construction, Trash2, Lightbulb, TreePine, Home, Dog, Cloudy } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { useRouter } from 'next/navigation';
+
+const categoryDetails: { category: IssueCategory; icon: React.ReactNode; }[] = [
+    { category: 'Garbage & Waste Management Problems', icon: <Trash2 className="h-8 w-8 mb-2" /> },
+    { category: 'Water Supply Quality', icon: <Droplets className="h-8 w-8 mb-2" /> },
+    { category: 'Drainage Issues', icon: <Droplets className="h-8 w-8 mb-2" /> },
+    { category: 'Roads, Footpaths & Infrastructure Damage', icon: <Construction className="h-8 w-8 mb-2" /> },
+    { category: 'Streetlights & Electricity Failures', icon: <Lightbulb className="h-8 w-8 mb-2" /> },
+    { category: 'Parks, Trees & Environmental Concerns', icon: <TreePine className="h-8 w-8 mb-2" /> },
+    { category: 'Illegal Constructions & Encroachments', icon: <Home className="h-8 w-8 mb-2" /> },
+    { category: 'Stray Animals & Public Health Hazards', icon: <Dog className="h-8 w-8 mb-2" /> },
+    { category: 'Sanitation & Toiletry Issues', icon: <Home className="h-8 w-8 mb-2" /> },
+    { category: 'Mosquito Control & Fogging', icon: <Cloudy className="h-8 w-8 mb-2" /> },
+];
+
 
 export function CitizenDashboard() {
   const { user } = useAuth();
+  const router = useRouter();
   const [userIssues, setUserIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,9 +60,13 @@ export function CitizenDashboard() {
     return <div>Loading your issues...</div>;
   }
 
-  const submittedCount = userIssues.filter(i => i.status === 'Submitted' && !i.isEmergency).length;
-  const inProgressCount = userIssues.filter(i => i.status === 'In Progress' && !i.isEmergency).length;
-  const resolvedCount = userIssues.filter(i => i.status === 'Resolved' && !i.isEmergency).length;
+  const submittedCount = userIssues.filter(i => i.status === 'Submitted').length;
+  const inProgressCount = userIssues.filter(i => i.status === 'In Progress').length;
+  const resolvedCount = userIssues.filter(i => i.status === 'Resolved').length;
+
+  const handleCategoryClick = (category: IssueCategory) => {
+    router.push(`/report?category=${encodeURIComponent(category)}`);
+  };
 
   return (
     <div className="grid gap-8">
@@ -61,7 +81,7 @@ export function CitizenDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{submittedCount}</div>
             <p className="text-xs text-muted-foreground">
-              Standard issues awaiting review
+              Issues awaiting review
             </p>
           </CardContent>
         </Card>
@@ -98,6 +118,31 @@ export function CitizenDashboard() {
           For any immediate assistance or queries, you can reach out to our 24/7 customer care at <a href="tel:18001234567" className="font-semibold underline">1800-123-4567</a>.
         </AlertDescription>
       </Alert>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle>Report a New Issue</CardTitle>
+            <CardDescription>
+              Select a category to begin your report.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {categoryDetails.map(({ category, icon }) => (
+                    <Button 
+                        key={category}
+                        variant="outline"
+                        className="h-auto p-4 flex flex-col items-center justify-center text-center hover:bg-accent hover:text-accent-foreground"
+                        onClick={() => handleCategoryClick(category)}
+                    >
+                        {icon}
+                        <span className="text-sm font-medium">{category.split('&')[0].trim()}</span>
+                    </Button>
+                ))}
+            </div>
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader className="flex flex-row items-center">
@@ -107,12 +152,6 @@ export function CitizenDashboard() {
               Here are the latest issues you've reported.
             </CardDescription>
           </div>
-          <Button asChild size="sm" className="ml-auto gap-1">
-            <Link href="/report">
-              New Report
-              <FilePlus2 className="h-4 w-4" />
-            </Link>
-          </Button>
         </CardHeader>
         <CardContent className="grid gap-6">
           {userIssues.length > 0 ? (
@@ -125,9 +164,7 @@ export function CitizenDashboard() {
                 <p className="text-sm text-muted-foreground mt-2 mb-4">
                     Get started by submitting your first issue.
                 </p>
-                <Button asChild>
-                    <Link href="/report">Report an Issue</Link>
-                </Button>
+                <Button onClick={() => handleCategoryClick('Garbage & Waste Management Problems')}>Report an Issue</Button>
             </div>
           )}
         </CardContent>
