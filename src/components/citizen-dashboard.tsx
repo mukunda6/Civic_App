@@ -131,7 +131,7 @@ export function CitizenDashboard() {
         </CardHeader>
         <CardContent className="grid gap-6">
           {userIssues.length > 0 ? (
-            userIssues.slice(0, 1).map(issue => <IssueCard key={issue.id} issue={issue} />)
+            userIssues.map(issue => <IssueCard key={issue.id} issue={issue} />)
           ) : (
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
                 <h3 className="text-xl font-semibold tracking-tight">
