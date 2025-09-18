@@ -53,6 +53,7 @@ const statusColors: Record<Issue['status'], string> = {
 type IssueCardProps = {
   issue: Issue;
   userRole?: UserRole;
+  isHighlighted?: boolean;
 };
 
 // Component to prevent hydration mismatch for dates
@@ -64,7 +65,7 @@ function SafeHydrate({ children }: { children: React.ReactNode }) {
   return isHydrated ? <>{children}</> : null;
 }
 
-export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
+export function IssueCard({ issue, userRole = 'Citizen', isHighlighted = false }: IssueCardProps) {
   const getButtonText = () => {
     if (userRole === 'Admin' || userRole === 'Head') {
         return 'View Details';
@@ -80,7 +81,10 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
 
 
   return (
-    <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 border-b pb-6">
+    <div className={cn(
+        "flex flex-col sm:flex-row items-start gap-4 md:gap-6 border-b pb-6 transition-colors duration-300",
+        isHighlighted && "bg-green-50 dark:bg-green-900/20 -mx-6 px-6 rounded-lg"
+    )}>
       <div className="w-full sm:w-48 md:w-56 flex-shrink-0">
         <Image
           src={issue.imageUrl || `https://picsum.photos/seed/${imageSeed}/600/400`}

@@ -258,7 +258,7 @@ export function ReportIssueForm({
         form.reset();
         setImagePreview(null);
         setImageClarity({status: 'idle'});
-        router.push(`/issues/${newIssue.id}`);
+        router.push(`/dashboard?newIssueId=${newIssue.id}`);
     } catch (error) {
         console.error('Error adding issue:', error);
         toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});

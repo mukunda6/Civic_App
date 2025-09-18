@@ -17,9 +17,10 @@ import { IssueCard } from './issue-card';
 import { FilePlus2, Clock, CheckCircle, AlertTriangle, Droplets, Construction, Trash2, Lightbulb, TreePine, Home, Dog, Cloudy, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Badge } from './ui/badge';
+import { cn } from '@/lib/utils';
 
 const categoryDetails: { category: IssueCategory; icon: React.ReactNode; description: string; }[] = [
     { category: 'Garbage & Waste Management Problems', icon: <Trash2 className="h-8 w-8" />, description: 'Overflowing bins, illegal dumping.'},
@@ -38,8 +39,20 @@ const categoryDetails: { category: IssueCategory; icon: React.ReactNode; descrip
 export function CitizenDashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [userIssues, setUserIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(true);
+  const [highlightedIssueId, setHighlightedIssueId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check for a recently submitted issue ID from the query params
+    const newIssueId = searchParams.get('newIssueId');
+    if (newIssueId) {
+      setHighlightedIssueId(newIssueId);
+      // Clean the URL
+      router.replace('/dashboard', { scroll: false });
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     if (user) {
@@ -156,7 +169,7 @@ export function CitizenDashboard() {
             <Card className="mt-4">
               <CardContent className="grid gap-6 pt-6">
                 {userIssues.length > 0 ? (
-                  userIssues.map(issue => <IssueCard key={issue.id} issue={issue} />)
+                  userIssues.map(issue => <IssueCard key={issue.id} issue={issue} isHighlighted={issue.id === highlightedIssueId} />)
                 ) : (
                   <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
                       <h3 className="text-xl font-semibold tracking-tight">
