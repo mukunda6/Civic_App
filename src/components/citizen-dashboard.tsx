@@ -112,14 +112,6 @@ export function CitizenDashboard() {
         </Card>
       </div>
 
-       <Alert>
-        <Phone className="h-4 w-4" />
-        <AlertTitle>Customer Care</AlertTitle>
-        <AlertDescription>
-          For any immediate assistance or queries, you can reach out to our 24/7 customer care at <a href="tel:18001234567" className="font-semibold underline">1800-123-4567</a>.
-        </AlertDescription>
-      </Alert>
-
       <Card>
         <CardHeader className="flex flex-row items-center">
           <div className="grid gap-2">
