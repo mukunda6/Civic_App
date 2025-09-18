@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
+import { Badge } from './ui/badge';
 
 const categoryDetails: { category: IssueCategory; icon: React.ReactNode; description: string; }[] = [
     { category: 'Garbage & Waste Management Problems', icon: <Trash2 className="h-8 w-8" />, description: 'Overflowing bins, illegal dumping.'},
