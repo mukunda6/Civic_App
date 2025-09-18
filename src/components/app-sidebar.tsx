@@ -108,18 +108,6 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === '/chatbot'}
-                  tooltip="Chatbot Assistant"
-                >
-                  <Link href="/chatbot">
-                    <Bot />
-                    <span>Chatbot Assistant</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </>
             )}
              {(user?.role === 'Admin' || user?.role === 'Head') && (
