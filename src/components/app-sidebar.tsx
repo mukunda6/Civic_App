@@ -24,7 +24,6 @@ import {
   Shield,
   Bot,
   AlertTriangle,
-  Camera,
 } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -137,18 +136,6 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/camera'}
-                tooltip="Camera Access"
-              >
-                <Link href="/camera">
-                  <Camera />
-                  <span>Camera Access</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
         </SidebarMenu>
 
         <SidebarMenu>
