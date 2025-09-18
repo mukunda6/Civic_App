@@ -47,7 +47,6 @@ function AppContent({ children }: { children: React.ReactNode }) {
 
   // If the user is logged in or on a public page, show the content.
   const showSidebar = user && !isPublicPage;
-  const isCitizen = user?.role === 'Citizen';
 
   return (
     <div className="flex flex-col flex-1 h-full">
@@ -67,8 +66,8 @@ function AppContent({ children }: { children: React.ReactNode }) {
          <main className="flex-1">{children}</main>
       )}
       <LanguageSwitcher />
-      { isCitizen && <ChatbotWidget /> }
-      { isCitizen && <CustomerCareButton /> }
+      { user && <ChatbotWidget /> }
+      { user && <CustomerCareButton /> }
     </div>
   );
 }
