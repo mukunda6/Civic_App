@@ -22,6 +22,7 @@ import { Trophy, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
 import type { Issue, Worker } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useLanguage } from '@/hooks/use-language';
 
 type WorkerStats = {
   id: string;
@@ -35,6 +36,7 @@ type WorkerStats = {
 export default function WorkerLeaderboardPage() {
   const [workerStats, setWorkerStats] = useState<WorkerStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -91,7 +93,7 @@ export default function WorkerLeaderboardPage() {
   const topPerformer = workerStats.length > 0 ? workerStats[0] : null;
 
   if (loading) {
-    return <div>Loading worker leaderboard...</div>;
+    return <div>{t('loading_worker_leaderboard')}</div>;
   }
 
   return (
@@ -100,31 +102,30 @@ export default function WorkerLeaderboardPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-headline flex items-center gap-2">
             <Trophy className="h-8 w-8 text-primary" />
-            Worker Leaderboard & Performance
+            {t('worker_leaderboard_performance')}
           </CardTitle>
           <CardDescription>
-            Ranking of field workers based on issue resolution performance.
+            {t('worker_leaderboard_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
            {topPerformer && (
              <Alert className="mb-6 bg-gradient-to-r from-yellow-100 to-amber-200 border-yellow-400 dark:from-yellow-900/50 dark:to-amber-800/50">
                 <Trophy className="h-5 w-5 text-yellow-600" />
-                <AlertTitle className="text-lg font-bold text-yellow-800 dark:text-yellow-300">Top Performer of the Month!</AlertTitle>
+                <AlertTitle className="text-lg font-bold text-yellow-800 dark:text-yellow-300">{t('top_performer_title')}</AlertTitle>
                 <AlertDescription className="text-yellow-700 dark:text-yellow-400">
-                  Congratulations to <span className="font-semibold">{topPerformer.name}</span> for resolving the most issues this month.
-                  An award certificate will be generated and added to their profile.
+                  {t('top_performer_desc', { name: topPerformer.name })}
                 </AlertDescription>
               </Alert>
            )}
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Rank</TableHead>
-                <TableHead>Worker</TableHead>
-                <TableHead className="text-center">Resolved</TableHead>
-                <TableHead className="text-center">In Progress</TableHead>
-                <TableHead className="text-center">Total Assigned</TableHead>
+                <TableHead className="w-[80px]">{t('rank')}</TableHead>
+                <TableHead>{t('worker')}</TableHead>
+                <TableHead className="text-center">{t('resolved')}</TableHead>
+                <TableHead className="text-center">{t('in_progress')}</TableHead>
+                <TableHead className="text-center">{t('total_assigned')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

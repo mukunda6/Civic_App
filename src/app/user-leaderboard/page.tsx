@@ -22,6 +22,7 @@ import { Trophy, Gift, DollarSign, Star, TrendingUp, Zap, CheckCircle } from 'lu
 import type { Issue } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useLanguage } from '@/hooks/use-language';
 
 type UserStats = {
   uid: string;
@@ -34,6 +35,7 @@ type UserStats = {
 export default function UserLeaderboardPage() {
   const [userStats, setUserStats] = useState<UserStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
@@ -98,7 +100,7 @@ export default function UserLeaderboardPage() {
   };
 
   if (loading) {
-    return <div>Loading leaderboard...</div>;
+    return <div>{t('loading_leaderboard')}</div>;
   }
 
   return (
@@ -107,26 +109,26 @@ export default function UserLeaderboardPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-headline flex items-center gap-2">
             <Trophy className="h-8 w-8 text-primary" />
-            Leaderboard and Rewards
+            {t('leaderboard_rewards')}
           </CardTitle>
           <CardDescription>
-            Ranking of citizens based on their contribution score.
+            {t('user_leaderboard_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
            <div className="grid md:grid-cols-2 gap-4 mb-6">
              <Alert>
                 <Gift className="h-4 w-4" />
-                <AlertTitle>Coupons for Reports</AlertTitle>
+                <AlertTitle>{t('coupons_for_reports')}</AlertTitle>
                 <AlertDescription>
-                  Receive a useful coupon for every valid issue you report after it's been successfully verified by our team.
+                  {t('coupons_for_reports_desc')}
                 </AlertDescription>
               </Alert>
               <Alert>
                 <DollarSign className="h-4 w-4" />
-                <AlertTitle>Weekly Cashback Rewards</AlertTitle>
+                <AlertTitle>{t('weekly_cashback_rewards')}</AlertTitle>
                 <AlertDescription>
-                  The top 3 most active users on the leaderboard each week will receive special cashback rewards. Keep reporting!
+                  {t('weekly_cashback_rewards_desc')}
                 </AlertDescription>
               </Alert>
            </div>
@@ -135,29 +137,29 @@ export default function UserLeaderboardPage() {
                 <CardHeader>
                     <CardTitle className="text-xl flex items-center gap-2">
                         <TrendingUp className="h-5 w-5"/>
-                        How It Works
+                        {t('how_it_works')}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="grid sm:grid-cols-3 gap-4 text-sm">
                    <div className="flex items-start gap-3">
                         <Star className="h-5 w-5 mt-1 text-primary flex-shrink-0"/>
                         <div>
-                            <h4 className="font-semibold">Base Points</h4>
-                            <p className="text-muted-foreground">Earn <span className="font-bold">3 points</span> for every issue you report.</p>
+                            <h4 className="font-semibold">{t('base_points')}</h4>
+                            <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('base_points_desc') }} />
                         </div>
                    </div>
                     <div className="flex items-start gap-3">
                         <Zap className="h-5 w-5 mt-1 text-yellow-500 flex-shrink-0"/>
                         <div>
-                            <h4 className="font-semibold">Emergency Bonus</h4>
-                            <p className="text-muted-foreground">Get an extra <span className="font-bold">5 points</span> for reporting critical, emergency issues.</p>
+                            <h4 className="font-semibold">{t('emergency_bonus')}</h4>
+                            <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('emergency_bonus_desc') }} />
                         </div>
                    </div>
                     <div className="flex items-start gap-3">
                         <CheckCircle className="h-5 w-5 mt-1 text-green-500 flex-shrink-0"/>
                         <div>
-                            <h4 className="font-semibold">Resolution Bonus</h4>
-                            <p className="text-muted-foreground">Receive a big bonus of <span className="font-bold">10 points</span> once your reported issue is successfully resolved.</p>
+                            <h4 className="font-semibold">{t('resolution_bonus')}</h4>
+                            <p className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: t('resolution_bonus_desc') }} />
                         </div>
                    </div>
                 </CardContent>
@@ -166,10 +168,10 @@ export default function UserLeaderboardPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[80px]">Rank</TableHead>
-                <TableHead>Citizen</TableHead>
-                <TableHead className="text-center">Reports</TableHead>
-                <TableHead className="text-right">Score</TableHead>
+                <TableHead className="w-[80px]">{t('rank')}</TableHead>
+                <TableHead>{t('citizen')}</TableHead>
+                <TableHead className="text-center">{t('reports')}</TableHead>
+                <TableHead className="text-right">{t('score')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
