@@ -66,8 +66,8 @@ function AppContent({ children }: { children: React.ReactNode }) {
          <main className="flex-1">{children}</main>
       )}
       { user && <LanguageSwitcher /> }
-      { user && <ChatbotWidget /> }
-      { user && <CustomerCareButton /> }
+      { user && user.role === 'Citizen' && <ChatbotWidget /> }
+      { user && user.role === 'Citizen' && <CustomerCareButton /> }
     </div>
   );
 }
