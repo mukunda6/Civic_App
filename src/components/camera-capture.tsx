@@ -19,23 +19,23 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
-  const getCameraPermission = useCallback(async () => {
+  const requestCameraPermission = useCallback(async () => {
     // Stop any existing stream before getting a new one
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
+        setStream(null);
     }
-
-    const videoConstraints: MediaStreamConstraints = {
-        video: { facingMode: { ideal: 'environment' } }
-    };
+    setHasCameraPermission(null);
 
     try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' } }
+        });
         setStream(mediaStream);
         setHasCameraPermission(true);
     } catch (err) {
         console.warn('Could not get environment camera, trying default camera.', err);
-        // Fallback to any available camera if the environment camera is not found
+        // Fallback to any available camera
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
             setStream(mediaStream);
@@ -53,7 +53,7 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   }, [toast, stream]);
 
   useEffect(() => {
-    getCameraPermission();
+    requestCameraPermission();
 
     return () => {
       // Clean up the stream when the component unmounts
@@ -83,13 +83,14 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
         setCapturedImage(dataUrl);
         // Stop the camera stream after capturing the image
         stream?.getTracks().forEach(track => track.stop());
+        setStream(null); // Clear the stream state
       }
     }
   };
 
   const handleRetake = () => {
     setCapturedImage(null);
-    getCameraPermission(); // Re-request the camera stream
+    requestCameraPermission(); // Re-request the camera stream
   };
 
   const handleConfirm = () => {
