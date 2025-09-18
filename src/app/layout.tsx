@@ -11,6 +11,7 @@ import { ThemeProvider } from 'next-themes'
 import { usePathname } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/hooks/use-auth'
 import { Loader2 } from 'lucide-react';
+import { CustomerCareButton } from '@/components/customer-care-button';
 
 const metadata: Metadata = {
   title: 'CivicSolve',
@@ -61,6 +62,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
       ) : (
          <main className="flex-1">{children}</main>
       )}
+      <CustomerCareButton />
     </div>
   );
 }
