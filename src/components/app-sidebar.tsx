@@ -66,22 +66,6 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          {user?.role === 'Citizen' && (
-            <>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/report/emergency'}
-                tooltip="Emergency Booking"
-              >
-                <Link href="/report/emergency">
-                  <AlertTriangle />
-                  <span>Emergency Booking</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            </>
-          )}
            {user?.role === 'Citizen' && (
             <>
               <SidebarMenuItem>
