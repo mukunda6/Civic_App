@@ -20,20 +20,29 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   const getCameraPermission = useCallback(async () => {
+    const videoConstraints: MediaStreamConstraints = {
+        video: { facingMode: 'environment' }
+    };
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      setStream(mediaStream);
-      setHasCameraPermission(true);
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      setHasCameraPermission(false);
-      toast({
-        variant: 'destructive',
-        title: 'Camera Access Denied',
-        description: 'Please enable camera permissions in your browser settings.',
-      });
+        const mediaStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
+        setStream(mediaStream);
+        setHasCameraPermission(true);
+    } catch (err) {
+        console.warn('Could not get environment camera, trying default camera.', err);
+        // If environment camera fails, try with no facingMode constraint.
+        try {
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            setStream(mediaStream);
+            setHasCameraPermission(true);
+        } catch (error) {
+            console.error('Error accessing camera:', error);
+            setHasCameraPermission(false);
+            toast({
+                variant: 'destructive',
+                title: 'Camera Access Denied',
+                description: 'Please enable camera permissions in your browser settings.',
+            });
+        }
     }
   }, [toast]);
 
@@ -42,7 +51,10 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
     return () => {
       stream?.getTracks().forEach(track => track.stop());
     };
-  }, [getCameraPermission, stream]);
+    // The stream dependency is removed to prevent re-running when stream is set.
+    // getCameraPermission is stable due to useCallback.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCameraPermission]);
 
   useEffect(() => {
     if (stream && videoRef.current) {
