@@ -127,14 +127,6 @@ export function ReportIssueForm({
   });
 
   const processImage = (file: File) => {
-    // For optional photo on emergency, we can skip clarity check if no file is provided.
-    if (!file && isEmergency) {
-        form.setValue('photoDataUri', 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'); // empty pixel
-        form.clearErrors('photoDataUri');
-        return;
-    }
-
-
     setImageClarity({ status: 'checking' });
     setImagePreview(URL.createObjectURL(file));
 
@@ -209,22 +201,29 @@ export function ReportIssueForm({
     setIsSubmitting(true);
     try {
       const existingIssues = await getIssues();
-      const existingIssueData = JSON.stringify(
-        existingIssues.map(i => ({ id: i.id, description: i.description, title: i.title, location: i.location }))
-      );
+      // Only run duplicate check if there are issues to check against and it's not an emergency
+      if (existingIssues.length > 0 && !isEmergency) {
+        const existingIssueData = JSON.stringify(
+          existingIssues.map(i => ({ id: i.id, description: i.description, title: i.title, location: i.location }))
+        );
 
-      const duplicateResult = await detectDuplicateIssue({
-        ...data,
-        location: `${data.location.lat}, ${data.location.lng}`,
-        existingIssueData,
-      });
-
-      if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.8 && !isEmergency) {
-        setDuplicateInfo(duplicateResult);
-        setIsSubmitting(false);
-      } else {
-        await finishSubmission();
+        const duplicateResult = await detectDuplicateIssue({
+          ...data,
+          location: `${data.location.lat}, ${data.location.lng}`,
+          existingIssueData,
+        });
+        
+        // Use a reasonable confidence threshold
+        if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.8) {
+          setDuplicateInfo(duplicateResult);
+          setIsSubmitting(false); // Stop submission and show dialog
+          return;
+        }
       }
+
+      // If no duplicates are found or it's an emergency, proceed to submit
+      await finishSubmission();
+
     } catch (error) {
       console.error('Submission failed:', error);
       toast({
@@ -237,9 +236,7 @@ export function ReportIssueForm({
   };
   
   const finishSubmission = async () => {
-    setDuplicateInfo(null);
-    setIsSubmitting(true);
-
+    setIsSubmitting(true); // Ensure submitting state is true
     const data = form.getValues();
 
     try {
@@ -257,6 +254,7 @@ export function ReportIssueForm({
         toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});
     } finally {
         setIsSubmitting(false);
+        setDuplicateInfo(null); // Also clear duplicate info here
     }
   };
   
@@ -384,18 +382,19 @@ export function ReportIssueForm({
           </Button>
         </form>
       </Form>
-      <AlertDialog open={!!duplicateInfo} onOpenChange={() => setDuplicateInfo(null)}>
+      <AlertDialog open={!!duplicateInfo} onOpenChange={(open) => !open && setDuplicateInfo(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Duplicate Report Detected</AlertDialogTitle>
             <AlertDialogDescription>
-              This issue has already been reported and cannot be submitted again. You can view the original report by clicking the button below.
+              This issue appears to have been reported already. You can view the original report by clicking the button below, or you can proceed to submit your report anyway if you believe this is a different issue.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDuplicateInfo(null)}>Cancel</AlertDialogCancel>
+            <Button variant="outline" onClick={finishSubmission}>Submit Anyway</Button>
             <AlertDialogAction asChild>
-                <a href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer">View Original Report</a>
+                <Link href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer">View Original Report</Link>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
