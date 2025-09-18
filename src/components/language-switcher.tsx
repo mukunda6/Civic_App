@@ -34,7 +34,7 @@ export function LanguageSwitcher() {
                 <Button
                     variant="default"
                     size="icon"
-                    className="fixed bottom-40 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
+                    className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-300"
                     aria-label="Open language switcher"
                 >
                     <Globe className="h-6 w-6" />
