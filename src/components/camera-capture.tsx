@@ -18,58 +18,72 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const cleanupStream = useCallback(() => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
-      setStream(null);
     }
+    if (videoRef.current) {
+        videoRef.current.srcObject = null;
+    }
+    setStream(null);
   }, [stream]);
 
   const requestCameraPermission = useCallback(async () => {
+    // Reset state for retries
     setHasCameraPermission(null);
+    setError(null);
     cleanupStream();
 
-    const getCamera = async (constraints: MediaStreamConstraints) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError("Camera not supported on this browser.");
+        setHasCameraPermission(false);
+        return;
+    }
+
+    const constraints: MediaStreamConstraints[] = [
+        { video: { facingMode: { ideal: 'environment' } } },
+        { video: true }
+    ];
+
+    let mediaStream: MediaStream | null = null;
+    for (const constraint of constraints) {
         try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-            setStream(mediaStream);
-            setHasCameraPermission(true);
-            return true;
-        } catch (err) {
-            return false;
+            mediaStream = await navigator.mediaDevices.getUserMedia(constraint);
+            if (mediaStream) break;
+        } catch (err: any) {
+            console.warn(`Failed to get camera with constraint: ${JSON.stringify(constraint)}`, err);
         }
     }
 
-    // 1. Try environment camera
-    if (await getCamera({ video: { facingMode: { ideal: 'environment' } } })) return;
-    
-    console.warn('Could not get environment camera, trying default camera.');
-    
-    // 2. Fallback to any camera
-    if (await getCamera({ video: true })) return;
-
-    // 3. If all fail, show error
-    console.error('Error accessing any camera.');
-    setHasCameraPermission(false);
-    toast({
-        variant: 'destructive',
-        title: 'Camera Access Denied',
-        description: 'Please enable camera permissions in your browser settings.',
-    });
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast]); // cleanupStream is not needed here as it's stable
+    if (mediaStream) {
+        setStream(mediaStream);
+        setHasCameraPermission(true);
+    } else {
+        console.error('Error accessing any camera.');
+        let errorMessage = "Could not access any camera. Please ensure it's not in use by another app.";
+        if (window.location.protocol !== 'https:') {
+            errorMessage += " Your browser may require a secure connection (https) to access the camera."
+        }
+        setError(errorMessage);
+        setHasCameraPermission(false);
+        toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: errorMessage,
+            duration: 9000,
+        });
+    }
+  }, [toast, cleanupStream]);
 
   useEffect(() => {
     requestCameraPermission();
 
-    // Ensure stream is cleaned up when the component unmounts.
     return () => {
       cleanupStream();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [requestCameraPermission, cleanupStream]);
 
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -109,18 +123,6 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
     }
   };
 
-  if (hasCameraPermission === false) {
-    return (
-      <Alert variant="destructive">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Camera Access Required</AlertTitle>
-        <AlertDescription>
-          We couldn't access your device's camera. Please grant camera permissions in your browser's settings and refresh the page.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-  
   if (hasCameraPermission === null) {
       return (
         <div className="flex items-center justify-center h-48 text-center p-8">
@@ -128,6 +130,18 @@ export function CameraCapture({ onPhotoTaken }: CameraCaptureProps) {
             Requesting camera permission...
         </div>
       );
+  }
+
+  if (hasCameraPermission === false) {
+    return (
+      <Alert variant="destructive">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Camera Access Required</AlertTitle>
+        <AlertDescription>
+          {error || "We couldn't access your device's camera. Please grant camera permissions in your browser's settings and refresh the page."}
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
