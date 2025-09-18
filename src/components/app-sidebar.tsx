@@ -98,32 +98,7 @@ export function AppSidebar() {
             )}
         </SidebarMenu>
 
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === '/help'}
-              tooltip="Help & Support"
-            >
-              <Link href="#">
-                <CircleHelp />
-                <span>Help & Support</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-             <SidebarMenuButton
-              asChild
-              isActive={pathname === '/settings'}
-              tooltip="Settings"
-            >
-              <Link href="/settings">
-                <Settings />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        
       </SidebarContent>
       <Separator className="my-0 bg-border/50" />
       <SidebarFooter className="p-4">
