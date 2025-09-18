@@ -118,31 +118,6 @@ export function CitizenDashboard() {
           For any immediate assistance or queries, you can reach out to our 24/7 customer care at <a href="tel:18001234567" className="font-semibold underline">1800-123-4567</a>.
         </AlertDescription>
       </Alert>
-      
-      <Card>
-        <CardHeader>
-            <CardTitle>Report a New Issue</CardTitle>
-            <CardDescription>
-              Select a category to begin your report.
-            </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {categoryDetails.map(({ category, icon }) => (
-                    <Button 
-                        key={category}
-                        variant="outline"
-                        className="h-auto p-4 flex flex-col items-center justify-center text-center hover:bg-accent hover:text-accent-foreground"
-                        onClick={() => handleCategoryClick(category)}
-                    >
-                        {icon}
-                        <span className="text-sm font-medium">{category.split('&')[0].trim()}</span>
-                    </Button>
-                ))}
-            </div>
-        </CardContent>
-      </Card>
-
 
       <Card>
         <CardHeader className="flex flex-row items-center">
@@ -164,7 +139,9 @@ export function CitizenDashboard() {
                 <p className="text-sm text-muted-foreground mt-2 mb-4">
                     Get started by submitting your first issue.
                 </p>
-                <Button onClick={() => handleCategoryClick('Garbage & Waste Management Problems')}>Report an Issue</Button>
+                <Button asChild>
+                  <Link href="/report">Report an Issue</Link>
+                </Button>
             </div>
           )}
         </CardContent>
