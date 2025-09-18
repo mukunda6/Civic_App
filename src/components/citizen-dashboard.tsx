@@ -76,10 +76,18 @@ export function CitizenDashboard() {
        <Card>
          <CardHeader>
             <CardTitle>Report a New Issue</CardTitle>
-            <CardDescription>Select a category to begin your report.</CardDescription>
+            <CardDescription>Select a category to begin your report. For urgent issues, select Emergency Report.</CardDescription>
          </CardHeader>
          <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                 <Link
+                    href="/report/emergency"
+                    className="col-span-2 md:col-span-1 lg:col-span-1 text-center p-4 rounded-lg border border-destructive bg-destructive/10 hover:bg-destructive/20 transition-all flex flex-col items-center justify-center shadow-sm"
+                >
+                    <div className="text-destructive mb-2"><AlertTriangle className="h-8 w-8" /></div>
+                    <h3 className="font-semibold text-sm text-destructive">Emergency Report</h3>
+                    <p className="text-xs text-destructive/80 mt-1">For critical, urgent issues.</p>
+                </Link>
                 {categoryDetails.map(({ category, icon, description }) => (
                     <button
                         key={category}
@@ -91,14 +99,6 @@ export function CitizenDashboard() {
                         <p className="text-xs text-muted-foreground mt-1">{description}</p>
                     </button>
                 ))}
-                 <Link
-                    href="/report/emergency"
-                    className="col-span-2 md:col-span-1 lg:col-span-1 text-center p-4 rounded-lg border border-destructive bg-destructive/10 hover:bg-destructive/20 transition-all flex flex-col items-center justify-center shadow-sm"
-                >
-                    <div className="text-destructive mb-2"><AlertTriangle className="h-8 w-8" /></div>
-                    <h3 className="font-semibold text-sm text-destructive">Emergency Report</h3>
-                    <p className="text-xs text-destructive/80 mt-1">For critical, urgent issues.</p>
-                </Link>
             </div>
          </CardContent>
        </Card>
@@ -144,7 +144,7 @@ export function CitizenDashboard() {
         </Card>
       </div>
 
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
         <AccordionItem value="item-1">
           <AccordionTrigger className="text-lg font-semibold">
             <div className="flex items-center gap-2">
