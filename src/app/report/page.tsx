@@ -1,4 +1,5 @@
 
+
 'use client'
 
 import { ReportIssueForm } from '@/components/report-issue-form';
@@ -10,8 +11,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import type { IssueCategory } from '@/lib/types';
 
@@ -28,9 +29,11 @@ const standardCategories: IssueCategory[] = [
     'Mosquito Control & Fogging',
 ];
 
-export default function ReportPage() {
+function ReportPageContent() {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const category = searchParams.get('category') as IssueCategory | null;
 
     useEffect(() => {
         if (!loading && !user) {
@@ -61,9 +64,19 @@ export default function ReportPage() {
           <ReportIssueForm 
             user={user} 
             allowedCategories={standardCategories}
+            initialCategory={category}
           />
         </CardContent>
       </Card>
     </div>
   );
+}
+
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-screen"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+        <ReportPageContent />
+    </Suspense>
+  )
 }

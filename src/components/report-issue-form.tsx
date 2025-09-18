@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -96,6 +96,7 @@ interface ReportIssueFormProps {
     allowedCategories?: (IssueCategory | EmergencyCategory)[];
     categoryTitle?: string;
     categoryPlaceholder?: string;
+    initialCategory?: IssueCategory | EmergencyCategory | null;
 }
 
 export function ReportIssueForm({ 
@@ -104,6 +105,7 @@ export function ReportIssueForm({
     allowedCategories = allCategories,
     categoryTitle = 'Category',
     categoryPlaceholder = 'Select an issue category',
+    initialCategory = null,
 }: ReportIssueFormProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -124,8 +126,15 @@ export function ReportIssueForm({
     defaultValues: {
       description: '',
       photoDataUri: '',
+      category: initialCategory || undefined,
     },
   });
+
+  useEffect(() => {
+    if (initialCategory) {
+        form.setValue('category', initialCategory);
+    }
+  }, [initialCategory, form]);
 
   const processImage = (file: File) => {
     setImageClarity({ status: 'checking' });
@@ -339,7 +348,7 @@ export function ReportIssueForm({
                 <FormLabel>{categoryTitle}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
