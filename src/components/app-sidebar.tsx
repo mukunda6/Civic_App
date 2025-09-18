@@ -71,18 +71,6 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === '/report'}
-                tooltip="Report an Issue"
-              >
-                <Link href="/report">
-                  <FilePlus2 />
-                  <span>Report an Issue</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
                 isActive={pathname === '/report/emergency'}
                 tooltip="Emergency Booking"
               >
