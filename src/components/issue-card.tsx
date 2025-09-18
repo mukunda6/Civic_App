@@ -76,7 +76,7 @@ export function IssueCard({ issue, userRole = 'Citizen' }: IssueCardProps) {
   const details = categoryDetails[issue.category] || { icon: <Construction className="h-4 w-4" />, imageHint: 'issue placeholder' };
   const imageHint = issue.imageHint || details.imageHint;
   // Use a unique part of the issue to seed the image, like its ID or a hash of its title
-  const imageSeed = issue.id.replace(/-/g, '');
+  const imageSeed = imageHint.replace(/\s/g, '');
 
 
   return (
