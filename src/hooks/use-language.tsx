@@ -4,6 +4,7 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import en from '@/locales/en.json';
 import te from '@/locales/te.json';
+import hi from '@/locales/hi.json';
 
 export const languages = [
     { code: 'en', name: 'English' },
@@ -13,7 +14,8 @@ export const languages = [
 
 const translations: Record<string, Record<string, string>> = {
     en,
-    te
+    te,
+    hi
 };
 
 interface LanguageContextType {
