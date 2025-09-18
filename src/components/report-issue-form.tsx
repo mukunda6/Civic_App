@@ -58,6 +58,7 @@ import type { AppUser, IssueCategory, EmergencyCategory } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { CameraCapture } from './camera-capture';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const allCategories: (IssueCategory | EmergencyCategory)[] = [
     'Garbage & Waste Management Problems',
