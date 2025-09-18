@@ -149,8 +149,64 @@ export const mockWorkers: Worker[] = [
 ];
 
 const citizens = mockUsers.filter(u => u.role === 'Citizen');
+const defaultCitizen = citizens.find(c => c.email === 'citizen@test.com') || citizens[0];
 
 export const mockIssues: Issue[] = [
+    {
+    id: 'default-1',
+    title: 'Water pipe broken',
+    description: 'A major water pipe has burst on the main road, causing significant flooding and water loss.',
+    category: 'Pipeline Burst',
+    status: 'Submitted',
+    slaStatus: 'On Time',
+    isEmergency: true,
+    slaDeadline: addHours(now, 24).toISOString(),
+    location: { lat: 40.7145, lng: -74.0080 },
+    imageUrl: 'https://picsum.photos/seed/pipeburst/600/400',
+    imageHint: 'pipe burst',
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedAt: subHours(now, 2).toISOString(),
+    assignedTo: undefined,
+    updates: [
+        { status: 'Submitted', updatedAt: subHours(now, 2).toISOString(), description: 'Emergency issue reported by citizen. Immediate attention required.' }
+    ]
+  },
+  {
+    id: 'default-2',
+    title: 'Public park is not cleaned',
+    description: 'The local community park is filled with litter and hasn\'t been cleaned for weeks. It has become unhygienic.',
+    category: 'Parks, Trees & Environmental Concerns',
+    status: 'Submitted',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(now, 48).toISOString(),
+    location: { lat: 40.7295, lng: -73.9965 },
+    imageUrl: 'https://picsum.photos/seed/parktrash/600/400',
+    imageHint: 'park trash',
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedAt: subHours(now, 10).toISOString(),
+    assignedTo: undefined,
+    updates: [
+        { status: 'Submitted', updatedAt: subHours(now, 10).toISOString(), description: 'Issue reported by citizen. Awaiting assignment.' }
+    ]
+  },
+  {
+    id: 'default-3',
+    title: 'Road is damaged',
+    description: 'The road surface on Oak Avenue is severely damaged with multiple deep potholes, making it unsafe for driving.',
+    category: 'Roads, Footpaths & Infrastructure Damage',
+    status: 'Submitted',
+    slaStatus: 'On Time',
+    slaDeadline: addHours(now, 48).toISOString(),
+    location: { lat: 40.7420, lng: -74.0015 },
+    imageUrl: 'https://picsum.photos/seed/roaddamage/600/400',
+    imageHint: 'road damage',
+    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedAt: subDays(now, 1).toISOString(),
+    assignedTo: undefined,
+    updates: [
+        { status: 'Submitted', updatedAt: subDays(now, 1).toISOString(), description: 'Issue reported by citizen. Awaiting assignment.' }
+    ]
+  },
   {
     id: '1',
     title: 'Large pothole on Main St',
