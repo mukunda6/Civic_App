@@ -38,13 +38,22 @@ export function CitizenDashboard() {
   const { user } = useAuth();
   const router = useRouter();
   const [userIssues, setUserIssues] = useState<Issue[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
-      // Intentionally keeping this empty as requested
-      setUserIssues([]);
-      setLoading(false);
+      const fetchIssues = async () => {
+        setLoading(true);
+        try {
+          const issues = await getIssuesByUser(user.uid);
+          setUserIssues(issues);
+        } catch (error) {
+          console.error("Error fetching user issues:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchIssues();
     }
   }, [user]);
 
