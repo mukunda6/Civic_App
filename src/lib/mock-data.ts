@@ -148,9 +148,18 @@ export const mockWorkers: Worker[] = [
 ];
 
 const citizens = mockUsers.filter(u => u.role === 'Citizen');
-const defaultCitizen = citizens.find(c => c.email === 'citizen@test.com') || citizens[0];
+const citizen1 = citizens[1]; 
+const citizen2 = citizens[2];
+const citizen3 = citizens[3];
+const citizen4 = citizens[4];
+const citizen5 = citizens[5];
+const citizen6 = citizens[6];
+const citizen7 = citizens[7];
+const citizen8 = citizens[8];
+const citizen9 = citizens[9];
 
-export const mockIssues: Issue[] = [
+
+export let mockIssues: Issue[] = [
     {
     id: 'default-1',
     title: 'Water pipe broken',
@@ -163,7 +172,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7145, lng: -74.0080 },
     imageUrl: 'https://picsum.photos/seed/pipeburst/600/400',
     imageHint: 'pipe flooding',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subHours(now, 2).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -181,7 +190,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7295, lng: -73.9965 },
     imageUrl: 'https://picsum.photos/seed/parktrash/600/400',
     imageHint: 'park litter',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen2.name, uid: citizen2.uid, email: citizen2.email },
     submittedAt: subHours(now, 10).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -199,7 +208,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7420, lng: -74.0015 },
     imageUrl: 'https://picsum.photos/seed/roaddamage/600/400',
     imageHint: 'damaged road',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen3.name, uid: citizen3.uid, email: citizen3.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -217,7 +226,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen4.name, uid: citizen4.uid, email: citizen4.email },
     submittedAt: subDays(now, 3).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -237,7 +246,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
     imageHint: 'tap water',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen5.name, uid: citizen5.uid, email: citizen5.email },
     submittedAt: subHours(now, 28).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -256,7 +265,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',
     imageHint: 'street light',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen6.name, uid: citizen6.uid, email: citizen6.email },
     submittedAt: subHours(now, 8).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -274,7 +283,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/trash1/600/400',
     imageHint: 'trash can',
-    submittedBy: { name: citizens[3].name, uid: citizens[3].uid, email: citizens[3].email },
+    submittedBy: { name: citizen3.name, uid: citizen3.uid, email: citizen3.email },
     submittedAt: subHours(now, 52).toISOString(),
      assignedTo: 'worker-3',
     updates: [
@@ -293,7 +302,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/pothole2/600/400',
     imageHint: 'pothole street',
-    submittedBy: { name: citizens[4].name, uid: citizens[4].uid, email: citizens[4].email },
+    submittedBy: { name: citizen4.name, uid: citizen4.uid, email: citizen4.email },
     submittedAt: subHours(now, 52).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -314,7 +323,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/manhole1/600/400',
     imageHint: 'manhole cover',
-    submittedBy: { name: citizens[5].name, uid: citizens[5].uid, email: citizens[5].email },
+    submittedBy: { name: citizen5.name, uid: citizen5.uid, email: citizen5.email },
     submittedAt: subDays(now, 4).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -334,7 +343,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/shelter1/600/400',
     imageHint: 'bus stop',
-    submittedBy: { name: citizens[6].name, uid: citizens[6].uid, email: citizens[6].email },
+    submittedBy: { name: citizen6.name, uid: citizen6.uid, email: citizen6.email },
     submittedAt: subDays(now, 5).toISOString(),
     assignedTo: 'worker-3',
     updates: [
@@ -355,7 +364,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole3/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: citizens[1].name, uid: citizens[1].uid, email: citizens[1].email },
+    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subDays(now, 5).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -374,7 +383,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole4/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: citizens[1].name, uid: citizens[1].uid, email: citizens[1].email },
+    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subDays(now, 6).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -393,7 +402,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/graffiti1/600/400',
     imageHint: 'graffiti wall',
-    submittedBy: { name: citizens[7].name, uid: citizens[7].uid, email: citizens[7].email },
+    submittedBy: { name: citizen7.name, uid: citizen7.uid, email: citizen7.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -411,7 +420,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/bench1/600/400',
     imageHint: 'park bench',
-    submittedBy: { name: citizens[8].name, uid: citizens[8].uid, email: citizens[8].email },
+    submittedBy: { name: citizen8.name, uid: citizen8.uid, email: citizen8.email },
     submittedAt: subDays(now, 2).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -429,7 +438,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/dog1/600/400',
     imageHint: 'stray dog',
-    submittedBy: { name: citizens[9].name, uid: citizens[9].uid, email: citizens[9].email },
+    submittedBy: { name: citizen9.name, uid: citizen9.uid, email: citizen9.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: 'worker-4',
     updates: [
@@ -449,7 +458,7 @@ export const mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/hydrant1/600/400',
     imageHint: 'fire hydrant',
-    submittedBy: { name: defaultCitizen.name, uid: defaultCitizen.uid, email: defaultCitizen.email },
+    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subHours(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -457,3 +466,5 @@ export const mockIssues: Issue[] = [
     ]
   }
 ];
+
+    
