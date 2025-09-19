@@ -108,7 +108,7 @@ export function AppSidebar() {
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user.avatarUrl} />
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+              <AvatarFallback>{user.name ? user.name.charAt(0) : 'U'}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="font-medium text-sm">{user.name}</span>
