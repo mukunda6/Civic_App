@@ -94,5 +94,7 @@
     "top_performer_desc": "Congratulations to <span class=\"font-semibold\">{{name}}</span> for resolving the most issues this month. An award certificate will be generated and added to their profile.",
     "worker": "Worker",
     "resolved": "Resolved",
-    "total_assigned": "Total Assigned"
+    "total_assigned": "Total Assigned",
+    "your_coins": "Your Coins",
+    "earn_coins_prompt": "Report issues to start earning coins!"
 }

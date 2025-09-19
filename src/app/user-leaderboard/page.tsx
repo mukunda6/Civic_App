@@ -18,11 +18,12 @@ import {
 } from '@/components/ui/table';
 import { getIssues, getWorkers } from '@/lib/firebase-service';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Trophy, Gift, DollarSign, Star, TrendingUp, Zap, CheckCircle } from 'lucide-react';
+import { Trophy, Gift, DollarSign, Star, TrendingUp, Zap, CheckCircle, Coins } from 'lucide-react';
 import type { Issue } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useLanguage } from '@/hooks/use-language';
+import { useAuth } from '@/hooks/use-auth';
 
 type UserStats = {
   uid: string;
@@ -34,11 +35,18 @@ type UserStats = {
 
 export default function UserLeaderboardPage() {
   const [userStats, setUserStats] = useState<UserStats[]>([]);
+  const [currentUserScore, setCurrentUserScore] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchLeaderboardData = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const issues = await getIssues();
         
@@ -78,6 +86,11 @@ export default function UserLeaderboardPage() {
         stats.sort((a, b) => b.score - a.score);
         
         setUserStats(stats);
+        
+        // Find and set the current user's score
+        const currentUserStat = stats.find(stat => stat.uid === user.uid);
+        setCurrentUserScore(currentUserStat?.score || 0);
+
       } catch (error) {
         console.error("Error fetching user leaderboard data:", error);
       } finally {
@@ -86,7 +99,7 @@ export default function UserLeaderboardPage() {
     };
     
     fetchLeaderboardData();
-  }, []);
+  }, [user]);
 
   const getRankNumber = (rank: number) => {
     if (rank === 0) return <Trophy className="h-6 w-6 text-yellow-500" />;
@@ -114,6 +127,19 @@ export default function UserLeaderboardPage() {
           <CardDescription>
             {t('user_leaderboard_desc')}
           </CardDescription>
+            <div className="pt-4">
+                <div className="flex items-center gap-4 rounded-lg bg-muted/50 p-4">
+                    <Coins className="h-10 w-10 text-yellow-500" />
+                    <div>
+                        <h3 className="font-bold text-lg">{t('your_coins')}</h3>
+                        {currentUserScore > 0 ? (
+                            <p className="text-2xl font-bold text-primary">{currentUserScore}</p>
+                        ) : (
+                             <p className="text-sm text-muted-foreground">{t('earn_coins_prompt')}</p>
+                        )}
+                    </div>
+                </div>
+            </div>
         </CardHeader>
         <CardContent>
            <div className="grid md:grid-cols-2 gap-4 mb-6">
