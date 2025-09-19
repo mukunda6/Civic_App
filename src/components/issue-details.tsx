@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/hooks/use-language';
 
 // Component to prevent hydration mismatch for dates
 function SafeHydrate({ children }: { children: React.ReactNode }) {
@@ -75,6 +76,8 @@ const slaStatusColors: Record<SlaStatus, string> = {
 
 
 export function IssueDetails({ issue }: { issue: Issue }) {
+  const { t } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
@@ -139,7 +142,7 @@ export function IssueDetails({ issue }: { issue: Issue }) {
                 <User className="h-4 w-4 mt-1" />
                 <div>
                     <p className="font-semibold">Reporter</p>
-                    <p className="text-muted-foreground">{issue.submittedBy.name}</p>
+                    <p className="text-muted-foreground">{t(issue.submittedBy.nameKey)}</p>
                 </div>
             </div>
         </div>

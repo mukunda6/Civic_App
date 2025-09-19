@@ -96,5 +96,24 @@
     "resolved": "పరిష్కరించబడింది",
     "total_assigned": "మొత్తం కేటాయించబడింది",
     "your_coins": "మీ నాణేలు",
-    "earn_coins_prompt": "నాణేలు సంపాదించడం ప్రారంభించడానికి సమస్యలను నివేదించండి!"
+    "earn_coins_prompt": "నాణేలు సంపాదించడం ప్రారంభించడానికి సమస్యలను నివేదించండి!",
+    
+    "gmc_head": "జిఎంసి హెడ్",
+    "admin_manager": "అడ్మిన్ మేనేజర్",
+    "field_worker_1": "ఫీల్డ్ వర్కర్ 1",
+    "field_worker_2": "ఫీల్డ్ వర్కర్ 2",
+    "john_citizen": "జాన్ సిటిజన్",
+    "jane_doe": "జేన్ డో",
+    "peter_jones": "పీటర్ జోన్స్",
+    "mary_smith": "మేరీ స్మిత్",
+    "david_williams": "డేవిడ్ విలియమ్స్",
+    "susan_brown": "సుసాన్ బ్రౌన్",
+    "michael_miller": "మైఖేల్ మిల్లర్",
+    "karen_wilson": "కరెన్ విల్సన్",
+    "james_moore": "జేమ్స్ మూర్",
+    "patricia_taylor": "ప్యాట్రిసియా టేలర్",
+    "alice_johnson": "ఆలిస్ జాన్సన్",
+    "bob_williams": "బాబ్ విలియమ్స్",
+    "charlie_brown": "చార్లీ బ్రౌన్",
+    "diana_prince": "డైయానా ప్రిన్స్"
 }

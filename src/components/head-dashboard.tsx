@@ -20,12 +20,14 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { useLanguage } from '@/hooks/use-language';
 
 export function HeadDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,6 +130,9 @@ export function HeadDashboard() {
                     <TableBody>
                         {escalatedIssues.map(issue => {
                             const lastRemark = issue.updates.filter(u => u.isSlaUpdate).pop()?.description || 'N/A';
+                            const worker = issue.assignedTo ? workers.find(w => w.id === issue.assignedTo) : null;
+                            const workerName = worker ? t(worker.nameKey) : <span className="text-destructive font-medium">Unassigned</span>;
+
                             return (
                                 <TableRow key={issue.id}>
                                     <TableCell>
@@ -140,9 +145,7 @@ export function HeadDashboard() {
                                             {formatDistanceToNow(new Date(issue.submittedAt))}
                                         </div>
                                     </TableCell>
-                                    <TableCell>
-                                        {issue.assignedTo ? workers.find(w => w.id === issue.assignedTo)?.name : <span className="text-destructive font-medium">Unassigned</span>}
-                                    </TableCell>
+                                    <TableCell>{workerName}</TableCell>
                                     <TableCell className="max-w-xs truncate italic">"{lastRemark}"</TableCell>
                                     <TableCell className='text-right'>
                                         <Button asChild size="sm">

@@ -90,6 +90,7 @@ export const addIssue = async (
         submittedBy: {
             uid: user.uid,
             name: user.name,
+            nameKey: user.nameKey,
             email: user.email,
         },
         status: 'Submitted' as IssueStatus,

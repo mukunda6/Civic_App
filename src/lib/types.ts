@@ -26,7 +26,8 @@ export type UserRole = 'Citizen' | 'Admin' | 'Head' | 'Worker';
 
 export interface AppUser {
     uid: string;
-    name: string;
+    name: string; // This will now be the translated name
+    nameKey: string; // Key for translation
     email: string;
     role: UserRole;
     avatarUrl: string;
@@ -48,7 +49,8 @@ export interface Issue {
   imageHint: string;
   submittedBy: {
     uid:string;
-    name: string;
+    name: string; // This will now be the translated name
+    nameKey: string; // Key for translation
     email: string;
   };
   submittedAt: string;
@@ -66,7 +68,8 @@ export interface Issue {
 
 export interface Worker {
   id: string;
-  name: string;
+  name: string; // This will now be the translated name
+  nameKey: string; // Key for translation
   area: string;
   avatarUrl: string;
 }

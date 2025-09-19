@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -27,6 +28,7 @@ import { useLanguage } from '@/hooks/use-language';
 type WorkerStats = {
   id: string;
   name: string;
+  nameKey: string;
   avatarUrl: string;
   resolvedCount: number;
   inProgressCount: number;
@@ -49,6 +51,7 @@ export default function WorkerLeaderboardPage() {
           statsMap.set(worker.id, {
             id: worker.id,
             name: worker.name,
+            nameKey: worker.nameKey,
             avatarUrl: worker.avatarUrl,
             resolvedCount: 0,
             inProgressCount: 0,
@@ -113,9 +116,7 @@ export default function WorkerLeaderboardPage() {
              <Alert className="mb-6 bg-gradient-to-r from-yellow-100 to-amber-200 border-yellow-400 dark:from-yellow-900/50 dark:to-amber-800/50">
                 <Trophy className="h-5 w-5 text-yellow-600" />
                 <AlertTitle className="text-lg font-bold text-yellow-800 dark:text-yellow-300">{t('top_performer_title')}</AlertTitle>
-                <AlertDescription className="text-yellow-700 dark:text-yellow-400">
-                  {t('top_performer_desc', { name: topPerformer.name })}
-                </AlertDescription>
+                <AlertDescription className="text-yellow-700 dark:text-yellow-400" dangerouslySetInnerHTML={{ __html: t('top_performer_desc', { name: t(topPerformer.nameKey) }) }} />
               </Alert>
            )}
           <Table>
@@ -139,13 +140,13 @@ export default function WorkerLeaderboardPage() {
                   <TableCell>
                     <div className="flex items-center gap-4">
                       <Avatar>
-                        <AvatarImage src={worker.avatarUrl} alt={worker.name} />
+                        <AvatarImage src={worker.avatarUrl} alt={t(worker.nameKey)} />
                         <AvatarFallback>
-                          {worker.name.charAt(0)}
+                          {t(worker.nameKey).charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold">{worker.name}</p>
+                        <p className="font-semibold">{t(worker.nameKey)}</p>
                         <p className="text-sm text-muted-foreground">
                           ID: {worker.id}
                         </p>

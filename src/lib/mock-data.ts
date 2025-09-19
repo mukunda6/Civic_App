@@ -1,4 +1,5 @@
 
+
 import type { Issue, Worker, AppUser } from './types';
 import { addHours, subDays, subHours } from 'date-fns';
 
@@ -8,6 +9,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
   {
     uid: 'head-user-01',
     name: 'GMC Head',
+    nameKey: 'gmc_head',
     email: 'head@test.com',
     password: 'password',
     role: 'Head',
@@ -16,6 +18,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
   {
     uid: 'admin-user-01',
     name: 'Admin Manager',
+    nameKey: 'admin_manager',
     email: 'admin@test.com',
     password: 'password',
     role: 'Admin',
@@ -24,6 +27,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
    {
     uid: 'worker-user-01',
     name: 'Field Worker 1',
+    nameKey: 'field_worker_1',
     email: 'worker@test.com',
     password: 'password',
     role: 'Worker',
@@ -32,6 +36,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
    {
     uid: 'worker-user-02',
     name: 'Field Worker 2',
+    nameKey: 'field_worker_2',
     email: 'worker2@test.com',
     password: 'password',
     role: 'Worker',
@@ -40,6 +45,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
   {
     uid: 'citizen-user-01',
     name: 'John Citizen',
+    nameKey: 'john_citizen',
     email: 'citizen@test.com',
     password: 'password',
     role: 'Citizen',
@@ -48,6 +54,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
   {
     uid: 'citizen-user-02',
     name: 'Jane Doe',
+    nameKey: 'jane_doe',
     email: 'jane.doe@test.com',
     password: 'password',
     role: 'Citizen',
@@ -56,6 +63,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-03',
     name: 'Peter Jones',
+    nameKey: 'peter_jones',
     email: 'peter.jones@test.com',
     password: 'password',
     role: 'Citizen',
@@ -64,6 +72,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-04',
     name: 'Mary Smith',
+    nameKey: 'mary_smith',
     email: 'mary.smith@test.com',
     password: 'password',
     role: 'Citizen',
@@ -72,6 +81,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-05',
     name: 'David Williams',
+    nameKey: 'david_williams',
     email: 'david.williams@test.com',
     password: 'password',
     role: 'Citizen',
@@ -80,6 +90,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-06',
     name: 'Susan Brown',
+    nameKey: 'susan_brown',
     email: 'susan.brown@test.com',
     password: 'password',
     role: 'Citizen',
@@ -88,6 +99,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-07',
     name: 'Michael Miller',
+    nameKey: 'michael_miller',
     email: 'michael.miller@test.com',
     password: 'password',
     role: 'Citizen',
@@ -96,6 +108,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-08',
     name: 'Karen Wilson',
+    nameKey: 'karen_wilson',
     email: 'karen.wilson@test.com',
     password: 'password',
     role: 'Citizen',
@@ -104,6 +117,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-09',
     name: 'James Moore',
+    nameKey: 'james_moore',
     email: 'james.moore@test.com',
     password: 'password',
     role: 'Citizen',
@@ -112,6 +126,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     {
     uid: 'citizen-user-10',
     name: 'Patricia Taylor',
+    nameKey: 'patricia_taylor',
     email: 'patricia.taylor@test.com',
     password: 'password',
     role: 'Citizen',
@@ -124,24 +139,28 @@ export const mockWorkers: Worker[] = [
   {
     id: 'worker-1',
     name: 'Alice Johnson',
+    nameKey: 'alice_johnson',
     area: 'Downtown',
     avatarUrl: 'https://picsum.photos/seed/worker1/100/100',
   },
   {
     id: 'worker-2',
     name: 'Bob Williams',
+    nameKey: 'bob_williams',
     area: 'Northside',
     avatarUrl: 'https://picsum.photos/seed/worker2/100/100',
   },
   {
     id: 'worker-3',
     name: 'Charlie Brown',
+    nameKey: 'charlie_brown',
     area: 'Southside',
     avatarUrl: 'https://picsum.photos/seed/worker3/100/100',
   },
     {
     id: 'worker-4',
     name: 'Diana Prince',
+    nameKey: 'diana_prince',
     area: 'West End',
     avatarUrl: 'https://picsum.photos/seed/worker4/100/100',
   },
@@ -172,7 +191,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7145, lng: -74.0080 },
     imageUrl: 'https://picsum.photos/seed/pipeburst/600/400',
     imageHint: 'pipe flooding',
-    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
+    submittedBy: { name: citizen1.name, nameKey: citizen1.nameKey, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subHours(now, 2).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -190,7 +209,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7295, lng: -73.9965 },
     imageUrl: 'https://picsum.photos/seed/parktrash/600/400',
     imageHint: 'park litter',
-    submittedBy: { name: citizen2.name, uid: citizen2.uid, email: citizen2.email },
+    submittedBy: { name: citizen2.name, nameKey: citizen2.nameKey, uid: citizen2.uid, email: citizen2.email },
     submittedAt: subHours(now, 10).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -208,7 +227,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7420, lng: -74.0015 },
     imageUrl: 'https://picsum.photos/seed/roaddamage/600/400',
     imageHint: 'damaged road',
-    submittedBy: { name: citizen3.name, uid: citizen3.uid, email: citizen3.email },
+    submittedBy: { name: citizen3.name, nameKey: citizen3.nameKey, uid: citizen3.uid, email: citizen3.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -226,7 +245,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole1/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: citizen4.name, uid: citizen4.uid, email: citizen4.email },
+    submittedBy: { name: citizen4.name, nameKey: citizen4.nameKey, uid: citizen4.uid, email: citizen4.email },
     submittedAt: subDays(now, 3).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -246,7 +265,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/water1/600/400',
     imageHint: 'tap water',
-    submittedBy: { name: citizen5.name, uid: citizen5.uid, email: citizen5.email },
+    submittedBy: { name: citizen5.name, nameKey: citizen5.nameKey, uid: citizen5.uid, email: citizen5.email },
     submittedAt: subHours(now, 28).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -265,7 +284,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/light1/600/400',
     imageHint: 'street light',
-    submittedBy: { name: citizen6.name, uid: citizen6.uid, email: citizen6.email },
+    submittedBy: { name: citizen6.name, nameKey: citizen6.nameKey, uid: citizen6.uid, email: citizen6.email },
     submittedAt: subHours(now, 8).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -283,7 +302,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/trash1/600/400',
     imageHint: 'trash can',
-    submittedBy: { name: citizen3.name, uid: citizen3.uid, email: citizen3.email },
+    submittedBy: { name: citizen3.name, nameKey: citizen3.nameKey, uid: citizen3.uid, email: citizen3.email },
     submittedAt: subHours(now, 52).toISOString(),
      assignedTo: 'worker-3',
     updates: [
@@ -302,7 +321,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/pothole2/600/400',
     imageHint: 'pothole street',
-    submittedBy: { name: citizen4.name, uid: citizen4.uid, email: citizen4.email },
+    submittedBy: { name: citizen4.name, nameKey: citizen4.nameKey, uid: citizen4.uid, email: citizen4.email },
     submittedAt: subHours(now, 52).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -323,7 +342,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7829, lng: -73.9654 },
     imageUrl: 'https://picsum.photos/seed/manhole1/600/400',
     imageHint: 'manhole cover',
-    submittedBy: { name: citizen5.name, uid: citizen5.uid, email: citizen5.email },
+    submittedBy: { name: citizen5.name, nameKey: citizen5.nameKey, uid: citizen5.uid, email: citizen5.email },
     submittedAt: subDays(now, 4).toISOString(),
     assignedTo: 'worker-2',
     updates: [
@@ -343,7 +362,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7580, lng: -73.9855 },
     imageUrl: 'https://picsum.photos/seed/shelter1/600/400',
     imageHint: 'bus stop',
-    submittedBy: { name: citizen6.name, uid: citizen6.uid, email: citizen6.email },
+    submittedBy: { name: citizen6.name, nameKey: citizen6.nameKey, uid: citizen6.uid, email: citizen6.email },
     submittedAt: subDays(now, 5).toISOString(),
     assignedTo: 'worker-3',
     updates: [
@@ -364,7 +383,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole3/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
+    submittedBy: { name: citizen1.name, nameKey: citizen1.nameKey, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subDays(now, 5).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -383,7 +402,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/pothole4/600/400',
     imageHint: 'pothole road',
-    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
+    submittedBy: { name: citizen1.name, nameKey: citizen1.nameKey, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subDays(now, 6).toISOString(),
     assignedTo: 'worker-1',
     updates: [
@@ -402,7 +421,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/graffiti1/600/400',
     imageHint: 'graffiti wall',
-    submittedBy: { name: citizen7.name, uid: citizen7.uid, email: citizen7.email },
+    submittedBy: { name: citizen7.name, nameKey: citizen7.nameKey, uid: citizen7.uid, email: citizen7.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -420,7 +439,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/bench1/600/400',
     imageHint: 'park bench',
-    submittedBy: { name: citizen8.name, uid: citizen8.uid, email: citizen8.email },
+    submittedBy: { name: citizen8.name, nameKey: citizen8.nameKey, uid: citizen8.uid, email: citizen8.email },
     submittedAt: subDays(now, 2).toISOString(),
     assignedTo: undefined,
     updates: [
@@ -438,7 +457,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 34.0522, lng: -118.2437 },
     imageUrl: 'https://picsum.photos/seed/dog1/600/400',
     imageHint: 'stray dog',
-    submittedBy: { name: citizen9.name, uid: citizen9.uid, email: citizen9.email },
+    submittedBy: { name: citizen9.name, nameKey: citizen9.nameKey, uid: citizen9.uid, email: citizen9.email },
     submittedAt: subDays(now, 1).toISOString(),
     assignedTo: 'worker-4',
     updates: [
@@ -458,7 +477,7 @@ export let mockIssues: Issue[] = [
     location: { lat: 40.7128, lng: -74.0060 },
     imageUrl: 'https://picsum.photos/seed/hydrant1/600/400',
     imageHint: 'fire hydrant',
-    submittedBy: { name: citizen1.name, uid: citizen1.uid, email: citizen1.email },
+    submittedBy: { name: citizen1.name, nameKey: citizen1.nameKey, uid: citizen1.uid, email: citizen1.email },
     submittedAt: subHours(now, 1).toISOString(),
     assignedTo: undefined,
     updates: [

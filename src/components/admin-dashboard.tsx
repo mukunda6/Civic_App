@@ -34,6 +34,7 @@ import { ListChecks, Users, AlertTriangle, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/hooks/use-language';
 
 
 const slaStatusColors: Record<SlaStatus, string> = {
@@ -50,6 +51,7 @@ export function AdminDashboard() {
   const [workers, setWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const fetchData = async () => {
       try {
@@ -96,7 +98,8 @@ export function AdminDashboard() {
   
   const getWorkerName = (workerId?: string) => {
     if (!workerId) return 'Unassigned';
-    return workers.find(w => w.id === workerId)?.name || 'Unknown Worker';
+    const worker = workers.find(w => w.id === workerId);
+    return worker ? t(worker.nameKey) : 'Unknown Worker';
   };
 
 
@@ -175,6 +178,7 @@ export function AdminDashboard() {
 
 
 const IssueTable = ({ issues, workers, onAssign, getWorkerName }: { issues: Issue[], workers: Worker[], onAssign: (issueId: string, workerId: string) => void, getWorkerName: (workerId?: string) => string }) => {
+    const { t } = useLanguage();
     return (
         <Table>
             <TableHeader>
@@ -223,7 +227,7 @@ const IssueTable = ({ issues, workers, onAssign, getWorkerName }: { issues: Issu
                       <SelectContent>
                         {workers.map(worker => (
                           <SelectItem key={worker.id} value={worker.id}>
-                            {worker.name}
+                            {t(worker.nameKey)}
                           </SelectItem>
                         ))}
                       </SelectContent>

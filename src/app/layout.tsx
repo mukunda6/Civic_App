@@ -96,12 +96,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>
-            <LanguageProvider>
+          <LanguageProvider>
+            <AuthProvider>
               <AppContent>{children}</AppContent>
               <Toaster />
-            </LanguageProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

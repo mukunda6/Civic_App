@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -28,6 +29,7 @@ import { useAuth } from '@/hooks/use-auth';
 type UserStats = {
   uid: string;
   name: string;
+  nameKey: string;
   avatarUrl: string;
   reportCount: number;
   score: number;
@@ -53,12 +55,13 @@ export default function UserLeaderboardPage() {
         const statsMap = new Map<string, UserStats>();
 
         issues.forEach(issue => {
-          const { uid, name } = issue.submittedBy;
+          const { uid, name, nameKey } = issue.submittedBy;
 
           if (!statsMap.has(uid)) {
             statsMap.set(uid, {
               uid,
               name,
+              nameKey,
               avatarUrl: `https://picsum.photos/seed/${name.split(' ')[0]}/100/100`,
               reportCount: 0,
               score: 0,
@@ -201,8 +204,8 @@ export default function UserLeaderboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {userStats.map((user, index) => (
-                <TableRow key={user.uid} className={index < 3 ? 'bg-muted/50 font-bold' : ''}>
+              {userStats.map((stat, index) => (
+                <TableRow key={stat.uid} className={index < 3 ? 'bg-muted/50 font-bold' : ''}>
                   <TableCell>
                     <div className="flex items-center justify-center">
                         {getRankNumber(index)}
@@ -211,21 +214,21 @@ export default function UserLeaderboardPage() {
                   <TableCell>
                     <div className="flex items-center gap-4">
                       <Avatar>
-                        <AvatarImage src={user.avatarUrl} />
+                        <AvatarImage src={stat.avatarUrl} />
                         <AvatarFallback>
-                          {user.name.charAt(0)}
+                          {t(stat.nameKey).charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold">{user.name}</p>
+                        <p className="font-semibold">{t(stat.nameKey)}</p>
                       </div>
                     </div>
                   </TableCell>
                    <TableCell className="text-center font-medium text-muted-foreground">
-                        {user.reportCount}
+                        {stat.reportCount}
                     </TableCell>
                   <TableCell className="text-right text-lg font-bold text-primary">
-                    {user.score}
+                    {stat.score}
                   </TableCell>
                 </TableRow>
               ))}

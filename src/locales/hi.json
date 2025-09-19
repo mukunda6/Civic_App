@@ -96,5 +96,24 @@
     "resolved": "हल",
     "total_assigned": "कुल सौंपा गया",
     "your_coins": "आपके सिक्के",
-    "earn_coins_prompt": "सिक्के कमाना शुरू करने के लिए समस्याओं की रिपोर्ट करें!"
+    "earn_coins_prompt": "सिक्के कमाना शुरू करने के लिए समस्याओं की रिपोर्ट करें!",
+
+    "gmc_head": "जीएमसी प्रमुख",
+    "admin_manager": "व्यवस्थापक प्रबंधक",
+    "field_worker_1": "क्षेत्र कार्यकर्ता 1",
+    "field_worker_2": "क्षेत्र कार्यकर्ता 2",
+    "john_citizen": "जॉन नागरिक",
+    "jane_doe": "जेन डो",
+    "peter_jones": "पीटर जोन्स",
+    "mary_smith": "मैरी स्मिथ",
+    "david_williams": "डेविड विलियम्स",
+    "susan_brown": "सुसान ब्राउन",
+    "michael_miller": "माइकल मिलर",
+    "karen_wilson": "करेन विल्सन",
+    "james_moore": "जेम्स मूर",
+    "patricia_taylor": "पेट्रीसिया टेलर",
+    "alice_johnson": "ऐलिस जॉनसन",
+    "bob_williams": "बॉब विलियम्स",
+    "charlie_brown": "चार्ली ब्राउन",
+    "diana_prince": "डायना प्रिंस"
 }

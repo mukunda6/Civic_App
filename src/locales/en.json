@@ -96,5 +96,24 @@
     "resolved": "Resolved",
     "total_assigned": "Total Assigned",
     "your_coins": "Your Coins",
-    "earn_coins_prompt": "Report issues to start earning coins!"
+    "earn_coins_prompt": "Report issues to start earning coins!",
+
+    "gmc_head": "GMC Head",
+    "admin_manager": "Admin Manager",
+    "field_worker_1": "Field Worker 1",
+    "field_worker_2": "Field Worker 2",
+    "john_citizen": "John Citizen",
+    "jane_doe": "Jane Doe",
+    "peter_jones": "Peter Jones",
+    "mary_smith": "Mary Smith",
+    "david_williams": "David Williams",
+    "susan_brown": "Susan Brown",
+    "michael_miller": "Michael Miller",
+    "karen_wilson": "Karen Wilson",
+    "james_moore": "James Moore",
+    "patricia_taylor": "Patricia Taylor",
+    "alice_johnson": "Alice Johnson",
+    "bob_williams": "Bob Williams",
+    "charlie_brown": "Charlie Brown",
+    "diana_prince": "Diana Prince"
 }
