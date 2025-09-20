@@ -112,10 +112,9 @@ export function ReportIssueForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [imageClarity, setImageClarity] = useState<{
-    status: 'idle' | 'checking' | 'clear' | 'unclear';
-    reason?: string;
-  }>({ status: 'idle' });
+  const [aiCheckStatus, setAiCheckStatus] = useState<'idle' | 'checking' | 'complete'>('idle');
+  const [clarityReason, setClarityReason] = useState<string | undefined>(undefined);
+  
   const [duplicateInfo, setDuplicateInfo] = useState<{
     isDuplicate: boolean;
     duplicateIssueId?: string;
@@ -135,9 +134,17 @@ export function ReportIssueForm({
         form.setValue('category', initialCategory);
     }
   }, [initialCategory, form]);
+  
+  const resetAiChecks = () => {
+    setAiCheckStatus('idle');
+    setClarityReason(undefined);
+    setDuplicateInfo(null);
+    form.clearErrors('photoDataUri');
+  };
 
   const processImage = (file: File) => {
-    setImageClarity({ status: 'checking' });
+    resetAiChecks();
+    setAiCheckStatus('checking');
     setImagePreview(URL.createObjectURL(file));
 
     const reader = new FileReader();
@@ -145,7 +152,7 @@ export function ReportIssueForm({
       const dataUri = e.target?.result as string;
       form.setValue('photoDataUri', dataUri, { shouldValidate: true });
 
-      // Run clarity check and duplicate check in parallel
+      // Run AI checks in the background
       runAiChecks(dataUri);
     };
     reader.readAsDataURL(file);
@@ -169,23 +176,23 @@ export function ReportIssueForm({
   
   const runAiChecks = async (photoDataUri: string) => {
     try {
-        // Get location and issues
-        const location = form.getValues('location');
-        if (!location) {
-             toast({ variant: 'destructive', title: 'Location missing', description: 'Cannot check for duplicates without location.' });
-             return;
-        }
+        const location = await new Promise<{lat: number, lng: number}>((resolve, reject) => {
+             navigator.geolocation.getCurrentPosition(
+                (position) => resolve({lat: position.coords.latitude, lng: position.coords.longitude}),
+                (error) => reject(error)
+            );
+        });
+        form.setValue('location', location);
+
 
         const [clarityResult, existingIssues] = await Promise.all([
             checkImageClarity({ photoDataUri }),
             getIssues()
         ]);
-
+        
         // Process clarity result
-        if (clarityResult.isClear) {
-            setImageClarity({ status: 'clear' });
-        } else {
-            setImageClarity({ status: 'unclear', reason: clarityResult.reason });
+        if (!clarityResult.isClear) {
+            setClarityReason(clarityResult.reason);
             form.setError('photoDataUri', {
                 type: 'manual',
                 message: clarityResult.reason || 'Image is not clear. Please try another.',
@@ -193,24 +200,28 @@ export function ReportIssueForm({
         }
         
         // Process duplicate detection result
-        const duplicateResult = await detectDuplicateIssue({
-            photoDataUri,
-            location: `${location.lat}, ${location.lng}`,
-            existingIssueData: JSON.stringify(existingIssues.map(i => ({id: i.id, title: i.title, description: i.description, location: i.location}))),
-        });
+        if (clarityResult.isClear) {
+            const duplicateResult = await detectDuplicateIssue({
+                photoDataUri,
+                location: `${location.lat}, ${location.lng}`,
+                description: form.getValues('description'),
+                existingIssueData: JSON.stringify(existingIssues.map(i => ({id: i.id, title: i.title, description: i.description, location: i.location}))),
+            });
 
-        if (duplicateResult.isDuplicate && duplicateResult.duplicateIssueId) {
-            setDuplicateInfo(duplicateResult);
+            if (duplicateResult.isDuplicate && duplicateResult.duplicateIssueId) {
+                setDuplicateInfo(duplicateResult);
+            }
         }
 
     } catch (error) {
         console.error('AI checks failed:', error);
-        setImageClarity({ status: 'idle' });
         toast({
             variant: 'destructive',
             title: 'AI Analysis Failed',
             description: 'Could not analyze the image. Please try again.',
         });
+    } finally {
+        setAiCheckStatus('complete');
     }
   }
 
@@ -228,17 +239,9 @@ export function ReportIssueForm({
   }
 
   const onSubmit = async (data: FormData) => {
-    if (imageClarity.status === 'unclear') {
-        toast({
-            variant: 'destructive',
-            title: 'Unclear Image',
-            description: 'Please upload a clear image before submitting.',
-        });
-        return;
-    }
-    
-    // The duplicate check now happens on image upload.
-    // The final submission is immediate.
+    // If a duplicate was detected and the user hasn't made a choice yet,
+    // the submit button would have opened the dialog instead.
+    // This function is now only called after that choice is made.
     await finishSubmission(data);
   };
   
@@ -253,18 +256,32 @@ export function ReportIssueForm({
         });
         form.reset();
         setImagePreview(null);
-        setImageClarity({status: 'idle'});
+        resetAiChecks();
         router.push(`/dashboard?newIssueId=${newIssue.id}`);
     } catch (error) {
         console.error('Error adding issue:', error);
         toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});
     } finally {
         setIsSubmitting(false);
-        setDuplicateInfo(null);
+        setDuplicateInfo(null); // Ensure dialog is closed
     }
   };
   
+  const handleFinalSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (duplicateInfo) {
+      // If the dialog is open for a duplicate, let that logic handle it.
+      // The "Submit Anyway" button in the dialog will call finishSubmission.
+      return; 
+    }
+    // Otherwise, just trigger the standard form submission.
+    form.handleSubmit(onSubmit)();
+  };
+
+  
   const photoInputId = `file-upload-${isEmergency ? 'emergency' : 'standard'}`;
+  const isAiChecking = aiCheckStatus === 'checking';
+  const isImageUnclear = aiCheckStatus === 'complete' && !!clarityReason;
 
   return (
     <>
@@ -284,7 +301,7 @@ export function ReportIssueForm({
                       className="hidden"
                       id={photoInputId}
                       onChange={handleFileChange}
-                      disabled={imageClarity.status === 'checking'}
+                      disabled={isAiChecking}
                     />
                     <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg">
                       {imagePreview ? (
@@ -300,14 +317,14 @@ export function ReportIssueForm({
                           <ImageIcon className="w-10 h-10 mb-3 text-muted-foreground" />
                           <label
                             htmlFor={photoInputId}
-                            className="font-semibold text-primary cursor-pointer hover:underline"
+                            className={cn("font-semibold text-primary cursor-pointer hover:underline", isAiChecking && "pointer-events-none opacity-50")}
                           >
                             Upload a file
                           </label>
                           <p className="text-sm text-muted-foreground my-1">or</p>
                           <Dialog open={isCameraOpen} onOpenChange={setIsCameraOpen}>
                             <DialogTrigger asChild>
-                              <Button variant="outline" size="sm">
+                              <Button variant="outline" size="sm" disabled={isAiChecking}>
                                 <Camera className="mr-2 h-4 w-4" />
                                 Take Photo
                               </Button>
@@ -324,11 +341,11 @@ export function ReportIssueForm({
                     </div>
                   </div>
                 </FormControl>
-                {imageClarity.status !== 'idle' && (
+                {aiCheckStatus !== 'idle' && (
                     <FormDescription className="flex items-center gap-2">
-                        {imageClarity.status === 'checking' && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image...</>}
-                        {imageClarity.status === 'clear' && <> <CheckCircle className="h-4 w-4 text-green-500"/> Image is clear.</>}
-                        {imageClarity.status === 'unclear' && <> <AlertTriangle className="h-4 w-4 text-destructive"/> Image may be unclear. Reason: {imageClarity.reason}</>}
+                        {isAiChecking && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image clarity and checking for duplicates...</>}
+                        {aiCheckStatus === 'complete' && !isImageUnclear && <> <CheckCircle className="h-4 w-4 text-green-500"/> AI checks complete. Image is clear.</>}
+                        {isImageUnclear && <> <AlertTriangle className="h-4 w-4 text-destructive"/> Image may be unclear. Reason: {clarityReason}</>}
                     </FormDescription>
                 )}
                 <FormMessage />
@@ -379,21 +396,25 @@ export function ReportIssueForm({
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting || imageClarity.status === 'checking'} className={cn("w-full", isEmergency && "bg-destructive hover:bg-destructive/90")}>
-            {isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {isEmergency && <AlertTriangle className="mr-2 h-4 w-4" />}
-            Submit Report
-          </Button>
+           <Button 
+            type="submit" 
+            disabled={isSubmitting || isAiChecking || isImageUnclear} 
+            className={cn("w-full", isEmergency && "bg-destructive hover:bg-destructive/90")}
+            onClick={handleFinalSubmit}
+            >
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isAiChecking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEmergency && <AlertTriangle className="mr-2 h-4 w-4" />}
+                {isAiChecking ? 'Analyzing...' : 'Submit Report'}
+            </Button>
         </form>
       </Form>
-      <AlertDialog open={!!duplicateInfo} onOpenChange={(open) => !open && setDuplicateInfo(null)}>
+      <AlertDialog open={!!duplicateInfo && aiCheckStatus === 'complete'} onOpenChange={(open) => !open && setDuplicateInfo(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Duplicate Report Detected</AlertDialogTitle>
+            <AlertDialogTitle>Possible Duplicate Report Detected</AlertDialogTitle>
             <AlertDialogDescription>
-              This issue appears to have been reported already. You can view the original report by clicking the button below, or you can proceed to submit your report anyway if you believe this is a different issue.
+              This issue appears to have been reported already. You can view the original report, or you can proceed to submit your report anyway if you believe this is a different issue.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -408,5 +429,3 @@ export function ReportIssueForm({
     </>
   );
 }
-
-    
