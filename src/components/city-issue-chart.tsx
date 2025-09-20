@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -48,9 +49,11 @@ const timeFrames = [
 ];
 
 const cityColors: Record<string, string> = {
-  'New York': '#8884d8',
-  'Los Angeles': '#82ca9d',
-  // Add more cities and colors as needed
+  'Hyderabad': '#8884d8',
+  'Mumbai': '#82ca9d',
+  'Delhi': '#ffc658',
+  'Bengaluru': '#ff8042',
+  'Chennai': '#00C49F',
 };
 
 export function CityIssueChart({ allIssues }: { allIssues: Issue[] }) {
