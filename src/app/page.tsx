@@ -35,7 +35,7 @@ import { Info } from 'lucide-react'
 
 const citizenSchema = z.object({
   mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
-  password: z.string().min(1, 'Password is required.'),
+  otp: z.string().optional(),
 });
 
 const staffSchema = z.object({
@@ -62,10 +62,11 @@ const roleCredentials: Record<Role, { identifier: string; description: string }>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { user, login, loading: authLoading } = useAuth()
+  const { user, login, sendOtp, loginWithOtp, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<Role>('Citizen');
+  const [otpSent, setOtpSent] = useState(false);
   
   useEffect(() => {
     if (!authLoading && user) {
@@ -79,14 +80,45 @@ export default function LoginPage() {
       email: roleCredentials.Admin.email,
       mobileNumber: roleCredentials.Citizen.identifier,
       password: 'password',
+      otp: '',
     },
   })
+  
+  const handleSendOtp = async () => {
+    const mobileNumber = form.getValues('mobileNumber');
+    const isValid = await form.trigger('mobileNumber');
+    if (!isValid) return;
+
+    setIsSubmitting(true);
+    try {
+        await sendOtp(mobileNumber);
+        setOtpSent(true);
+        toast({
+            title: 'OTP Sent',
+            description: 'A mock OTP has been sent. Please use 123456 to log in.',
+        });
+    } catch (error: any) {
+         toast({
+            variant: 'destructive',
+            title: 'Failed to Send OTP',
+            description: error.message,
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
+  }
+
 
   async function onSubmit(values: any) {
     setIsSubmitting(true);
     try {
       if (activeTab === 'Citizen') {
-        await login(values.mobileNumber, values.password, 'mobile');
+        if (!otpSent) {
+            // This should not happen if UI is correct, but as a fallback
+            await handleSendOtp();
+            return;
+        }
+        await loginWithOtp(values.mobileNumber, values.otp);
       } else {
         await login(values.email, values.password, 'email');
       }
@@ -104,13 +136,16 @@ export default function LoginPage() {
 
   const handleTabChange = (role: Role) => {
     setActiveTab(role);
+    setOtpSent(false); // Reset OTP state on tab change
     form.reset(); // Reset form state and errors
     if (role === 'Citizen') {
         form.setValue('mobileNumber', roleCredentials.Citizen.identifier);
     } else {
         form.setValue('email', roleCredentials[role].identifier);
     }
-    form.setValue('password', 'password');
+    if (role !== 'Citizen') {
+      form.setValue('password', 'password');
+    }
   }
 
   // Display a loading indicator until auth state is confirmed and user is not logged in.
@@ -139,41 +174,63 @@ export default function LoginPage() {
                   placeholder="Enter your 10-digit mobile number"
                   {...field}
                   autoComplete="tel"
+                  disabled={otpSent}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Enter your password"
-                  {...field}
-                  autoComplete="current-password"
-                />
-              </FormControl>
-               <FormMessage />
-            </FormItem>
-          )}
-        />
+        {otpSent && (
+            <FormField
+            control={form.control}
+            name="otp"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>One-Time Password (OTP)</FormLabel>
+                <FormControl>
+                    <Input
+                    placeholder="Enter the 6-digit OTP"
+                    {...field}
+                    autoComplete="one-time-code"
+                    />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        )}
         <div className="pt-2">
-            <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                disabled={isSubmitting}
-            >
-                {isSubmitting && <Loader2 className="animate-spin mr-2" />}
-                Sign In as Citizen
-            </Button>
+            {!otpSent ? (
+                 <Button
+                    type="button"
+                    className="w-full"
+                    size="lg"
+                    disabled={isSubmitting}
+                    onClick={handleSendOtp}
+                >
+                    {isSubmitting && <Loader2 className="animate-spin mr-2" />}
+                    Send OTP
+                </Button>
+            ) : (
+                <Button
+                    type="submit"
+                    className="w-full"
+                    size="lg"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting && <Loader2 className="animate-spin mr-2" />}
+                    Sign In with OTP
+                </Button>
+            )}
         </div>
+        {otpSent && (
+            <div className="text-center text-sm">
+                <Button variant="link" size="sm" onClick={() => setOtpSent(false)} disabled={isSubmitting}>
+                    Change mobile number
+                </Button>
+            </div>
+        )}
       </form>
     </Form>
   )

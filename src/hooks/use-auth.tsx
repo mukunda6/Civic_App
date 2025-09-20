@@ -12,6 +12,8 @@ interface AuthContextType {
   user: AppUser | null;
   loading: boolean;
   login: (identifier: string, pass: string, type: 'email' | 'mobile') => Promise<void>;
+  sendOtp: (mobileNumber: string) => Promise<void>;
+  loginWithOtp: (mobileNumber: string, otp: string) => Promise<void>;
   logout: () => Promise<void>;
   signUp: (email: string, pass: string, name: string, role: AppUser['role'], details?: any) => Promise<void>;
 }
@@ -46,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (type === 'email') {
         foundUser = mockUsers.find(u => u.email === identifier && u.password === pass);
     } else {
+        // This path is kept for potential future use but is replaced by OTP for citizens
         foundUser = mockUsers.find(u => u.mobileNumber === identifier && u.password === pass);
     }
 
@@ -65,6 +68,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Invalid credentials.');
     }
   };
+
+  const sendOtp = async (mobileNumber: string) => {
+    // In a real app, this would trigger an SMS service.
+    // For this mock, we just check if the user exists.
+    await new Promise(resolve => setTimeout(resolve, 500));
+    const foundUser = mockUsers.find(u => u.mobileNumber === mobileNumber && u.role === 'Citizen');
+    if (!foundUser) {
+        throw new Error('No citizen account found with this mobile number.');
+    }
+    console.log(`(Mock) OTP sent to ${mobileNumber}. The OTP is 123456.`);
+  };
+
+  const loginWithOtp = async (mobileNumber: string, otp: string) => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    // This is a mock OTP verification.
+    if (otp !== '123456') {
+        throw new Error('Invalid OTP. Please try again.');
+    }
+    
+    const foundUser = mockUsers.find(u => u.mobileNumber === mobileNumber && u.role === 'Citizen');
+    if (foundUser) {
+         const appUser: AppUser = {
+            uid: foundUser.uid,
+            name: foundUser.name,
+            nameKey: foundUser.nameKey,
+            email: foundUser.email,
+            role: foundUser.role,
+            avatarUrl: foundUser.avatarUrl,
+            mobileNumber: foundUser.mobileNumber,
+        };
+        setUser(getTranslatedUser(appUser));
+        sessionStorage.setItem('user', JSON.stringify(appUser));
+    } else {
+        // This should not be reachable if sendOtp check passed, but for safety.
+        throw new Error('Login failed. Please try again.');
+    }
+  };
+
 
   const logout = async () => {
     setUser(null);
@@ -101,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, signUp }}>
+    <AuthContext.Provider value={{ user, loading, login, sendOtp, loginWithOtp, logout, signUp }}>
       {children}
     </AuthContext.Provider>
   );
