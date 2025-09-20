@@ -115,10 +115,7 @@ export function ReportIssueForm({
   const [aiCheckStatus, setAiCheckStatus] = useState<'idle' | 'checking' | 'complete'>('idle');
   const [clarityReason, setClarityReason] = useState<string | undefined>(undefined);
   
-  const [duplicateInfo, setDuplicateInfo] = useState<{
-    isDuplicate: boolean;
-    duplicateIssueId?: string;
-  } | null>(null);
+  const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -138,7 +135,7 @@ export function ReportIssueForm({
   const resetAiChecks = () => {
     setAiCheckStatus('idle');
     setClarityReason(undefined);
-    setDuplicateInfo(null);
+    setIsDuplicate(false);
     form.clearErrors('photoDataUri');
   };
 
@@ -209,7 +206,16 @@ export function ReportIssueForm({
             });
 
             if (duplicateResult.isDuplicate && duplicateResult.duplicateIssueId) {
-                setDuplicateInfo(duplicateResult);
+                setIsDuplicate(true);
+                toast({
+                    title: 'Issue Already Reported',
+                    description: 'This issue has already been reported and is in process. Thank you!',
+                    duration: 6000,
+                });
+                form.setError('photoDataUri', {
+                    type: 'manual',
+                    message: 'This issue has already been reported.'
+                });
             }
         }
 
@@ -239,13 +245,6 @@ export function ReportIssueForm({
   }
 
   const onSubmit = async (data: FormData) => {
-    // If a duplicate was detected and the user hasn't made a choice yet,
-    // the submit button would have opened the dialog instead.
-    // This function is now only called after that choice is made.
-    await finishSubmission(data);
-  };
-  
-  const finishSubmission = async (data: FormData) => {
     setIsSubmitting(true);
     
     try {
@@ -263,21 +262,8 @@ export function ReportIssueForm({
         toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});
     } finally {
         setIsSubmitting(false);
-        setDuplicateInfo(null); // Ensure dialog is closed
     }
   };
-  
-  const handleFinalSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (duplicateInfo) {
-      // If the dialog is open for a duplicate, let that logic handle it.
-      // The "Submit Anyway" button in the dialog will call finishSubmission.
-      return; 
-    }
-    // Otherwise, just trigger the standard form submission.
-    form.handleSubmit(onSubmit)();
-  };
-
   
   const photoInputId = `file-upload-${isEmergency ? 'emergency' : 'standard'}`;
   const isAiChecking = aiCheckStatus === 'checking';
@@ -341,7 +327,7 @@ export function ReportIssueForm({
                     </div>
                   </div>
                 </FormControl>
-                {aiCheckStatus !== 'idle' && (
+                {aiCheckStatus !== 'idle' && !isDuplicate && (
                     <FormDescription className="flex items-center gap-2">
                         {isAiChecking && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image clarity and checking for duplicates...</>}
                         {aiCheckStatus === 'complete' && !isImageUnclear && <> <CheckCircle className="h-4 w-4 text-green-500"/> AI checks complete. Image is clear.</>}
@@ -398,9 +384,8 @@ export function ReportIssueForm({
 
            <Button 
             type="submit" 
-            disabled={isSubmitting || isAiChecking || isImageUnclear} 
+            disabled={isSubmitting || isAiChecking || isImageUnclear || isDuplicate} 
             className={cn("w-full", isEmergency && "bg-destructive hover:bg-destructive/90")}
-            onClick={handleFinalSubmit}
             >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isAiChecking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -409,23 +394,6 @@ export function ReportIssueForm({
             </Button>
         </form>
       </Form>
-      <AlertDialog open={!!duplicateInfo && aiCheckStatus === 'complete'} onOpenChange={(open) => !open && setDuplicateInfo(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Possible Duplicate Report Detected</AlertDialogTitle>
-            <AlertDialogDescription>
-              This issue appears to have been reported already. You can view the original report, or you can proceed to submit your report anyway if you believe this is a different issue.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDuplicateInfo(null)}>Cancel</AlertDialogCancel>
-            <Button variant="outline" onClick={() => finishSubmission(form.getValues())}>Submit Anyway</Button>
-            <AlertDialogAction asChild>
-                <Link href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer">View Original Report</Link>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
