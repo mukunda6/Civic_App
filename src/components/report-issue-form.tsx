@@ -210,30 +210,8 @@ export function ReportIssueForm({
     
     setIsSubmitting(true);
     try {
-      const existingIssues = await getIssues();
-      // Only run duplicate check if there are issues to check against and it's not an emergency
-      if (existingIssues.length > 0 && !isEmergency) {
-        const existingIssueData = JSON.stringify(
-          existingIssues.map(i => ({ id: i.id, description: i.description, title: i.title, location: i.location }))
-        );
-
-        const duplicateResult = await detectDuplicateIssue({
-          ...data,
-          location: `${data.location.lat}, ${data.location.lng}`,
-          existingIssueData,
-        });
-        
-        // Use a reasonable confidence threshold
-        if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.8) {
-          setDuplicateInfo(duplicateResult);
-          setIsSubmitting(false); // Stop submission and show dialog
-          return;
-        }
-      }
-
-      // If no duplicates are found or it's an emergency, proceed to submit
+      // Removed duplicate detection for faster submission.
       await finishSubmission();
-
     } catch (error) {
       console.error('Submission failed:', error);
       toast({
