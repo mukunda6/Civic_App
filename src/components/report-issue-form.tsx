@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -26,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { addIssue, getIssues } from '@/lib/firebase-service';
+import { addIssue } from '@/lib/firebase-service';
 import {
   Dialog,
   DialogContent,
@@ -35,7 +34,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { checkImageClarity } from '@/ai/flows/image-clarity-check';
-import { detectDuplicateIssue } from '@/ai/flows/duplicate-issue-detection';
 import {
   Image as ImageIcon,
   Loader2,
@@ -105,8 +103,6 @@ export function ReportIssueForm({
   const [aiCheckStatus, setAiCheckStatus] = useState<'idle' | 'checking' | 'complete'>('idle');
   const [clarityReason, setClarityReason] = useState<string | undefined>(undefined);
   
-  const [isDuplicate, setIsDuplicate] = useState<boolean>(false);
-
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -125,7 +121,6 @@ export function ReportIssueForm({
   const resetAiChecks = () => {
     setAiCheckStatus('idle');
     setClarityReason(undefined);
-    setIsDuplicate(false);
     form.clearErrors('photoDataUri');
   };
 
@@ -163,21 +158,8 @@ export function ReportIssueForm({
   
   const runAiChecks = async (photoDataUri: string) => {
     try {
-        const location = await new Promise<{lat: number, lng: number}>((resolve, reject) => {
-             navigator.geolocation.getCurrentPosition(
-                (position) => resolve({lat: position.coords.latitude, lng: position.coords.longitude}),
-                (error) => reject(error)
-            );
-        });
-        form.setValue('location', location);
-
-
-        const [clarityResult, existingIssues] = await Promise.all([
-            checkImageClarity({ photoDataUri }),
-            getIssues()
-        ]);
+        const clarityResult = await checkImageClarity({ photoDataUri });
         
-        // Process clarity result
         if (!clarityResult.isClear) {
             setClarityReason(clarityResult.reason);
             form.setError('photoDataUri', {
@@ -185,30 +167,6 @@ export function ReportIssueForm({
                 message: clarityResult.reason || 'Image is not clear. Please try another.',
             });
         }
-        
-        // Process duplicate detection result
-        if (clarityResult.isClear) {
-            const duplicateResult = await detectDuplicateIssue({
-                photoDataUri,
-                location: `${location.lat}, ${location.lng}`,
-                description: form.getValues('description'),
-                existingIssueData: JSON.stringify(existingIssues.map(i => ({id: i.id, title: i.title, description: i.description, location: i.location}))),
-            });
-
-            if (duplicateResult.isDuplicate && duplicateResult.duplicateIssueId) {
-                setIsDuplicate(true);
-                toast({
-                    title: 'Issue Already Reported',
-                    description: 'This issue has already been reported and is in process. Thank you!',
-                    duration: 6000,
-                });
-                form.setError('photoDataUri', {
-                    type: 'manual',
-                    message: 'This issue has already been reported.'
-                });
-            }
-        }
-
     } catch (error) {
         console.error('AI checks failed:', error);
         toast({
@@ -317,9 +275,9 @@ export function ReportIssueForm({
                     </div>
                   </div>
                 </FormControl>
-                {aiCheckStatus !== 'idle' && !isDuplicate && (
+                {aiCheckStatus !== 'idle' && (
                     <FormDescription className="flex items-center gap-2">
-                        {isAiChecking && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image clarity and checking for duplicates...</>}
+                        {isAiChecking && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image clarity...</>}
                         {aiCheckStatus === 'complete' && !isImageUnclear && <> <CheckCircle className="h-4 w-4 text-green-500"/> AI checks complete. Image is clear.</>}
                         {isImageUnclear && <> <AlertTriangle className="h-4 w-4 text-destructive"/> Image may be unclear. Reason: {clarityReason}</>}
                     </FormDescription>
@@ -374,7 +332,7 @@ export function ReportIssueForm({
 
            <Button 
             type="submit" 
-            disabled={isSubmitting || isAiChecking || isImageUnclear || isDuplicate} 
+            disabled={isSubmitting || isAiChecking || isImageUnclear} 
             className={cn("w-full", isEmergency && "bg-destructive hover:bg-destructive/90")}
             >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
