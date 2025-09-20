@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { addIssue } from '@/lib/firebase-service';
+import { addIssue, getIssues } from '@/lib/firebase-service';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { checkImageClarity } from '@/ai/flows/image-clarity-check';
+import { detectDuplicateIssue } from '@/ai/flows/duplicate-issue-detection';
 import {
   Image as ImageIcon,
   Loader2,
@@ -42,7 +43,7 @@ import {
   Camera,
 } from 'lucide-react';
 import Image from 'next/image';
-import type { AppUser, IssueCategory, EmergencyCategory } from '@/lib/types';
+import type { AppUser, IssueCategory, EmergencyCategory, Issue } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { CameraCapture } from './camera-capture';
 import { cn } from '@/lib/utils';
@@ -101,7 +102,8 @@ export function ReportIssueForm({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [aiCheckStatus, setAiCheckStatus] = useState<'idle' | 'checking' | 'complete'>('idle');
-  const [clarityReason, setClarityReason] = useState<string | undefined>(undefined);
+  const [aiCheckMessage, setAiCheckMessage] = useState<string | null>(null);
+  const [isDuplicate, setIsDuplicate] = useState(false);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -120,7 +122,8 @@ export function ReportIssueForm({
   
   const resetAiChecks = () => {
     setAiCheckStatus('idle');
-    setClarityReason(undefined);
+    setAiCheckMessage(null);
+    setIsDuplicate(false);
     form.clearErrors('photoDataUri');
   };
 
@@ -134,51 +137,84 @@ export function ReportIssueForm({
       const dataUri = e.target?.result as string;
       form.setValue('photoDataUri', dataUri, { shouldValidate: true });
 
-      // Run AI checks in the background
-      runAiChecks(dataUri);
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          form.setValue('location', location);
+          // Run AI checks now that we have image and location
+          runAiChecks(dataUri, location);
+        },
+        () => {
+          setAiCheckStatus('complete');
+          form.setError('photoDataUri', { type: 'manual', message: 'Could not get location. Please enable location services.' });
+          toast({
+            variant: 'destructive',
+            title: 'Location Error',
+            description: 'Could not get your location. Please enable location services.',
+          });
+        }
+      );
     };
     reader.readAsDataURL(file);
-
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        form.setValue('location', {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      },
-      () => {
-        toast({
-          variant: 'destructive',
-          title: 'Location Error',
-          description: 'Could not get your location. Please enable location services.',
-        });
-      }
-    );
   };
   
-  const runAiChecks = async (photoDataUri: string) => {
+  const runAiChecks = async (photoDataUri: string, location: { lat: number, lng: number }) => {
     try {
-        const clarityResult = await checkImageClarity({ photoDataUri });
+        const [clarityResult, allIssues] = await Promise.all([
+            checkImageClarity({ photoDataUri }),
+            getIssues() 
+        ]);
         
         if (!clarityResult.isClear) {
-            setClarityReason(clarityResult.reason);
+            setAiCheckMessage(clarityResult.reason || 'Image is not clear. Please try another.');
             form.setError('photoDataUri', {
                 type: 'manual',
                 message: clarityResult.reason || 'Image is not clear. Please try another.',
             });
+            setAiCheckStatus('complete');
+            return;
         }
+
+        const existingIssueData = allIssues.map(i => ({ 
+            id: i.id, 
+            title: i.title, 
+            description: i.description, 
+            location: i.location 
+        }));
+
+        const duplicateResult = await detectDuplicateIssue({
+            photoDataUri,
+            location: `${location.lat}, ${location.lng}`,
+            existingIssueData: JSON.stringify(existingIssueData),
+        });
+
+        if (duplicateResult.isDuplicate && duplicateResult.confidence > 0.8) {
+            setIsDuplicate(true);
+            toast({
+                variant: 'destructive',
+                title: 'Duplicate Issue Detected',
+                description: 'This issue has already been reported and is in process. Thank you!',
+            });
+             setAiCheckMessage('This issue seems to be a duplicate.');
+        } else {
+            setAiCheckMessage('AI checks complete. Image is clear.');
+        }
+
     } catch (error) {
         console.error('AI checks failed:', error);
+        setAiCheckMessage('Could not analyze the image. You can still submit.');
         toast({
             variant: 'destructive',
             title: 'AI Analysis Failed',
-            description: 'Could not analyze the image. Please try again.',
+            description: 'Could not fully analyze the image, but you can proceed with submission.',
         });
     } finally {
         setAiCheckStatus('complete');
     }
   }
-
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -215,7 +251,7 @@ export function ReportIssueForm({
   
   const photoInputId = `file-upload-${isEmergency ? 'emergency' : 'standard'}`;
   const isAiChecking = aiCheckStatus === 'checking';
-  const isImageUnclear = aiCheckStatus === 'complete' && !!clarityReason;
+  const hasAiError = !!form.formState.errors.photoDataUri || isDuplicate;
 
   return (
     <>
@@ -277,9 +313,9 @@ export function ReportIssueForm({
                 </FormControl>
                 {aiCheckStatus !== 'idle' && (
                     <FormDescription className="flex items-center gap-2">
-                        {isAiChecking && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image clarity...</>}
-                        {aiCheckStatus === 'complete' && !isImageUnclear && <> <CheckCircle className="h-4 w-4 text-green-500"/> AI checks complete. Image is clear.</>}
-                        {isImageUnclear && <> <AlertTriangle className="h-4 w-4 text-destructive"/> Image may be unclear. Reason: {clarityReason}</>}
+                        {isAiChecking && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image...</>}
+                        {aiCheckStatus === 'complete' && !hasAiError && <> <CheckCircle className="h-4 w-4 text-green-500"/> {aiCheckMessage}</>}
+                         {aiCheckStatus === 'complete' && hasAiError && <> <AlertTriangle className="h-4 w-4 text-destructive"/> {aiCheckMessage}</>}
                     </FormDescription>
                 )}
                 <FormMessage />
@@ -332,12 +368,12 @@ export function ReportIssueForm({
 
            <Button 
             type="submit" 
-            disabled={isSubmitting || isAiChecking || isImageUnclear} 
+            disabled={isSubmitting || isAiChecking || hasAiError} 
             className={cn("w-full", isEmergency && "bg-destructive hover:bg-destructive/90")}
             >
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isAiChecking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEmergency && <AlertTriangle className="mr-2 h-4 w-4" />}
+                {isEmergency && !isSubmitting && !isAiChecking && <AlertTriangle className="mr-2 h-4 w-4" />}
                 {isAiChecking ? 'Analyzing...' : 'Submit Report'}
             </Button>
         </form>
@@ -345,3 +381,5 @@ export function ReportIssueForm({
     </>
   );
 }
+
+    
