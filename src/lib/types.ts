@@ -29,6 +29,7 @@ export interface AppUser {
     name: string; // This will now be the translated name
     nameKey: string; // Key for translation
     email: string;
+    mobileNumber?: string;
     role: UserRole;
     avatarUrl: string;
 }
@@ -73,3 +74,5 @@ export interface Worker {
   area: string;
   avatarUrl: string;
 }
+
+    

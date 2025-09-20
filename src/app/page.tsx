@@ -33,24 +33,29 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Info } from 'lucide-react'
 
 
-const formSchema = z.object({
+const citizenSchema = z.object({
+  mobileNumber: z.string().regex(/^\d{10}$/, 'Please enter a valid 10-digit mobile number.'),
+  password: z.string().min(1, 'Password is required.'),
+});
+
+const staffSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
   password: z.string().min(1, 'Password is required.'),
-})
+});
 
 type Role = 'Citizen' | 'Admin' | 'Head';
 
-const roleCredentials: Record<Role, { email: string; description: string }> = {
+const roleCredentials: Record<Role, { identifier: string; description: string }> = {
     Citizen: {
-        email: 'citizen@test.com',
-        description: 'Report issues and track their status.'
+        identifier: '1234567890',
+        description: 'Report issues and track their status using your mobile number.'
     },
     Admin: {
-        email: 'admin@test.com',
+        identifier: 'admin@test.com',
         description: 'Assign issues and manage field workers.'
     },
     Head: {
-        email: 'head@test.com',
+        identifier: 'head@test.com',
         description: 'Oversee all operations and performance.'
     }
 }
@@ -60,6 +65,7 @@ export default function LoginPage() {
   const { user, login, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<Role>('Citizen');
   
   useEffect(() => {
     if (!authLoading && user) {
@@ -67,18 +73,23 @@ export default function LoginPage() {
     }
   }, [user, authLoading, router]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm({
+    resolver: zodResolver(activeTab === 'Citizen' ? citizenSchema : staffSchema),
     defaultValues: {
-      email: roleCredentials.Citizen.email,
+      email: roleCredentials.Admin.email,
+      mobileNumber: roleCredentials.Citizen.identifier,
       password: 'password',
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: any) {
     setIsSubmitting(true);
     try {
-      await login(values.email, values.password);
+      if (activeTab === 'Citizen') {
+        await login(values.mobileNumber, values.password, 'mobile');
+      } else {
+        await login(values.email, values.password, 'email');
+      }
       router.push('/dashboard');
     } catch (error: any) {
       toast({
@@ -92,7 +103,13 @@ export default function LoginPage() {
   }
 
   const handleTabChange = (role: Role) => {
-    form.setValue('email', roleCredentials[role].email);
+    setActiveTab(role);
+    form.reset(); // Reset form state and errors
+    if (role === 'Citizen') {
+        form.setValue('mobileNumber', roleCredentials.Citizen.identifier);
+    } else {
+        form.setValue('email', roleCredentials[role].identifier);
+    }
     form.setValue('password', 'password');
   }
 
@@ -105,7 +122,63 @@ export default function LoginPage() {
     )
   }
 
-  const LoginForm = ({ role }: { role: Role }) => (
+  const CitizenLoginForm = () => (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <p className="text-sm text-muted-foreground text-center h-10 flex items-center justify-center px-4">
+          {roleCredentials.Citizen.description}
+        </p>
+        <FormField
+          control={form.control}
+          name="mobileNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mobile Number</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter your 10-digit mobile number"
+                  {...field}
+                  autoComplete="tel"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  {...field}
+                  autoComplete="current-password"
+                />
+              </FormControl>
+               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="pt-2">
+            <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={isSubmitting}
+            >
+                {isSubmitting && <Loader2 className="animate-spin mr-2" />}
+                Sign In as Citizen
+            </Button>
+        </div>
+      </form>
+    </Form>
+  )
+
+  const StaffLoginForm = ({ role }: { role: 'Admin' | 'Head' }) => (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <p className="text-sm text-muted-foreground text-center h-10 flex items-center justify-center px-4">
@@ -183,13 +256,13 @@ export default function LoginPage() {
               <TabsTrigger value="Head">Head</TabsTrigger>
             </TabsList>
             <TabsContent value="Citizen">
-              <LoginForm role="Citizen" />
+              <CitizenLoginForm />
             </TabsContent>
             <TabsContent value="Admin">
-              <LoginForm role="Admin" />
+              <StaffLoginForm role="Admin" />
             </TabsContent>
             <TabsContent value="Head">
-              <LoginForm role="Head" />
+              <StaffLoginForm role="Head" />
             </TabsContent>
           </Tabs>
            <div className="mt-4 text-center text-sm">
@@ -203,3 +276,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+    

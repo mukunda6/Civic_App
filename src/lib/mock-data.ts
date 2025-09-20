@@ -47,6 +47,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'John Citizen',
     nameKey: 'john_citizen',
     email: 'citizen@test.com',
+    mobileNumber: '1234567890',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/John/100/100',
@@ -56,6 +57,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Jane Doe',
     nameKey: 'jane_doe',
     email: 'jane.doe@test.com',
+    mobileNumber: '1234567891',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Jane/100/100',
@@ -65,6 +67,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Peter Jones',
     nameKey: 'peter_jones',
     email: 'peter.jones@test.com',
+    mobileNumber: '1234567892',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Peter/100/100',
@@ -74,6 +77,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Mary Smith',
     nameKey: 'mary_smith',
     email: 'mary.smith@test.com',
+    mobileNumber: '1234567893',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Mary/100/100',
@@ -83,6 +87,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'David Williams',
     nameKey: 'david_williams',
     email: 'david.williams@test.com',
+    mobileNumber: '1234567894',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/David/100/100',
@@ -92,6 +97,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Susan Brown',
     nameKey: 'susan_brown',
     email: 'susan.brown@test.com',
+    mobileNumber: '1234567895',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Susan/100/100',
@@ -101,6 +107,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Michael Miller',
     nameKey: 'michael_miller',
     email: 'michael.miller@test.com',
+    mobileNumber: '1234567896',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Michael/100/100',
@@ -110,6 +117,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Karen Wilson',
     nameKey: 'karen_wilson',
     email: 'karen.wilson@test.com',
+    mobileNumber: '1234567897',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Karen/100/100',
@@ -119,6 +127,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'James Moore',
     nameKey: 'james_moore',
     email: 'james.moore@test.com',
+    mobileNumber: '1234567898',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/James/100/100',
@@ -128,6 +137,7 @@ export const mockUsers: (AppUser & { password?: string })[] = [
     name: 'Patricia Taylor',
     nameKey: 'patricia_taylor',
     email: 'patricia.taylor@test.com',
+    mobileNumber: '1234567899',
     password: 'password',
     role: 'Citizen',
     avatarUrl: 'https://picsum.photos/seed/Patricia/100/100',
@@ -485,5 +495,7 @@ export let mockIssues: Issue[] = [
     ]
   }
 ];
+
+    
 
     

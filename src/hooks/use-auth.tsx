@@ -11,7 +11,7 @@ import { useLanguage } from './use-language';
 interface AuthContextType {
   user: AppUser | null;
   loading: boolean;
-  login: (email: string, pass: string) => Promise<void>;
+  login: (identifier: string, pass: string, type: 'email' | 'mobile') => Promise<void>;
   logout: () => Promise<void>;
   signUp: (email: string, pass: string, name: string, role: AppUser['role'], details?: any) => Promise<void>;
 }
@@ -41,10 +41,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, [t]);
 
-  const login = async (email: string, pass: string) => {
-    const foundUser = mockUsers.find(
-      u => u.email === email && u.password === pass
-    );
+  const login = async (identifier: string, pass: string, type: 'email' | 'mobile') => {
+    let foundUser;
+    if (type === 'email') {
+        foundUser = mockUsers.find(u => u.email === identifier && u.password === pass);
+    } else {
+        foundUser = mockUsers.find(u => u.mobileNumber === identifier && u.password === pass);
+    }
 
     if (foundUser) {
       const appUser: AppUser = {
@@ -54,11 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: foundUser.email,
         role: foundUser.role,
         avatarUrl: foundUser.avatarUrl,
+        mobileNumber: foundUser.mobileNumber,
       };
       setUser(getTranslatedUser(appUser));
       sessionStorage.setItem('user', JSON.stringify(appUser));
     } else {
-      throw new Error('Invalid email or password.');
+      throw new Error('Invalid credentials.');
     }
   };
 
@@ -85,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         role,
         avatarUrl: `https://picsum.photos/seed/${name.split(' ')[0]}/100/100`,
+        mobileNumber: details.mobileNumber,
     };
 
     // Add to mock users array to allow login later in the session
@@ -109,3 +114,5 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+    
