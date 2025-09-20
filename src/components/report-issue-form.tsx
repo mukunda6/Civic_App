@@ -145,27 +145,8 @@ export function ReportIssueForm({
       const dataUri = e.target?.result as string;
       form.setValue('photoDataUri', dataUri, { shouldValidate: true });
 
-      try {
-        const clarityResult = await checkImageClarity({ photoDataUri: dataUri });
-        if (clarityResult.isClear) {
-          setImageClarity({ status: 'clear' });
-        } else {
-          setImageClarity({ status: 'unclear', reason: clarityResult.reason });
-          form.setError('photoDataUri', {
-            type: 'manual',
-            message:
-              clarityResult.reason || 'Image is not clear. Please try another.',
-          });
-        }
-      } catch (error) {
-        console.error('Clarity check failed:', error);
-        setImageClarity({ status: 'idle' }); // Reset on error
-        toast({
-          variant: 'destructive',
-          title: 'Clarity Check Failed',
-          description: 'Could not analyze the image. Please try again.',
-        });
-      }
+      // Run clarity check and duplicate check in parallel
+      runAiChecks(dataUri);
     };
     reader.readAsDataURL(file);
 
@@ -185,6 +166,54 @@ export function ReportIssueForm({
       }
     );
   };
+  
+  const runAiChecks = async (photoDataUri: string) => {
+    try {
+        // Get location and issues
+        const location = form.getValues('location');
+        if (!location) {
+             toast({ variant: 'destructive', title: 'Location missing', description: 'Cannot check for duplicates without location.' });
+             return;
+        }
+
+        const [clarityResult, existingIssues] = await Promise.all([
+            checkImageClarity({ photoDataUri }),
+            getIssues()
+        ]);
+
+        // Process clarity result
+        if (clarityResult.isClear) {
+            setImageClarity({ status: 'clear' });
+        } else {
+            setImageClarity({ status: 'unclear', reason: clarityResult.reason });
+            form.setError('photoDataUri', {
+                type: 'manual',
+                message: clarityResult.reason || 'Image is not clear. Please try another.',
+            });
+        }
+        
+        // Process duplicate detection result
+        const duplicateResult = await detectDuplicateIssue({
+            photoDataUri,
+            location: `${location.lat}, ${location.lng}`,
+            existingIssueData: JSON.stringify(existingIssues.map(i => ({id: i.id, title: i.title, description: i.description, location: i.location}))),
+        });
+
+        if (duplicateResult.isDuplicate && duplicateResult.duplicateIssueId) {
+            setDuplicateInfo(duplicateResult);
+        }
+
+    } catch (error) {
+        console.error('AI checks failed:', error);
+        setImageClarity({ status: 'idle' });
+        toast({
+            variant: 'destructive',
+            title: 'AI Analysis Failed',
+            description: 'Could not analyze the image. Please try again.',
+        });
+    }
+  }
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -208,25 +237,14 @@ export function ReportIssueForm({
         return;
     }
     
-    setIsSubmitting(true);
-    try {
-      // Removed duplicate detection for faster submission.
-      await finishSubmission();
-    } catch (error) {
-      console.error('Submission failed:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Submission Failed',
-        description: 'An unexpected error occurred. Please try again.',
-      });
-      setIsSubmitting(false);
-    }
+    // The duplicate check now happens on image upload.
+    // The final submission is immediate.
+    await finishSubmission(data);
   };
   
-  const finishSubmission = async () => {
-    setIsSubmitting(true); // Ensure submitting state is true
-    const data = form.getValues();
-
+  const finishSubmission = async (data: FormData) => {
+    setIsSubmitting(true);
+    
     try {
         const newIssue = await addIssue({ ...data, isEmergency }, user);
         toast({
@@ -242,7 +260,7 @@ export function ReportIssueForm({
         toast({ variant: 'destructive', title: 'Submission Error', description: 'Could not save your report.'});
     } finally {
         setIsSubmitting(false);
-        setDuplicateInfo(null); // Also clear duplicate info here
+        setDuplicateInfo(null);
     }
   };
   
@@ -308,7 +326,7 @@ export function ReportIssueForm({
                 </FormControl>
                 {imageClarity.status !== 'idle' && (
                     <FormDescription className="flex items-center gap-2">
-                        {imageClarity.status === 'checking' && <> <Loader2 className="h-4 w-4 animate-spin"/> Checking image clarity...</>}
+                        {imageClarity.status === 'checking' && <> <Loader2 className="h-4 w-4 animate-spin"/> Analyzing image...</>}
                         {imageClarity.status === 'clear' && <> <CheckCircle className="h-4 w-4 text-green-500"/> Image is clear.</>}
                         {imageClarity.status === 'unclear' && <> <AlertTriangle className="h-4 w-4 text-destructive"/> Image may be unclear. Reason: {imageClarity.reason}</>}
                     </FormDescription>
@@ -380,7 +398,7 @@ export function ReportIssueForm({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDuplicateInfo(null)}>Cancel</AlertDialogCancel>
-            <Button variant="outline" onClick={finishSubmission}>Submit Anyway</Button>
+            <Button variant="outline" onClick={() => finishSubmission(form.getValues())}>Submit Anyway</Button>
             <AlertDialogAction asChild>
                 <Link href={`/issues/${duplicateInfo?.duplicateIssueId}`} target="_blank" rel="noopener noreferrer">View Original Report</Link>
             </AlertDialogAction>
@@ -390,3 +408,5 @@ export function ReportIssueForm({
     </>
   );
 }
+
+    
