@@ -13,7 +13,7 @@ import { getIssues, getWorkers } from '@/lib/firebase-service';
 import type { Issue, Worker } from '@/lib/types';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { ListChecks, Users, Shield, AlertTriangle, Clock } from 'lucide-react';
+import { ListChecks, Users, Shield, AlertTriangle, Clock, BarChart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { formatDistanceToNow } from 'date-fns';
@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { useLanguage } from '@/hooks/use-language';
+import { CityIssueChart } from './city-issue-chart';
 
 export function HeadDashboard() {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -106,6 +107,21 @@ export function HeadDashboard() {
           </CardContent>
         </Card>
       </div>
+
+       <Card>
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <BarChart />
+                City-wise Major Issues Analysis
+            </CardTitle>
+            <CardDescription>
+                Analysis of civic issues reported across different cities with filtering options.
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <CityIssueChart allIssues={issues} />
+        </CardContent>
+      </Card>
       
        {escalatedIssues.length > 0 && (
         <Card className="border-purple-500 border-2">

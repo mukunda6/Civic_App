@@ -45,6 +45,7 @@ export interface Issue {
   location: {
     lat: number;
     lng: number;
+    city: string;
   };
   imageUrl: string;
   imageHint: string;
