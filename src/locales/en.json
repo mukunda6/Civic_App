@@ -100,8 +100,10 @@
 
     "gmc_head": "GMC Head",
     "admin_manager": "Admin Manager",
-    "field_worker_1": "Field Worker 1",
-    "field_worker_2": "Field Worker 2",
+    "suresh_kumar": "Suresh Kumar",
+    "priya_sharma": "Priya Sharma",
+    "rajesh_singh": "Rajesh Singh",
+    "anita_devi": "Anita Devi",
     "john_citizen": "John Citizen",
     "jane_doe": "Jane Doe",
     "peter_jones": "Peter Jones",
@@ -111,9 +113,5 @@
     "michael_miller": "Michael Miller",
     "karen_wilson": "Karen Wilson",
     "james_moore": "James Moore",
-    "patricia_taylor": "Patricia Taylor",
-    "alice_johnson": "Alice Johnson",
-    "bob_williams": "Bob Williams",
-    "charlie_brown": "Charlie Brown",
-    "diana_prince": "Diana Prince"
+    "patricia_taylor": "Patricia Taylor"
 }

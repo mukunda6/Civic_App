@@ -96,12 +96,14 @@
     "resolved": "حل",
     "total_assigned": "کل تفویض",
     "your_coins": "آپ کے سکے",
-    "earn_coins_prompt": "سکے کمانا شروع करने के लिए مسائل کی اطلاع دیں!",
+    "earn_coins_prompt": "سکے کمانا شروع کرنے के लिए مسائل کی اطلاع دیں!",
 
     "gmc_head": "جی ایم سی ہیڈ",
     "admin_manager": "ایڈمن مینیجر",
-    "field_worker_1": "فیلڈ ورکر 1",
-    "field_worker_2": "فیلڈ ورکر 2",
+    "suresh_kumar": "سریش کمار",
+    "priya_sharma": "پریا شرما",
+    "rajesh_singh": "راجیش سنگھ",
+    "anita_devi": "انیتا دیوی",
     "john_citizen": "جان سٹیزن",
     "jane_doe": "جین ڈو",
     "peter_jones": "پیٹر جونز",
@@ -111,9 +113,5 @@
     "michael_miller": "مائیکل ملر",
     "karen_wilson": "کیرن ولسن",
     "james_moore": "جیمز مور",
-    "patricia_taylor": "پیٹریسیا ٹیلر",
-    "alice_johnson": "ایلس جانسن",
-    "bob_williams": "باب ولیمز",
-    "charlie_brown": "چارلی براؤن",
-    "diana_prince": "ڈیانا پرنس"
+    "patricia_taylor": "پیٹریسیا ٹیلر"
 }

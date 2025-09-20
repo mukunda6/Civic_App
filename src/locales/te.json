@@ -100,8 +100,10 @@
     
     "gmc_head": "జిఎంసి హెడ్",
     "admin_manager": "అడ్మిన్ మేనేజర్",
-    "field_worker_1": "ఫీల్డ్ వర్కర్ 1",
-    "field_worker_2": "ఫీల్డ్ వర్కర్ 2",
+    "suresh_kumar": "సురేష్ కుమార్",
+    "priya_sharma": "ప్రియా శర్మ",
+    "rajesh_singh": "రాజేష్ సింగ్",
+    "anita_devi": "అనితా దేవి",
     "john_citizen": "జాన్ సిటిజన్",
     "jane_doe": "జేన్ డో",
     "peter_jones": "పీటర్ జోన్స్",
@@ -111,9 +113,5 @@
     "michael_miller": "మైఖేల్ మిల్లర్",
     "karen_wilson": "కరెన్ విల్సన్",
     "james_moore": "జేమ్స్ మూర్",
-    "patricia_taylor": "ప్యాట్రిసియా టేలర్",
-    "alice_johnson": "ఆలిస్ జాన్సన్",
-    "bob_williams": "బాబ్ విలియమ్స్",
-    "charlie_brown": "చార్లీ బ్రౌన్",
-    "diana_prince": "డైయానా ప్రిన్స్"
+    "patricia_taylor": "ప్యాట్రిసియా టేలర్"
 }
