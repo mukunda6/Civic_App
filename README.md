@@ -1,3 +1,4 @@
+git remote remove origin
 # Firebase Studio
 
 This is a NextJS starter in Firebase Studio.
